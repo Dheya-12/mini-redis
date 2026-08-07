@@ -17,10 +17,23 @@ jobs:
           node-version: '22'
       - name: Install exact dependencies
         run: npm install --no-audit --no-fund
-      - name: Package dependencies
-        run: tar -czf next-runtime-dependencies.tgz node_modules package-lock.json
+      - name: Package smaller dependency groups
+        run: |
+          tar -czf next-core.tgz node_modules/next
+          tar -czf next-swc.tgz node_modules/@next/swc-*
+          tar --exclude='node_modules/next' --exclude='node_modules/@next/swc-*' -czf next-rest.tgz node_modules package-lock.json
       - uses: actions/upload-artifact@v4
         with:
-          name: next-runtime-dependencies
-          path: next-runtime-dependencies.tgz
+          name: next-core
+          path: next-core.tgz
+          retention-days: 1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: next-swc
+          path: next-swc.tgz
+          retention-days: 1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: next-rest
+          path: next-rest.tgz
           retention-days: 1
