@@ -208,6 +208,15 @@ of the remaining pixel difference on featured-project frames at 390 px.
 **To reverse:** keep `srcset`/`sizes` in `tools/extract-content.mjs` (`convert`, `picture` branch) and download
 every candidate. Media would grow by about 30 %.
 
+### [12:20] Home content refreshed after the original changed
+
+**Fork:** During validation (about 12:00 UTC) the original replaced the third featured project on the home page
+(Forge → University of Hull London) and the John Laing quote. The capture from 08:40 no longer matched.
+**Investigated:** Re-fetched all 60 routes and compared visible text and image lists. Only the home page changed.
+**Chose:** Re-extract the home page from the fresh server HTML (the extractor is deterministic; only
+`src/content/pages/home.json` changed). /project/forge stays in the build; it is still a live page.
+**To reverse:** `git checkout <previous commit> -- 02-thirdway/src/content/pages/home.json`.
+
 ### [08:55] Media handling
 
 **Chose:** Images are the exact bytes the browser received (AVIF from DatoCMS at the requested widths). Renditions

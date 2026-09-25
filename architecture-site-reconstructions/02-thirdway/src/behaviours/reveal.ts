@@ -7,7 +7,11 @@ import fadeTargets from "./fade-targets.json";
  *  - wrappers the original fades in (24px rise) are matched by their measured DOM signature,
  *  - "scroll-fill" paragraphs brighten character by character as they scroll through.
  */
-const START = "top 75%"; // measured: reveals start when the element reaches 73–75 % of the viewport
+// measured on the original at 390, 1024 and 1440 px:
+//  - line reveals start when the heading's top reaches 85 % of the viewport,
+//  - fade-ups start when the wrapper's top (still 24px low) is 200px above the viewport bottom.
+const LINES_START = "top 85%";
+const FADE_START = "top bottom-=200";
 
 type Sig = [string, string[]][];
 const sigs = fadeTargets as unknown as Sig[];
@@ -75,7 +79,7 @@ export function revealLines(el: HTMLElement, opts: { immediate?: boolean; delay?
   const play = () =>
     gsap.to(inners, { yPercent: 0, autoAlpha: 1, duration: 1, ease: EASE.reveal, stagger: 0.1, delay: opts.delay ?? 0 });
   if (opts.immediate) return play();
-  return gsap.timeline({ scrollTrigger: { trigger: el, start: START, once: true } }).add(play());
+  return gsap.timeline({ scrollTrigger: { trigger: el, start: LINES_START, once: true } }).add(play());
 }
 
 export function revealFade(el: HTMLElement) {
@@ -85,8 +89,7 @@ export function revealFade(el: HTMLElement) {
     autoAlpha: 1,
     duration: 1,
     ease: EASE.reveal,
-    // measured on the original (with the element still 24px low): fires when that top reaches 75.4 % of the viewport
-    scrollTrigger: { trigger: el, start: "top 75.4%", once: true },
+    scrollTrigger: { trigger: el, start: FADE_START, once: true },
   });
 }
 
