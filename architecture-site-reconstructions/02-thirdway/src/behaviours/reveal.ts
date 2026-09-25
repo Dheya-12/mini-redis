@@ -113,6 +113,7 @@ const EXTRA_SPLITS = [
   ".mb-8.lg\\:mb-16.lg\\:flex > h2.h5",
   ".title-container > span.h3.whitespace-pre-line",
   ".container > h2.inline-block.h3.text-warm-black",
+  ".col-span-full.flex.flex-col > h2.h3.whitespace-pre-line",
 ];
 
 export function initReveals(root: HTMLElement, skip: (el: Element) => boolean = () => false) {

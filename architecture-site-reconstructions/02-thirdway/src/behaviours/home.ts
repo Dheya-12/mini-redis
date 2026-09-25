@@ -152,8 +152,8 @@ export function initFeaturedProjects(section: HTMLElement) {
     pinSpacing: false,
     scrub: true,
     animation: tl,
-    // captions switch as soon as the next image starts to wipe in
-    onUpdate: (self) => setIndex(Math.min(n - 1, Math.floor(self.progress * (n - 1) + 0.75))),
+    // captions switch when the next image is half wiped in (services: still the first caption at 29 %)
+    onUpdate: (self) => setIndex(Math.min(n - 1, Math.floor(self.progress * (n - 1) + 0.5))),
   });
 
   // "View project" cursor that follows the pointer on desktop

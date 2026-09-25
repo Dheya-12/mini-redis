@@ -219,9 +219,9 @@ export function initCounters(root: HTMLElement): Cleanup {
     const state = { v: 0 };
     el.textContent = fmt(0);
     return gsap.to(state, {
-      v: target, duration: 2, ease: "power2.out",
+      v: target, duration: 1.4, ease: "power2.out",
       onUpdate: () => (el.textContent = fmt(decimals ? state.v : Math.round(state.v))),
-      scrollTrigger: { trigger: el, start: "top 90%", once: true },
+      scrollTrigger: { trigger: el, start: "top bottom", once: true },
     });
   });
   return () => tweens.forEach((t) => t?.kill());

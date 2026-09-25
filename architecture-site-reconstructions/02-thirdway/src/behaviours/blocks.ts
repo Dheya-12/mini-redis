@@ -91,7 +91,7 @@ function initProcess(section: HTMLElement): Cleanup | null {
   let settled = 0;
   let swap: gsap.core.Tween | null = null;
   const drive = (d: number) => {
-    const idx = Math.max(0, Math.min(n - 1, Math.floor((d + DRIFT()) / STEP())));
+    const idx = Math.max(0, Math.min(n - 1, Math.floor((d + DRIFT() - 1) / STEP())));
     const q = idx < n - 1 ? Math.max(0, Math.min(1, (d - idx * STEP()) / DRIFT())) : 0;
     const want = idx + TENSION * q;
     if (idx !== settled) {
@@ -106,17 +106,11 @@ function initProcess(section: HTMLElement): Cleanup | null {
     show(idx);
   };
   const pinned = section.firstElementChild as HTMLElement;
-  // touch devices get the static first step (the original does not pin this block there)
-  const touch = ScrollTrigger.isTouch === 1;
+  const touch = false; // the original pins on touch devices too (verified at 390px)
   const st = touch ? null : ScrollTrigger.create({
     trigger: pinned,
-    // desktop: pin once the image frame sits 89px above the viewport bottom (measured at 1440×900)
-    start: () => {
-      if (!isDesktop()) return "top top";
-      const frame = stage.querySelector(":scope > .site-grid > div")!.getBoundingClientRect();
-      const off = frame.top - pinned.getBoundingClientRect().top;
-      return `top ${window.innerHeight - frame.height - 89 - off}px`;
-    },
+    // desktop: the block pins vertically centred (measured: top 90px at 1440×900, 107px at 1024×768)
+    start: () => (isDesktop() ? "center center" : "top top"),
     end: () => `+=${total()}`,
     pin: true,
     invalidateOnRefresh: true,
@@ -232,7 +226,8 @@ function initCaseStudies(section: HTMLElement): Cleanup | null {
       scrub: true,
       animation: tl,
       onUpdate: (self) => {
-        const k = Math.min(list.length - 1, Math.floor(self.progress * (list.length - 1) + 0.5));
+        // measured: the card switches about a third of the way into the image wipe
+        const k = Math.min(list.length - 1, Math.floor(self.progress * (list.length - 1) + 0.65));
         if (k === current) return;
         current = k;
         layers.forEach((l, i) => gsap.to(l, { opacity: i === k ? 1 : 0, duration: 0.4 }));
@@ -391,7 +386,12 @@ function initPeopleNav(root: HTMLElement): Cleanup | null {
     pill.style.width = `${w}px`;
     pill.style.transform = `translateX(${a.offsetLeft + a.offsetWidth / 2 - w / 2}px)`;
   };
+  const footer = document.querySelector<HTMLElement>("footer#footer");
   const tick = () => {
+    // the bar fades away once the footer comes into view
+    const hide = !!footer && footer.getBoundingClientRect().top < window.innerHeight;
+    nav.classList.toggle("opacity-0", hide);
+    nav.classList.toggle("opacity-100", !hide);
     let i = 0;
     targets.forEach((t, k) => { if (t && t.getBoundingClientRect().top <= window.innerHeight * 0.5) i = k; });
     select(i);

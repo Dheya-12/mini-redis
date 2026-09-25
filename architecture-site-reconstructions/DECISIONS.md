@@ -174,6 +174,16 @@ Contact dialog validates locally and acknowledges (no backend). Cookie consent i
 (`cookieConsent`) and gates only the banner; there are no analytics to gate. The intro animation's Lottie data (a
 14 KB public asset in the site's bundle) is played with lottie-web.
 
+### [11:30] Client-rendered UI reproduced from the live DOM
+
+**Fork:** The original renders some UI only in the browser, so the server HTML omits it: the contact dialog, the
+People sticky team bar, the desktop "View all" cell in related-project grids, and the People footer photo.
+**Chose:** Save that markup from the live page (`tools/extract-content.mjs` reads `live/*.html`, with
+`page-<slug>-*.html` appended to that page) or derive it from the server data. Behaviour is re-implemented.
+**Why:** Without these the grids reflow and page heights drift (the People page was 68px short, and related
+projects wrapped at 1024px). Measured page heights now match the live site to within 3px.
+**To reverse:** delete `live/page-*.html` and re-run the extractor.
+
 ### [08:55] Media handling
 
 **Chose:** Images are the exact bytes the browser received (AVIF from DatoCMS at the requested widths). Renditions

@@ -25,7 +25,13 @@ for (const route of routes) {
   await page.goto(origin + route, { waitUntil: 'load', timeout: 120000 });
   await page.waitForTimeout(route === '/' ? 10500 : 3500);
   // the header slides in after load; make sure it has arrived before the first frame
-  await page.waitForFunction(() => { const h = document.querySelector('header'); return !h || h.getBoundingClientRect().top >= 0; }, null, { timeout: 8000 }).catch(() => {});
+  // (the live site occasionally never runs its slide-in on a load: reload up to twice)
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const ok = await page.waitForFunction(() => { const h = document.querySelector('header'); return !h || h.getBoundingClientRect().top >= 0; }, null, { timeout: 8000 }).then(() => true, () => false);
+    if (ok) break;
+    await page.reload({ waitUntil: 'load' });
+    await page.waitForTimeout(3500);
+  }
   await page.addStyleTag({ content: `${MASK.join(',')}{visibility:hidden!important} *{caret-color:transparent!important}` });
   const total = await page.evaluate(() => document.documentElement.scrollHeight - innerHeight);
   const slug = route === '/' ? 'home' : route.slice(1).replace(/\//g, '_');

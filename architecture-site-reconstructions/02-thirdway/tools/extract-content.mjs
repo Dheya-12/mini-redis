@@ -303,6 +303,13 @@ for (const f of files) {
   const tree = convert(raw.main, page, null);
   const rsc = rscText(fs.readFileSync(path.resolve(ssrDir, f), 'utf8'));
   attachData(tree, 'featured-projects-full-bleed', featuredData(rsc));
+  // page-level footer image override (a client component on the original)
+  const fm = /\{"media":\{"image":\{"responsiveImage":\{"srcSet":"([^"]+)"/.exec(rsc);
+  if (fm) {
+    const cands = parseSrcset(fm[1].replace(/\\u0026/g, '&'));
+    const img = resolveImage(cands.filter((c) => c.w <= 2000));
+    if (img) tree[1] = { ...(tree[1] || {}), 'data-footer-image': img };
+  }
   addRelatedViewAll(tree);
   collectTeams(tree);
   const og = raw.ogImage ? resolveImage([{ url: raw.ogImage, w: 0 }]) : null;
