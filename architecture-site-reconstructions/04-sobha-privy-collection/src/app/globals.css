@@ -40,6 +40,13 @@ a {
   scroll-behavior: auto;
 }
 /*
+ * The original's scrolling container also clips what spills out sideways (decorative images overhang the screen on
+ * phones). `clip` keeps sticky layers working, where `hidden` would make the wrapper their scroll container.
+ */
+.no-scroll-smooth .page-content-wrapper {
+  overflow-x: clip;
+}
+/*
  * The original scrolls a fixed container, where the browser never anchors the scroll position to content; on the
  * window it would, nudging the page when a layer above changes size as a section initialises.
  */

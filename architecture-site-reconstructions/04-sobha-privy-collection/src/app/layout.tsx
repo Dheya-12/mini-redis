@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { allRoutes, loadChrome, sheetByRoute } from "@/lib/content";
 import { renderTree } from "@/lib/tree";
@@ -14,6 +14,9 @@ export const metadata: Metadata = {
     apple: "/manifest/apple-touch-icon.png",
   },
 };
+
+/** as the original: the page runs under the notch and home indicator (its safe-area padding handles them) */
+export const viewport: Viewport = { width: "device-width", initialScale: 1, viewportFit: "cover" };
 
 /**
  * Runs before first paint: the same root classes the original sets from its <head>, the native-scroll mode of its
