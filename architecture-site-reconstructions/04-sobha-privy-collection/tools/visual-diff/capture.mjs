@@ -26,23 +26,19 @@ const ctx = await browser.newContext({ viewport: { width: +W, height: +H }, devi
 await ctx.route(/googletagmanager|google-analytics|player-metrics|recaptcha/, (r) => r.abort());
 // films are compared on their placeholder images (headless Chromium cannot play the H.264 streams)
 const MASK = 'iframe[src*="kinescope"], video.film { visibility: hidden !important; } * { caret-color: transparent !important; }';
-const scrollTo = (page, y) => page.evaluate((y) => {
-  if (window.lenis) window.lenis.scrollTo(y, { immediate: true, force: true });
-  else if (window.$ && window.$.fn.scroller && window.$('body').scroller('instance')?.scroller) window.$('body').scroller('instance').scrollTop(y);
-  else window.scrollTo(0, y);
-}, y);
-const limit = (page) => page.evaluate(() => {
-  if (window.lenis) return window.lenis.limit;
+// the scrolling element: Lenis (reconstruction), the original's smooth scroller (desktop), or on phones the original's
+// fixed page wrapper, which scrolls instead of the window
+const SCROLLER = `(() => {
+  if (window.lenis) return { get: () => window.lenis.scroll, set: (y) => window.lenis.scrollTo(y, { immediate: true, force: true }), max: () => window.lenis.limit };
   const s = window.$ && window.$.fn.scroller && window.$('body').scroller('instance');
-  if (s && s.scroller) return s.scroller.scroll.instance.limit.y;
-  return document.documentElement.scrollHeight - innerHeight;
-});
-const current = (page) => page.evaluate(() => {
-  if (window.lenis) return window.lenis.scroll;
-  const s = window.$ && window.$.fn.scroller && window.$('body').scroller('instance');
-  if (s && s.scroller) return s.scroller.scroll.instance.scroll.y;
-  return scrollY;
-});
+  if (s && s.scroller) return { get: () => s.scroller.scroll.instance.scroll.y, set: (y) => s.scrollTop(y), max: () => s.scroller.scroll.instance.limit.y };
+  const w = document.querySelector('.js-page-content-wrapper');
+  if (w && w.scrollHeight > w.clientHeight + 1 && getComputedStyle(w).overflowY !== 'visible') return { get: () => w.scrollTop, set: (y) => { w.style.scrollBehavior = 'auto'; w.scrollTop = y; }, max: () => w.scrollHeight - w.clientHeight };
+  return { get: () => scrollY, set: (y) => window.scrollTo({ top: y, behavior: 'instant' }), max: () => document.documentElement.scrollHeight - innerHeight };
+})()`;
+const scrollTo = (page, y) => page.evaluate(([y, S]) => new Function('return ' + S)().set(y), [y, SCROLLER]);
+const limit = (page) => page.evaluate((S) => new Function('return ' + S)().max(), SCROLLER);
+const current = (page) => page.evaluate((S) => new Function('return ' + S)().get(), SCROLLER);
 const frames = [];
 for (const route of routes) {
   const page = await ctx.newPage();

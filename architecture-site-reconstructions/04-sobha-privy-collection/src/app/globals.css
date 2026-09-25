@@ -57,15 +57,13 @@ html.js.has-hover body::-webkit-scrollbar {
   display: none;
 }
 
-/* films: the original embeds Kinescope players sized to cover their box; ours are plain muted loops that cover it */
+/*
+ * films: the original embeds Kinescope players; ours are plain muted loops in the same place, laid out by the same
+ * rules (tools/extract-styles.mjs gives `video.film` every rule written for those iframes). Inside that box the
+ * picture covers, as the player's does.
+ */
 video.film {
-  display: block;
-  height: 100%;
-  left: 0;
   object-fit: cover;
-  position: absolute;
-  top: 0;
-  width: 100%;
 }
 
 /* while a modal is open the page holds still (Lenis is stopped; this also stops native touch and keyboard scrolling) */

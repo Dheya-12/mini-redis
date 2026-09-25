@@ -713,7 +713,8 @@ img[draggable="false"] {
   pointer-events: none;
 }
 iframe,
-video {
+video,
+video.film {
   --ratio: 16/9;
   --aspect-ratio: 16/9;
   aspect-ratio: var(--aspect-ratio);
@@ -1146,7 +1147,8 @@ iframe,
 object,
 p,
 pre,
-table {
+table,
+video.film {
   margin: 0;
 }
 :is(ul, ol):where([class]) {
@@ -1321,7 +1323,8 @@ table {
 .text object,
 .text p,
 .text pre,
-.text table {
+.text table,
+.text video.film {
   margin-bottom: var(--md, calc(var(--spacing) * 0.66))
     var(--n-md, var(--spacing));
   margin-top: var(--md, calc(var(--spacing) * 0.66)) var(--n-md, var(--spacing));
@@ -1332,7 +1335,8 @@ table {
 .text object:where(:first-child),
 .text p:where(:first-child),
 .text pre:where(:first-child),
-.text table:where(:first-child) {
+.text table:where(:first-child),
+.text video.film:where(:first-child) {
   margin-top: 0;
 }
 .text blockquote:where(:last-child),
@@ -1341,7 +1345,8 @@ table {
 .text object:where(:last-child),
 .text p:where(:last-child),
 .text pre:where(:last-child),
-.text table:where(:last-child) {
+.text table:where(:last-child),
+.text video.film:where(:last-child) {
   margin-bottom: 0;
 }
 .text .h3 + p,
@@ -3380,12 +3385,14 @@ html.js.has-hover:not(.no-scroll-smooth)::-webkit-scrollbar {
   top: 0;
 }
 .background iframe,
-.background__placeholder {
+.background__placeholder,
+.background video.film {
   pointer-events: none;
 }
 .background _::-webkit-full-page-media,
 .background _:future,
-.background:has(iframe):after {
+.background:has(iframe):after,
+.background:has(video.film):after {
   content: "";
   height: 100%;
   left: 0;
@@ -3420,7 +3427,8 @@ video.background--cover {
   object-position: 50% 50%;
 }
 .background--cover iframe,
-.background__placeholder {
+.background__placeholder,
+.background--cover video.film {
   aspect-ratio: unset;
   height: max(100%, calc(var(--iframe-width) / var(--iframe-ratio)));
   left: 50%;
@@ -4732,7 +4740,7 @@ html.no-scroll-smooth:where([data-page="home"]) .l-tenets-section {
     height: 100%;
     width: 100%;
   }
-  :where(html[data-page="home"]) .l-expansive-slider__mobile-video iframe {
+  :where(html[data-page="home"]) .l-expansive-slider__mobile-video iframe, :where(html[data-page="home"]) .l-expansive-slider__mobile-video video.film {
     position: relative;
   }
 }
@@ -4960,7 +4968,8 @@ html.no-scroll-smooth:where([data-page="home"]) .l-tenets-section {
   width: 120%;
 }
 :where(html[data-page="home"]) .l-expansive-finesse-images__iframe .background__placeholder,
-:where(html[data-page="home"]) .l-expansive-finesse-images__iframe iframe {
+:where(html[data-page="home"]) .l-expansive-finesse-images__iframe iframe,
+:where(html[data-page="home"]) .l-expansive-finesse-images__iframe video.film {
   aspect-ratio: 1280/720;
   height: 100%;
   width: auto;
@@ -5050,14 +5059,14 @@ html.no-scroll-smooth:where([data-page="home"]) .l-tenets-section {
   margin-right: var(--md, -20%) var(--n-md, 0);
   width: var(--md, 189.57346svh) var(--n-md, 100vw);
 }
-:where(html[data-page="home"]) .l-expansive-privacy-video iframe {
+:where(html[data-page="home"]) .l-expansive-privacy-video iframe, :where(html[data-page="home"]) .l-expansive-privacy-video video.film {
   height: var(--md, auto) var(--n-md, 100%);
   position: relative;
 }
 @media (max-aspect-ratio: 10/11) and (max-width: 1439px),
   (max-aspect-ratio: 13/9) and (max-width: 667px),
   (max-width: 979px) {
-  :where(html[data-page="home"]) .l-expansive-privacy-video iframe {
+  :where(html[data-page="home"]) .l-expansive-privacy-video iframe, :where(html[data-page="home"]) .l-expansive-privacy-video video.film {
     aspect-ratio: unset;
     height: max(100%, calc(var(--iframe-width) / var(--iframe-ratio)));
     left: 50%;

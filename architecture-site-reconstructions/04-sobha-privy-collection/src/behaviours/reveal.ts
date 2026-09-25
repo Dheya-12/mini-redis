@@ -86,10 +86,13 @@ export function initReveal(root: HTMLElement, opts: { asContainer?: boolean } = 
       enableMq: (c.getAttribute("data-reveal-enable-mq") ?? DEFAULTS.enableMq) as string,
     };
     if (o.enableMq && o.enableMq !== "null" && !matches(o.enableMq)) {
-      // no reveal on this device: the content is simply shown
-      const keep = new Set(Array.from(c.querySelectorAll('[data-plugin~="reveal"][data-reveal], [data-plugin~="reveal"] [data-reveal]')));
-      c.querySelectorAll("[data-reveal]").forEach((el) => {
-        if (keep.has(el) && el !== c) return;
+      // no reveal on this device: the content is simply shown (elements of a nested reveal container are left to it)
+      const own = [c, ...Array.from(c.querySelectorAll<HTMLElement>("[data-reveal]"))].filter((el) => {
+        if (!el.hasAttribute("data-reveal")) return false;
+        const owner = el.parentElement?.closest('[data-plugin~="reveal"]') ?? null;
+        return el === c || !owner || owner === c || !c.contains(owner);
+      });
+      own.forEach((el) => {
         el.setAttribute("data-reveal-old", el.getAttribute("data-reveal") ?? "");
         el.removeAttribute("data-reveal");
       });

@@ -398,3 +398,33 @@ texture is fetched but never used.
 **Chose:** Skip loading it (the file stays extracted alongside the model).
 **To reverse:** load it and assign it in `src/gl/location.ts`, then clear it, as the original does.
 **Confidence:** High (no visual effect).
+
+### [18:00] The original's "in view" rule for scroll animations
+
+**Fork:** At 1024 px the map's place names appeared on my side but not on the original. The first version treated an
+animated element as on screen within its section. The original uses the nearest ancestor, from the grandparent up,
+that clips its content or is a scroll section, skipping sticky layers (read from its bundle). For the map labels
+that is the SVG itself. Updates run only while an element is on screen, and a run entered "from below" fires its
+`enter` hook (here, `is-seen`) only if the previous update saw the element before the run. So one-screen jumps
+leave the labels hidden, as on the original.
+**Chose:** the original's rule (`findViewBox` in `src/behaviours/parallax/engine.ts`).
+**To reverse:** return `el.closest(".section")` from `findViewBox`.
+**Confidence:** High (the rule is the original's; the 1024 frame now matches).
+
+### [18:05] A layout pass per arriving image (desktop)
+
+**Fork:** The original's desktop scroller re-runs its layout pass (reset styles, measure, re-apply), debounced 60 ms,
+whenever an image loads. Elements off screen then drop the inline styles their animation last set.
+**Chose:** the same trigger in `src/lib/layout.ts`, on devices with hover (the original's smooth-scroll mode).
+**To reverse:** remove the capture-phase `load` listener in `initLayoutEvents`.
+**Confidence:** High.
+
+### [18:05] Comparison harness: one layout pass after each jump, on both sides
+
+**Fork:** Because of the rule above, what the original shows after a jump depends on whether an image happens to
+arrive over the network just then. Locally every image has arrived within a second.
+**Chose:** after each scroll jump, the harness fires one image `load` event on both sides, so both run the same
+layout pass. The live references were captured again this way.
+**To reverse:** remove the `dispatchEvent` line in `tools/visual-diff/capture.mjs`.
+**Confidence:** High for determinism. It favours the network-loaded case, which is what a visitor usually sees on
+the original.

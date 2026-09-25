@@ -40,6 +40,11 @@ const classOk = (c) => known.has(c) || statePrefix.test(c);
 const unescapeClass = (s) => s.replace(/\\(.)/g, '$1');
 const classesOf = (sel) => [...sel.matchAll(/\.((?:\\.|[a-zA-Z0-9_-])+)/g)].map((m) => unescapeClass(m[1]));
 
+// ---------------------------------------------------------------- films
+// `iframe` as an element selector (not inside a class name such as `__iframe`)
+const IFRAME = /(?<![\w-])iframe(?![\w-])/;
+const IFRAME_G = new RegExp(IFRAME.source, 'g');
+
 // ---------------------------------------------------------------- url rewriting
 // images the kept rules refer to are downloaded next to the markup's (public/media), once
 const ORIGIN = 'https://sobha-privy-collection.com';
@@ -86,7 +91,9 @@ for (const [file, page] of [['global.css', null], ['landing.css', 'home'], ['loc
     stats.dropped += rule.selectors.length - selectors.length;
     stats.kept += selectors.length;
     if (!selectors.length) { rule.remove(); return; }
-    rule.selectors = page ? selectors.map((s) => scope(s, page)) : selectors;
+    // the films replace the original's Kinescope iframes in place: they take the iframe's rules too
+    const withFilms = [...selectors, ...selectors.filter((s) => IFRAME.test(s)).map((s) => s.replace(IFRAME_G, 'video.film'))];
+    rule.selectors = page ? withFilms.map((s) => scope(s, page)) : withFilms;
   });
   root.walkDecls((d) => { if (d.value.includes('url(')) d.value = rewriteUrls(d.value); });
   // the commercial families are not redistributed: each stack gains its metric-matched open-licence stand-in
