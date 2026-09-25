@@ -348,3 +348,53 @@ All behaviour (scroll, parallax, reveals, WebGL, forms) is new code.
 pixel diff to guard each step.
 **Confidence:** Low as a policy call: this is closer to reuse than the "no file copied" line taken for Loam House.
 Technically it is the most faithful option.
+
+### [17:00] Two more policy pages
+
+**Fork:** The privacy page's tabs link to `/privacy-policy-uk-eu` and `/data-protection-policy`. The site's markup
+links to them only from those tabs, and they were not in the first extraction.
+**Investigated:** Both return 200, use the same stylesheet and plugins as `/privacy-policy`, and add no CSS rules
+(the style extraction output is byte-identical with them included).
+**Chose:** Reconstruct them as well: five routes in all. Stylesheet scoping now follows each route's stylesheet
+(`data-page="privacy-policy"` for all three policy pages) instead of its path.
+**To reverse:** drop the two slugs from `tools/extract-content.mjs` and re-run it; the tab links would then leave the
+site.
+**Confidence:** High.
+
+### [17:10] Scroll anchoring off
+
+**Fork:** Arriving at the Handpicked gallery, the page jumped back 17 px. The browser's scroll anchoring compensated
+for a layer above changing size as a section initialised.
+**Investigated:** The original scrolls a fixed container, where browsers never anchor, so it never shows the jump.
+With `overflow-anchor: none` the jump is gone and the frame matches.
+**Chose:** `overflow-anchor: none` on `html` and `body`.
+**To reverse:** remove the rule from `src/app/globals.css`.
+**Confidence:** High.
+
+### [17:20] Smoothing follows the original's formula
+
+**Fork:** The original eases followers (pointer, scroll progress, cursor) by `strength × elapsed / 16 ms` per frame,
+capped at the target. The first version compounded per 60th of a second. The two agree at 60 fps but not at low
+frame rates, and the software renderer used for comparisons runs the location scene at a few frames per second.
+**Chose:** the original's formula everywhere (`approach` in `src/gl/app.ts`, `Follower` in `src/lib/follow.ts`). With
+it, the location camera's smoothed progress after the same scroll equals the original's to 16 decimal places.
+**To reverse:** restore the exponential form in those two functions.
+**Confidence:** High.
+
+### [17:30] Page changes on the Next.js router
+
+**Fork:** The original follows internal links with Barba (ajax page swaps): by default the preloader screen fades in,
+the next page loads behind it, and the screen lifts as the page reveals itself. The policy tabs fade in place.
+**Chose:** The same two transitions on the Next.js App Router (`src/behaviours/navigation.ts`), with prefetch on
+hover as Barba does. Back and forward cover the swap with the screen and lift it the same way. Barba's own history
+scroll restoration is not reproduced: a covered page change starts at the top of the page.
+**To reverse:** delete `initPageTransitions` from `SiteEffects`; links then load pages normally.
+**Confidence:** Medium: the flow and animations are the original's, the timing of the swap is the router's.
+
+### [17:30] Location model: road mask not loaded
+
+**Fork:** The original loads `mask.png` as the roads' alpha map and then sets the alpha map back to `null`, so the
+texture is fetched but never used.
+**Chose:** Skip loading it (the file stays extracted alongside the model).
+**To reverse:** load it and assign it in `src/gl/location.ts`, then clear it, as the original does.
+**Confidence:** High (no visual effect).

@@ -10,6 +10,8 @@ export const state = {
   /** the preloader (and, on the first visit, the intro) has run */
   firstLoaded: false,
   lenis: null as Lenis | null,
+  /** the page change in progress, set by a link and read by the arriving page (see behaviours/navigation.ts) */
+  navigation: null as null | { kind: "loader" | "tabs"; route: string },
 };
 
 export type Cleanup = () => void;

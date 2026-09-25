@@ -56,7 +56,7 @@ for (const route of routes) {
     await scrollTo(page, y);
     if (reached.has(name) && reached.get(name) !== y) { await page.waitForTimeout(300); await scrollTo(page, reached.get(name)); }
     await page.waitForTimeout(SETTLE);
-    await page.screenshot({ path: path.join(out, name + '.png') });
+    await page.screenshot({ path: path.join(out, name + '.png'), timeout: 180000 });
     const actual = Math.round(await current(page));
     frames.push({ name, route, y, actual });
     const max = await limit(page);

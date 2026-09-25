@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { loadChrome, sheetByRoute } from "@/lib/content";
+import { allRoutes, loadChrome, sheetByRoute } from "@/lib/content";
 import { renderTree } from "@/lib/tree";
 import SiteEffects from "@/components/SiteEffects";
 
@@ -45,7 +45,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         {renderTree(chrome.cookie)}
         <script dangerouslySetInnerHTML={{ __html: COOKIE }} />
         {renderTree(chrome.turn)}
-        <SiteEffects />
+        <SiteEffects routes={allRoutes.map((r) => r.route)} />
       </body>
     </html>
   );

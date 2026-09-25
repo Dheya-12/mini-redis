@@ -6,6 +6,8 @@
  * eased 15 % per frame; stroke n follows 4 × progress − n). When everything has arrived it fades out ("fade-out block",
  * 1.6 s) and, one second later, the page's own content is revealed — the header and the opening titles.
  * Later visits and pages without the intro skip the drawing and reveal their content once their media are in.
+ * A page reached from another one (behaviours/navigation.ts) waits behind the preloader screen for the same media, then
+ * lifts the screen and reveals itself.
  */
 import { state, type Cleanup } from "@/lib/runtime";
 import { matches } from "@/lib/mq";
@@ -14,6 +16,7 @@ import { revealContent } from "./reveal";
 import { transition } from "./transition";
 import { ensureSplitting } from "./split";
 import { Follower } from "@/lib/follow";
+import { finishPageTransition } from "./navigation";
 
 /** media within the first two screens, visible at this breakpoint and not inside a modal */
 function introMedia(root: HTMLElement): Element[] {
@@ -84,7 +87,13 @@ export function initPreloader(root: HTMLElement, hasIntro: boolean): Cleanup {
     } else ensureSplitting().then(() => { if (alive) offReveal = revealContent(root); });
   };
 
-  if (!first || !matches("md-up")) complete();
+  if (!first) {
+    // arriving from another page: behind the preloader screen, wait for the first screens' media (not on phones)
+    const covered = state.navigation?.kind === "loader" && matches("md-up");
+    const done = () => { if (!alive) return; finishPageTransition(); complete(); };
+    if (covered) Promise.all(introMedia(root).map(whenLoaded)).then(done);
+    else done();
+  } else if (!matches("md-up")) complete();
   else {
     const media = introMedia(root);
     let n = 0;

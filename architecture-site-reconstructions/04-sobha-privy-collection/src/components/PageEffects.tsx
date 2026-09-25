@@ -23,6 +23,8 @@ import { initPointerFollowers } from "@/behaviours/pointer";
 import { initMap } from "@/behaviours/map";
 import { saveUtm } from "@/behaviours/cookies";
 import { scrollToHash } from "@/behaviours/smooth";
+import { transition } from "@/behaviours/transition";
+import { initTabs } from "@/behaviours/navigation";
 
 /** Behaviour bound to one page's markup; everything it sets up is torn down when the page changes. */
 export default function PageEffects({ route, sheet, intro }: { route: string; sheet: string; intro: boolean }) {
@@ -31,6 +33,10 @@ export default function PageEffects({ route, sheet, intro }: { route: string; sh
     const root = document.querySelector<HTMLElement>(`[data-route="${route}"]`);
     if (!root) return;
     const scrollY = () => state.lenis?.scroll ?? window.scrollY;
+    // arriving from another page: a covered change starts at the top; a tab change fades in where the page was
+    const nav = state.navigation;
+    if (nav?.kind === "loader") { state.lenis?.scrollTo(0, { immediate: true, force: true }); window.scrollTo(0, 0); }
+    if (nav?.kind === "tabs") { root.classList.add("is-invisible"); transition(root, "fade-in"); }
     const offSize = initIframeSize(root);
     const offAppear = initAppear(root);
     const sliders = initStickySliders(root, scrollY);
@@ -47,6 +53,7 @@ export default function PageEffects({ route, sheet, intro }: { route: string; sh
     const offMenu = initMenuLinks(root);
     const offPointer = initPointerFollowers(root);
     const offMap = initMap(root);
+    const offTabs = initTabs(root);
     if (root.querySelector('[data-plugin~="utmSave"]') || root.matches('[data-plugin~="utmSave"]')) saveUtm();
     const offWorlds = [
       ...Array.from(root.querySelectorAll<HTMLElement>('[data-plugin~="threeWorldsWebGl"]')).map((el) => initThreeWorlds(el)),
@@ -70,6 +77,7 @@ export default function PageEffects({ route, sheet, intro }: { route: string; sh
       window.removeEventListener("scroll", onScroll);
       offLenis?.();
       offWorlds.forEach((f) => f());
+      offTabs();
       offMap();
       offPointer();
       offMenu();
