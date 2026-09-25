@@ -85,7 +85,8 @@ export function revealFade(el: HTMLElement) {
     autoAlpha: 1,
     duration: 1,
     ease: EASE.reveal,
-    scrollTrigger: { trigger: el, start: START, once: true },
+    // the trigger is measured while the element sits 24px low, so start 24px earlier to match the original
+    scrollTrigger: { trigger: el, start: `top-=24 ${START.split(" ")[1]}`, once: true },
   });
 }
 
