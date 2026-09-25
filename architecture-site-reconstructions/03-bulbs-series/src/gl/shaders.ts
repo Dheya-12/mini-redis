@@ -67,10 +67,22 @@ void main() {
   y -= sin(exitA) * exitR * 0.28 * exitT;
   z -= ((1.0 - cos(exitA)) * exitR + 24.0) * exitT;
 
-  // the strip narrows a touch as it rolls and shears slightly with its lean
+  // the strip narrows a touch as it rolls, shears slightly with its lean, drifts sideways along an S and the
+  // paper ripples faintly
+  float edge = abs(position.x * 2.0);
   float localX = position.x * uSize.x * (1.0 - roll * 0.012 - exitT * 0.008);
   float shear = (t - 0.5) * uSize.x * 0.085 * (fold * 0.42 + roll * 2.5);
-  float x = uCenter.x + localX + shear;
+  float drift = sin((t - 0.18) * 6.2831853) * uSize.x * 0.018 * smoothstep(-0.12, 0.04, t) * (1.0 - smoothstep(0.82, 0.98, t)) * ribbon;
+  float ripple = sin(t * 18.0) * 2.16 * (1.0 - edge * 0.8) * ribbon;
+  float x = uCenter.x + localX + shear + drift + ripple;
+
+  // a second, gentler bend around the middle of the screen
+  float bendR = max(170.0, 0.42 * vh);
+  float bendT = max(0.0, y);
+  float bend = s5(smoothstep(0.0, 0.2 * vh, bendT)) * (1.0 - s5(smoothstep(bendR * 0.92, bendR * 1.34, bendT))) * (1.0 - roll * 0.45) * ribbon;
+  float bendA = min(bendT / bendR, 1.25);
+  y = mix(y, sin(bendA) * bendR, bend);
+  z = mix(z, z - (1.0 - cos(bendA)) * bendR * 0.34, bend);
 
   // stacking / focus wave from the top-right corner
   float corner = length(vec2(1.0 - uv.x, uv.y) * vec2(0.86, 1.0));

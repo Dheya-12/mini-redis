@@ -18,8 +18,8 @@ for (const rf of ref.frames) {
   fs.writeFileSync(path.join(outDir, rf.name + '-diff.png'), PNG.sync.write(diff));
   // text geometry: match by text content
   const deltas = [];
-  for (const t of rf.texts) {
-    const m = tf.texts.find(u => u.t === t.t && u.tag === t.tag) || tf.texts.find(u => u.t === t.t);
+  for (const t of rf.texts || []) {
+    const m = (tf.texts || []).find(u => u.t === t.t && u.tag === t.tag) || (tf.texts || []).find(u => u.t === t.t);
     if (!m) { deltas.push(`MISSING ${JSON.stringify(t.t)} @${t.x},${t.y}`); continue; }
     const d = [];
     for (const k of ['x', 'y', 'w', 'h']) if (Math.abs(t[k] - m[k]) > 2) d.push(`${k} ${t[k]}→${m[k]}`);
@@ -28,7 +28,7 @@ for (const rf of ref.frames) {
     if (Math.abs(t.op - m.op) > 0.1) d.push(`op ${t.op}→${m.op}`);
     if (d.length) deltas.push(`${JSON.stringify(t.t.slice(0, 28))}: ${d.join(', ')}`);
   }
-  for (const u of tf.texts) if (!rf.texts.find(t => t.t === u.t)) deltas.push(`EXTRA ${JSON.stringify(u.t)} @${u.x},${u.y}`);
+  for (const u of tf.texts || []) if (!(rf.texts || []).find(t => t.t === u.t)) deltas.push(`EXTRA ${JSON.stringify(u.t)} @${u.x},${u.y}`);
   rows.push({ frame: rf.name, y: `${rf.actual}/${tf.actual}`, diff: (100 * n / (w * h)).toFixed(2) + '%', deltas });
 }
 for (const r of rows) {

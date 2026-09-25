@@ -35,7 +35,22 @@ for (const route of routes) {
     const name = `${slug}-${String(i).padStart(2, '0')}`;
     await page.screenshot({ path: path.join(out, name + '.png') });
     const actual = await page.evaluate(() => Math.round(window.lenis?.scroll ?? scrollY));
-    frames.push({ name, route, y, actual });
+    const texts = await page.evaluate(() => {
+      const r = [];
+      const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+      while (walker.nextNode()) {
+        const t = walker.currentNode.nodeValue.trim();
+        const el = walker.currentNode.parentElement;
+        if (!t || t.length < 3 || !el || el.closest('script,style')) continue;
+        const b = el.getBoundingClientRect();
+        if (b.bottom < 0 || b.top > innerHeight || b.width === 0) continue;
+        const cs = getComputedStyle(el);
+        if (cs.visibility === 'hidden' || +cs.opacity === 0) continue;
+        r.push({ t: t.slice(0, 60), tag: el.tagName, x: Math.round(b.x), y: Math.round(b.y), w: Math.round(b.width), h: Math.round(b.height), fs: cs.fontSize, ff: cs.fontFamily.split(',')[0].replace(/"/g, ''), fw: cs.fontWeight, fst: cs.fontStyle, ls: cs.letterSpacing, lh: cs.lineHeight, c: cs.color, op: +cs.opacity });
+      }
+      return r.slice(0, 120);
+    });
+    frames.push({ name, route, y, actual, texts });
     // lazy images grow the page as it is scrolled: re-read the height every step
     const max = await page.evaluate(() => (window.lenis?.limit ?? document.documentElement.scrollHeight - innerHeight));
     if (y >= max) break;
