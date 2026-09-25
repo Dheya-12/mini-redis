@@ -9,6 +9,8 @@ export type PageDoc = {
   description: string;
   ogImage: string | null;
   main: TreeNode;
+  /** dialogs the original renders at the end of <body> (e.g. a project's "Deep Dive" article) */
+  modal?: TreeNode;
 };
 
 export type Chrome = {

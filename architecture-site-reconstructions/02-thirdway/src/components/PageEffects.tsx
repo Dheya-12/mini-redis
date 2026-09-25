@@ -7,6 +7,7 @@ import { initCarousels } from "@/behaviours/carousels";
 import { initFeaturedProjects, initHomeHero, initLogoMarquees, playHeroMedia } from "@/behaviours/home";
 import { initVimeoFilms } from "@/behaviours/media";
 import { initBlocks } from "@/behaviours/blocks";
+import { initDeepDive } from "@/behaviours/deepdive";
 
 /** Some pages carry their own footer photograph; the shared footer shows it while they are open. */
 function swapFooterImage(src?: string) {
@@ -36,6 +37,7 @@ export default function PageEffects({ route }: { route: string }) {
       offs.push(initLogoMarquees(main));
       offs.push(initVimeoFilms(main));
       offs.push(initBlocks(main));
+      offs.push(initDeepDive(main));
       offs.push(swapFooterImage(main.dataset.footerImage));
       // the home hero choreographs its own headline/copy after the intro
       initReveals(main, (el) => !!homeHero?.contains(el) && !el.classList.contains("scroll-fill-notrim"));

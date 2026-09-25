@@ -350,6 +350,22 @@ if (liveDir) {
     }
     chrome[path.basename(f, '.html')] = convert(raw, { slug: 'chrome', route: '/' }, null);
   }
+  // deepdive/<page>.html: the project "Deep Dive" popup (inside <main> on the original) and its article dialog
+  const ddDir = path.join(liveDir, 'deepdive');
+  if (fs.existsSync(ddDir)) for (const f of fs.readdirSync(ddDir).filter((x) => x.endsWith('.html'))) {
+    const slug = path.basename(f, '.html');
+    await tab.goto('file://' + path.resolve(ddDir, f));
+    const [aside, modal] = await tab.evaluate((ser) => {
+      const s = new Function('return ' + ser)();
+      return ['aside', 'modal'].map((k) => { const el = document.querySelector(`[data-part="${k}"]`)?.firstElementChild; return el ? s(el) : null; });
+    }, serialize.toString());
+    const file = path.join(OUT_PAGES, slug + '.json');
+    const doc = JSON.parse(fs.readFileSync(file, 'utf8'));
+    const page = { slug, route: '/' + slug.replace('__', '/') };
+    if (aside) doc.main.push(convert(aside, page, null));
+    if (modal) doc.modal = convert(modal, page, null);
+    fs.writeFileSync(file, JSON.stringify(doc));
+  }
 }
 await b.close();
 fs.writeFileSync(path.join(ROOT, 'src/content/chrome.json'), JSON.stringify(chrome));
@@ -394,6 +410,7 @@ fs.writeFileSync(path.join(ROOT, 'src/content/routes.json'), JSON.stringify(inde
     const file = path.join(OUT_PAGES, f);
     const doc = JSON.parse(fs.readFileSync(file, 'utf8'));
     fix(doc.main);
+    if (doc.modal) fix(doc.modal);
     fs.writeFileSync(file, JSON.stringify(doc));
   }
   const cf = path.join(ROOT, 'src/content/chrome.json');

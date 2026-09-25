@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { allRoutes, loadPage, slugForRoute } from "@/lib/content";
 import { renderTree, type TreeNode } from "@/lib/tree";
 import PageEffects from "@/components/PageEffects";
+import BodyPortal from "@/components/BodyPortal";
 
 type Params = Promise<{ slug?: string[] }>;
 
@@ -45,6 +46,7 @@ export default async function Page({ params }: { params: Params }) {
   return (
     <>
       {renderTree(withMainId(doc.main, hit.route))}
+      {doc.modal && <BodyPortal key={`modal:${hit.route}`}>{renderTree(doc.modal)}</BodyPortal>}
       <PageEffects key={hit.route} route={hit.route} />
     </>
   );

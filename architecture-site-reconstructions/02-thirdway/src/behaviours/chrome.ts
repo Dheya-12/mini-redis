@@ -21,7 +21,7 @@ export function initSmooth(): Cleanup {
   };
 }
 
-const lockScroll = (on: boolean) => (on ? runtime.lenis?.stop() : runtime.lenis?.start());
+export const lockScroll = (on: boolean) => (on ? runtime.lenis?.stop() : runtime.lenis?.start());
 
 /* ------------------------------------------------------------------ header */
 
