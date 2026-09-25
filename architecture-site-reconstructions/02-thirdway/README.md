@@ -43,6 +43,7 @@ line breaks and spacing stay close; see `src/app/fonts.css`.
 | `src/behaviours/blocks.ts` | Process steps, case-study scroller, services stack, People hero |
 | `src/behaviours/listings.ts` | Projects and Journal index controls, stat counters |
 | `src/behaviours/carousels.ts` | Every Swiper carousel, using geometry measured on the live site |
+| `src/behaviours/deepdive.ts`, `src/components/BodyPortal.tsx` | The "Deep Dive" card on three project pages and its article dialog (rendered at the end of `<body>`) |
 | `tools/extract-content.mjs` | Build-time extractor that produced `src/content` from the captured public HTML |
 | `tools/visual-diff/` | Capture and pixel-diff harness used for `FIDELITY.md` |
 

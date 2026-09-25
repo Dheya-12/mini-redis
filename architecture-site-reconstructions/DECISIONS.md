@@ -217,6 +217,16 @@ every candidate. Media would grow by about 30 %.
 `src/content/pages/home.json` changed). /project/forge stays in the build; it is still a live page.
 **To reverse:** `git checkout <previous commit> -- 02-thirdway/src/content/pages/home.json`.
 
+### [12:50] Project "Deep Dive" popup captured from the live DOM
+
+**Fork:** Three project pages (Cleo AI, University of Hull London, Zopa) show a floating "Deep Dive" card that opens
+an article dialog. Both are rendered in the browser only; the server HTML has neither.
+**Chose:** Same approach as [11:30]. The card and dialog markup were saved from the live page
+(`live/deepdive/<page>.html`); the extractor appends the card to `<main>` and stores the dialog as the page's
+`modal`, which is portalled into `<body>` as on the original. Show/hide thresholds and open/close timing were
+measured (`src/behaviours/deepdive.ts`).
+**To reverse:** delete the `deepdive` captures and re-run the extractor.
+
 ### [08:55] Media handling
 
 **Chose:** Images are the exact bytes the browser received (AVIF from DatoCMS at the requested widths). Renditions
