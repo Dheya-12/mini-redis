@@ -27,10 +27,11 @@ async function page(route = '/', w = 1440, h = 900) {
 }
 const scrollTo = (p, y) => p.evaluate((y) => {
   if (window.lenis) window.lenis.scrollTo(y, { immediate: true, force: true });
-  else window.$('body').scroller('instance').scrollTop(y);
+  else if (window.$('body').scroller('instance')?.scroller) window.$('body').scroller('instance').scrollTop(y);
+  else window.scrollTo(0, y);
 }, y);
-const current = (p) => p.evaluate(() => (window.lenis ? window.lenis.scroll : window.$('body').scroller('instance').scroller.scroll.instance.scroll.y));
-const limit = (p) => p.evaluate(() => (window.lenis ? window.lenis.limit : window.$('body').scroller('instance').scroller.scroll.instance.limit.y));
+const current = (p) => p.evaluate(() => (window.lenis ? window.lenis.scroll : window.$('body').scroller('instance')?.scroller?.scroll.instance.scroll.y ?? scrollY));
+const limit = (p) => p.evaluate(() => (window.lenis ? window.lenis.limit : window.$('body').scroller('instance')?.scroller?.scroll.instance.limit.y ?? document.documentElement.scrollHeight - innerHeight));
 /** scrolls in screen-sized steps (as a visitor would, so every section initialises) to a position */
 async function travel(p, y) {
   for (let s = await current(p); Math.abs(y - s) > 900; s += Math.sign(y - s) * 900) { await scrollTo(p, s); await p.waitForTimeout(250); }

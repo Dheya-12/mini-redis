@@ -28,7 +28,7 @@ await ctx.route(/googletagmanager|google-analytics|player-metrics|recaptcha/, (r
 const MASK = 'iframe[src*="kinescope"], video.film { visibility: hidden !important; } * { caret-color: transparent !important; }';
 const scrollTo = (page, y) => page.evaluate((y) => {
   if (window.lenis) window.lenis.scrollTo(y, { immediate: true, force: true });
-  else if (window.$ && window.$.fn.scroller && window.$('body').scroller('instance')) window.$('body').scroller('instance').scrollTop(y);
+  else if (window.$ && window.$.fn.scroller && window.$('body').scroller('instance')?.scroller) window.$('body').scroller('instance').scrollTop(y);
   else window.scrollTo(0, y);
 }, y);
 const limit = (page) => page.evaluate(() => {

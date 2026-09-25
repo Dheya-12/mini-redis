@@ -150,7 +150,7 @@ class Group {
     this.clamp = pattern.clamp ?? options.clamp === "true";
     this.easing = ease(pattern.easing ?? options.easing);
     const measure = resolveMeasure(el, pattern.measureSelector ?? options.measureSelector ?? null);
-    const viewBox = el.closest(".section");
+    const viewBox = findViewBox(el);
     this.ctx = { el, measure, viewBox, axis: el.closest(".sticky-slider") ? "x" : "y", elementSize: 0, viewportSize: 0, targetSize: null, position: 0, group: this };
     const mq = pattern.enableMq !== undefined ? pattern.enableMq : options.enableMq ?? "md-up";
     const check = () => {
@@ -248,6 +248,26 @@ class Group {
   apply() { this.pattern.apply?.(this.ctx); }
   /** CSS properties this group writes */
   properties() { return this.points ? Object.keys(this.points[0].props).filter((p) => p !== "progress") : []; }
+}
+
+/**
+ * The box whose extent decides when an element counts as on screen (the original's rule): the nearest ancestor, from
+ * the grandparent up, that clips its content or is a scroll section, leaving out sticky layers. An element with no
+ * such ancestor inside the page counts as always on screen. (Updates run only while an element is on screen, and a
+ * run entered from below fires its `enter` hook only if the previous update saw the element before the run.)
+ */
+function findViewBox(el: Element): Element | null {
+  const stop = (n: Element) => n === document.body || n === document.documentElement || n.matches(".page-content-wrapper");
+  let n = el.parentElement;
+  while (n && !stop(n)) {
+    n = n.parentElement;
+    if (!n || stop(n)) return null;
+    const cs = getComputedStyle(n);
+    const clips = cs.overflow === "hidden" || n.matches("[data-scroll-section]");
+    const sticky = cs.position === "sticky" || n.matches("[data-scroll-sticky], [data-native-sticky], .js-scroll-parent-ignore");
+    if (clips && !sticky) return n;
+  }
+  return null;
 }
 
 function resolveMeasure(el: HTMLElement, selector: Pattern["measureSelector"] | null): HTMLElement {

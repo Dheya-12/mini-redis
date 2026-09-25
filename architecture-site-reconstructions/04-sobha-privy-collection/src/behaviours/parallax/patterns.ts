@@ -11,7 +11,7 @@ export type PatternContext = {
   el: HTMLElement;
   /** the element whose position drives the run */
   measure: HTMLElement;
-  /** the section the element belongs to (outside its range the element is hidden) */
+  /** the clipping ancestor or section whose extent decides when the element is on screen (see findViewBox) */
   viewBox: Element | null;
   /** inside a horizontal sticky slider the run is across the element */
   axis: "x" | "y";
