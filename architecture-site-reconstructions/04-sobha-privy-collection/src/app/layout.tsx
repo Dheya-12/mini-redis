@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { loadChrome } from "@/lib/content";
+import { loadChrome, sheetByRoute } from "@/lib/content";
 import { renderTree } from "@/lib/tree";
 import SiteEffects from "@/components/SiteEffects";
 
@@ -17,13 +17,13 @@ export const metadata: Metadata = {
 
 /**
  * Runs before first paint: the same root classes the original sets from its <head>, the native-scroll mode of its
- * stylesheet (sections clip with clip-path, so sticky layers work on the window), and the route name that scopes each
- * route's stylesheet (see tools/extract-styles.mjs).
+ * stylesheet (sections clip with clip-path, so sticky layers work on the window), and the name of the route's
+ * stylesheet, which scopes its rules (see tools/extract-styles.mjs).
  */
 const BOOT = `(function(){var d=document.documentElement;d.classList.remove('no-js');d.classList.add('js','no-scroll-smooth');
 if(navigator.platform.toUpperCase().indexOf('WIN')>=0)d.classList.add('is-win');
 if(!matchMedia('(hover: hover)').matches){d.classList.remove('has-hover');d.classList.add('no-hover');}
-var p=location.pathname.replace(/\\/+$/,'');d.setAttribute('data-page',p?p.slice(1):'home');})();`;
+var s=${JSON.stringify(sheetByRoute)},p=location.pathname.replace(/\\/+$/,'')||'/';d.setAttribute('data-page',s[p]||'home');})();`;
 
 /** the cookie dialog stays hidden once a choice has been stored (as on the original) */
 const COOKIE = `(function(){var c=document.cookie,e=document.querySelector('#cookie-consent');

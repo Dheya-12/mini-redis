@@ -1,6 +1,8 @@
 // Scroll-step captures of several routes, for pixel comparison against the live site.
-// usage: node capture.mjs <origin> <outDir> <w> <h> [--mobile] [--routes /,/location] [--settle 2000] [--step 900]
+// usage: node capture.mjs <origin> <outDir> <w> <h> [--mobile] [--routes /,/location] [--settle 2000] [--step 900] [--follow <refDir>]
 // The original scrolls through its own smooth scroller; the reconstruction through Lenis. Both are set instantly.
+// --follow: after stepping to each position, settle on the scroll position the reference capture actually reached
+// (the original occasionally clamps a jump while a section is still initialising), so both frames show the same state.
 import { chromium } from 'playwright';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -11,6 +13,8 @@ const mobile = process.argv.includes('--mobile');
 const routes = arg('--routes', '/').split(',');
 const SETTLE = +arg('--settle', '2000');
 const STEP = +arg('--step', H);
+const follow = arg('--follow', null);
+const reached = new Map(follow ? JSON.parse(fs.readFileSync(path.join(follow, 'meta.json'), 'utf8')).frames.map((f) => [f.name, f.actual]) : []);
 fs.mkdirSync(out, { recursive: true });
 
 const local = /localhost|127\.0\.0\.1/.test(origin);
@@ -48,9 +52,10 @@ for (const route of routes) {
   const slug = route === '/' ? 'home' : route.slice(1).replace(/\//g, '_');
   let y = 0, i = 0;
   for (;;) {
-    await scrollTo(page, y);
-    await page.waitForTimeout(SETTLE);
     const name = `${slug}-${String(i).padStart(2, '0')}`;
+    await scrollTo(page, y);
+    if (reached.has(name) && reached.get(name) !== y) { await page.waitForTimeout(300); await scrollTo(page, reached.get(name)); }
+    await page.waitForTimeout(SETTLE);
     await page.screenshot({ path: path.join(out, name + '.png') });
     const actual = Math.round(await current(page));
     frames.push({ name, route, y, actual });

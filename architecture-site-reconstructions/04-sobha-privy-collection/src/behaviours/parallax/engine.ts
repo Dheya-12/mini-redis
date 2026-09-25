@@ -1,6 +1,6 @@
 import { matches, onChange } from "@/lib/mq";
 import { addLayout } from "@/lib/layout";
-import { patterns, type Frame, type Pattern, type PatternContext } from "./patterns";
+import { patterns, type Frame, type Frames, type Pattern, type PatternContext } from "./patterns";
 
 /**
  * Scroll-linked keyframes, declared in the markup.
@@ -270,7 +270,17 @@ class ParallaxElement {
     if (explicit) {
       explicit.forEach((pattern, i) => this.groups.push(new Group(el, pattern, `run-${i}`, options, onToggle)));
     } else {
-      for (const [k, v] of Object.entries(ds)) if (k.startsWith("parallax") && k !== "parallaxPattern" && v !== undefined) options[k.charAt(8).toLowerCase() + k.slice(9)] = v;
+      // keyframes written on the element itself (`data-parallax--70-0='{"opacity": 1}'`) form a run of their own
+      const inline: Frames = {};
+      for (const [k, v] of Object.entries(ds)) {
+        if (!k.startsWith("parallax") || k === "parallaxPattern" || v === undefined) continue;
+        if (KEY.test(ALIAS[k] ?? k)) {
+          try { inline[k] = JSON.parse(v) as Frame; } catch { console.warn(`parallax keyframe ${k} is not valid JSON`, el); }
+        } else options[k.charAt(8).toLowerCase() + k.slice(9)] = v;
+      }
+      // options the original also reads without the prefix
+      if (ds.measureSelector && !options.measureSelector) options.measureSelector = ds.measureSelector;
+      if (Object.keys(inline).length) this.groups.push(new Group(el, { frames: inline }, "inline", options, onToggle));
       for (const name of (ds.parallaxPattern ?? "").trim().split(/\s+/).filter(Boolean)) {
         const pattern = patterns[name];
         if (!pattern) { console.warn(`parallax pattern "${name}" is not defined`, el); continue; }

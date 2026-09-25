@@ -169,7 +169,7 @@ await ctx.route('**/*', (r) => (r.request().url().startsWith('file:') ? r.contin
 const tab = await ctx.newPage();
 const index = [];
 let chrome = null;
-for (const slug of ['home', 'location', 'privacy-policy']) {
+for (const slug of ['home', 'location', 'privacy-policy', 'privacy-policy-uk-eu', 'data-protection-policy']) {
   const route = slug === 'home' ? '/' : '/' + slug;
   await tab.goto('file://' + path.resolve(ssrDir, slug + '.html'));
   const raw = await tab.evaluate((ser) => {
@@ -184,11 +184,14 @@ for (const slug of ['home', 'location', 'privacy-policy']) {
         cookie: s('#cookie-consent'), turn: s('body > .turn-message'),
       },
       hasIntro: !!document.querySelector('body > .preloader--intro'),
+      // the route's own stylesheet (landing.css, location.css, privacy-policy.css)
+      sheet: [...document.querySelectorAll('link[rel="stylesheet"]')].map((l) => /\/stylesheets\/([a-z-]+)\.css/.exec(l.getAttribute('href') || '')?.[1]).find((n) => n && n !== 'global') || null,
     };
   }, serialize.toString());
-  const doc = { route, title: raw.title, description: raw.description, ogImage: raw.ogImage ? localAsset(raw.ogImage.replace(SITE, '')) : null, intro: raw.hasIntro, view: convert(raw.view, null) };
+  const sheet = raw.sheet === 'landing' ? 'home' : raw.sheet;
+  const doc = { route, title: raw.title, description: raw.description, ogImage: raw.ogImage ? localAsset(raw.ogImage.replace(SITE, '')) : null, intro: raw.hasIntro, sheet, view: convert(raw.view, null) };
   fs.writeFileSync(path.join(OUT, 'pages', slug + '.json'), JSON.stringify(doc));
-  index.push({ slug, route, title: raw.title });
+  index.push({ slug, route, title: raw.title, sheet });
   if (slug === 'home') chrome = Object.fromEntries(Object.entries(raw.chrome).map(([k, v]) => [k, v ? convert(v, null) : null]));
 }
 await b.close();

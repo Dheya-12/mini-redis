@@ -10,6 +10,8 @@ export type PageDoc = {
   ogImage: string | null;
   /** whether the original plays its intro preloader on this route */
   intro: boolean;
+  /** the route's stylesheet (home, location, privacy-policy): the scope of its rules in site.css */
+  sheet: string;
   /** the page container (header, content and modals), rendered straight into <body> */
   view: TreeNode;
 };
@@ -24,7 +26,10 @@ export type Chrome = {
 
 const CONTENT = path.join(process.cwd(), "src/content");
 
-export const allRoutes = routes as { slug: string; route: string; title: string }[];
+export const allRoutes = routes as { slug: string; route: string; title: string; sheet: string }[];
+
+/** route → stylesheet scope, for the boot script (set before first paint) */
+export const sheetByRoute = Object.fromEntries(allRoutes.map((r) => [r.route, r.sheet]));
 
 export function slugForRoute(route: string) {
   return allRoutes.find((r) => r.route === route)?.slug ?? null;

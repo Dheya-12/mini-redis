@@ -132,8 +132,15 @@ export const mapRange = (v: number, a: number, b: number, c: number, d: number) 
   return Math.max(lo, Math.min(hi, ((v - a) / (b - a)) * (d - c) + c));
 };
 
-/** eases a value towards its target by `strength` per 60th of a second, whatever the frame rate */
-export const approach = (value: number, target: number, strength: number, dt: number) => value + (target - value) * (1 - Math.pow(1 - strength, dt / (1000 / 60)));
+/**
+ * Eases a value towards its target as the original does: each frame covers `strength × dt / 16` of the remaining
+ * distance (dt in ms), never overshooting, and snaps once within `precision`.
+ */
+export function approach(value: number, target: number, strength: number, dt: number, precision = 0.001) {
+  if (Math.abs(target - value) < precision) return target;
+  const next = value + (target - value) * ((strength * (dt || 16)) / 16);
+  return value < target ? Math.min(target, next) : Math.max(target, next);
+}
 
 /**
  * The pointer across the window (0..1), eased by `strength` per frame. Like the original, the eased value starts at 0

@@ -38,7 +38,7 @@ export default async function Page({ params }: { params: Params }) {
   return (
     <>
       {renderTree([tag, { ...(props || {}), key: hit.route, "data-route": hit.route }, ...kids])}
-      <PageEffects key={hit.route} route={hit.route} intro={doc.intro} />
+      <PageEffects key={hit.route} route={hit.route} sheet={doc.sheet} intro={doc.intro} />
     </>
   );
 }

@@ -15,6 +15,7 @@ import { initHeader } from "@/behaviours/header";
 import { initContentAnimations } from "@/behaviours/contentAnimation";
 import { initThreeWorlds } from "@/gl/threeWorlds";
 import { initHandpicked } from "@/gl/handpicked";
+import { initLocation } from "@/gl/location";
 import { initIframeSize } from "@/behaviours/iframeSize";
 import { initModals } from "@/behaviours/modal";
 import { initMenuLinks } from "@/behaviours/menu";
@@ -24,9 +25,9 @@ import { saveUtm } from "@/behaviours/cookies";
 import { scrollToHash } from "@/behaviours/smooth";
 
 /** Behaviour bound to one page's markup; everything it sets up is torn down when the page changes. */
-export default function PageEffects({ route, intro }: { route: string; intro: boolean }) {
+export default function PageEffects({ route, sheet, intro }: { route: string; sheet: string; intro: boolean }) {
   useEffect(() => {
-    document.documentElement.setAttribute("data-page", route === "/" ? "home" : route.slice(1));
+    document.documentElement.setAttribute("data-page", sheet);
     const root = document.querySelector<HTMLElement>(`[data-route="${route}"]`);
     if (!root) return;
     const scrollY = () => state.lenis?.scroll ?? window.scrollY;
@@ -50,6 +51,7 @@ export default function PageEffects({ route, intro }: { route: string; intro: bo
     const offWorlds = [
       ...Array.from(root.querySelectorAll<HTMLElement>('[data-plugin~="threeWorldsWebGl"]')).map((el) => initThreeWorlds(el)),
       ...Array.from(root.querySelectorAll<HTMLElement>('[data-plugin~="carouselWebGl"]')).map((el) => initHandpicked(el)),
+      ...Array.from(root.querySelectorAll<HTMLElement>('[data-plugin~="locationWebGl"]')).map((el) => initLocation(el)),
     ];
     const onScroll = () => { sliders.update(); parallax.update(); header.update(); };
     const offLenis = state.lenis?.on("scroll", onScroll);
@@ -83,6 +85,6 @@ export default function PageEffects({ route, intro }: { route: string; intro: bo
       offAppear();
       offSize();
     };
-  }, [route, intro]);
+  }, [route, sheet, intro]);
   return null;
 }

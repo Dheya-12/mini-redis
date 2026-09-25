@@ -39,6 +39,14 @@ a {
   right: auto;
   scroll-behavior: auto;
 }
+/*
+ * The original scrolls a fixed container, where the browser never anchors the scroll position to content; on the
+ * window it would, nudging the page when a layer above changes size as a section initialises.
+ */
+html,
+body {
+  overflow-anchor: none;
+}
 html.js.has-hover,
 html.js.has-hover body {
   -ms-overflow-style: none;
