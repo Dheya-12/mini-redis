@@ -227,6 +227,20 @@ an article dialog. Both are rendered in the browser only; the server HTML has ne
 measured (`src/behaviours/deepdive.ts`).
 **To reverse:** delete the `deepdive` captures and re-run the extractor.
 
+### [14:00] **[LOW]** Thirdway accepted with 60 of 377 frames above the 1.0 % gate
+
+**Fork:** Keep iterating on Thirdway until every frame is at or under 1.0 %, or accept, document and move on to Site #3.
+**Investigated:** Over 11 capture rounds the worst frames were traced to measured causes. What remains: phone images are
+sharper than the original's (it upscales 430 px renditions), the original's Services image drift depends on scroll
+history, and a 1 px pin offset at 1440. At 1440 × 900, 115 of 121 frames pass; interaction states are 0.00–1.02 %;
+carousels, filters and dialogs behave like the original. Loam House passed every frame.
+**Chose:** Accept. The ZIP builds and runs from a clean extraction. FIDELITY.md lists every frame over 1.5 % with its
+cause.
+**To reverse:** re-open Thirdway. The fastest wins: keep `srcset` for phone images (about 30 % more media), then
+recapture.
+**Confidence:** Medium — the brief asks for major discrepancies to be fixed, and none of the remaining ones changes
+layout or behaviour.
+
 ### [08:55] Media handling
 
 **Chose:** Images are the exact bytes the browser received (AVIF from DatoCMS at the requested widths). Renditions
