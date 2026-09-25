@@ -119,8 +119,16 @@ export function initProjectsIndex(root: HTMLElement): Cleanup | null {
   sector = params.get("sector");
   const sectors = [...new Set(listing.projects.flatMap((p) => p.sectors))].sort();
   const teamNames = [...new Set(listing.projects.map((p) => p.team).filter(Boolean) as string[])].sort();
-  $$<HTMLButtonElement>("button[aria-label='Sector']", root).forEach((b) => offs.push(dropdown(b, sectors, (v) => { sector = v; render(true); })));
-  $$<HTMLButtonElement>("button[aria-label='Team']", root).forEach((b) => offs.push(dropdown(b, teamNames, (v) => { team = v; render(true); })));
+  // the original mirrors the filters in the address bar (?sector=Finance&team=Studio)
+  const syncUrl = () => {
+    const q = new URLSearchParams();
+    if (sector) q.set("sector", sector);
+    if (team) q.set("team", team);
+    const qs = q.toString();
+    window.history.replaceState(window.history.state, "", location.pathname + (qs ? `?${qs}` : "") + location.hash);
+  };
+  $$<HTMLButtonElement>("button[aria-label='Sector']", root).forEach((b) => offs.push(dropdown(b, sectors, (v) => { sector = v; syncUrl(); render(true); })));
+  $$<HTMLButtonElement>("button[aria-label='Team']", root).forEach((b) => offs.push(dropdown(b, teamNames, (v) => { team = v; syncUrl(); render(true); })));
 
   const [gridBtn, listBtn] = $$<HTMLButtonElement>("button", $(".flex.grow.items-center", root) ?? root).filter((b) => /^(Grid|List)$/.test(b.textContent || ""));
   const setView = (v: "grid" | "list") => {
@@ -135,7 +143,8 @@ export function initProjectsIndex(root: HTMLElement): Cleanup | null {
   };
   const g = () => setView("grid"), l = () => setView("list");
   if (team || sector) {
-    $$<HTMLButtonElement>(`button[aria-label='${team ? "Team" : "Sector"}'] .cap-trim`, root).forEach((el) => (el.textContent = team ?? sector));
+    if (sector) $$<HTMLElement>("button[aria-label='Sector'] .cap-trim", root).forEach((el) => (el.textContent = sector));
+    if (team) $$<HTMLElement>("button[aria-label='Team'] .cap-trim", root).forEach((el) => (el.textContent = team));
     render(true);
   }
   gridBtn?.addEventListener("click", g);

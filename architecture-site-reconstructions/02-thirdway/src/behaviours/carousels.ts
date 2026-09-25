@@ -36,15 +36,27 @@ export function initCarousels(root: HTMLElement) {
   const swipers: Swiper[] = [];
   root.querySelectorAll<HTMLElement>(".swiper").forEach((el) => {
     const { key, g } = geometryFor(el);
-    const navKey = key ? NAV_ALIASES[key] ?? key : null;
-    const prevSel = navKey ? `.${navKey}-prev, .swiper-button-prev` : "[aria-label=Previous]";
-    const nextSel = navKey ? `.${navKey}-next, .swiper-button-next` : "[aria-label=Next]";
-    // the closest ancestor that also holds this carousel's buttons
+    // buttons are named after the carousel or its alias (e.g. desktop and mobile controls of the same carousel)
+    const names = key ? [...new Set([key, NAV_ALIASES[key] ?? key])] : [];
+    const prevSel = names.length ? [...names.map((n) => `.${n}-prev`), ".swiper-button-prev"].join(", ") : "[aria-label=Previous]";
+    const nextSel = names.length ? [...names.map((n) => `.${n}-next`), ".swiper-button-next"].join(", ") : "[aria-label=Next]";
+    // the closest ancestor that also holds this carousel's buttons (ignoring the zero-height placeholders the
+    // original leaves inside the swiper itself)
+    const outside = (from: ParentNode, sel: string) => [...from.querySelectorAll<HTMLElement>(sel)].filter((b) => !el.contains(b));
     let scope: HTMLElement | null = el.parentElement;
-    while (scope && scope !== root && !scope.querySelector(prevSel)) scope = scope.parentElement;
+    while (scope && scope !== root && !outside(scope, prevSel).length) scope = scope.parentElement;
     scope ??= root;
-    const prev = scope.querySelectorAll<HTMLElement>(prevSel);
-    const next = scope.querySelectorAll<HTMLElement>(nextSel);
+    // widen to the largest ancestor that still holds only this carousel, so desktop and mobile button pairs both bind
+    while (scope !== root && scope.parentElement && scope.parentElement.querySelectorAll(".swiper").length === 1) scope = scope.parentElement;
+    let prev = outside(scope, prevSel);
+    let next = outside(scope, nextSel);
+    // the original's controls are wired by hand, so a pair's class names do not always match (on project pages the
+    // "next" of the related-projects carousel is named after the People carousel): take the partner from the same
+    // controls container
+    const partner = (from: HTMLElement[], sel: string) =>
+      from.flatMap((b) => [...(b.parentElement?.querySelectorAll<HTMLElement>(sel) ?? [])]).filter((b) => !el.contains(b));
+    if (prev.length && !next.length) next = partner(prev, "[class*='swiper-next']");
+    if (next.length && !prev.length) prev = partner(next, "[class*='swiper-prev']");
     const desktop = g.desktop ?? g.mobile;
     const s = new Swiper(el, {
       modules: [Navigation],
