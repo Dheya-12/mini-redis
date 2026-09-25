@@ -288,3 +288,23 @@ Images: one rendition per photo (the 1600/2400 px JPEG the original serves), 115
 git-ignored in the repo (as for Thirdway). Special Gothic is OFL and self-hosted. Big Caslon FB is commercial: a
 git-ignored drop-in slot, with Libre Caslon Text (OFL) metric-matched as the fallback (size-adjust 99 %).
 
+
+### [15:20] Ribbon layout measured before lazy photos arrive
+
+**Fork:** At 390 px the home ribbon drifted from the original by up to 30 % per frame after the eighth image. Six
+of the twenty photos are 2:3 inside 4:5 figures; when such a photo loads, it grows its figure by 71 px and pushes the
+rest of the page down.
+**Investigated:** Sampled each image's rendered top and bottom edges every 40 px of scroll on both sites. The ribbon
+itself matched to 1 px until the first 2:3 photo. The original lays the strip out once, when the first five images are
+ready, and never re-measures (a resize event changes nothing). Figure 8's photo sometimes arrives before that moment
+and sometimes after, so the original's result varies between loads. In two of three runs it had not arrived. The
+original starts stacking at scroll 7823 at 390 × 844, which equals the threshold with all six photos unloaded. The
+stacked card, by contrast, follows its placeholder every frame.
+**Chose:** Measure each lazy figure at its CSS 4:5 frame and move later content up by any growth above it. Re-measure
+the stacked card's placeholder every frame (below 640 px the canvas is fixed while the placeholder scrolls).
+**Why:** Deterministic, and it matches the original's usual outcome. The stacking threshold is now 7823 on both sites,
+and the card lands 411–569 px (original 411–568).
+**To reverse:** in `src/gl/scene.ts` `refreshLayout()`, drop the `frameHeight` clamp to always use the real figure
+height.
+**Confidence:** Medium. When figure 8's photo happens to load first, the original draws it at 2:3 and later images
+71 px lower.

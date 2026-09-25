@@ -42,6 +42,11 @@ const clamp = (v: number, a = 0, b = 1) => Math.min(b, Math.max(a, v));
 const s5 = (v: number) => { const t = clamp(v); return t * t * t * (t * (t * 6 - 15) + 10); };
 const mix = (a: number, b: number, t: number) => a + (b - a) * t;
 const sineInOut = (v: number) => (1 - Math.cos(Math.PI * clamp(v))) / 2;
+/** height of an element's CSS aspect-ratio frame at the given width (null when it has none) */
+function frameHeight(el: Element, width: number) {
+  const m = getComputedStyle(el).aspectRatio.match(/([\d.]+)\s*\/\s*([\d.]+)/);
+  return m && +m[1] > 0 ? (width * +m[2]) / +m[1] : null;
+}
 
 type Item = {
   img: HTMLImageElement;
@@ -205,14 +210,23 @@ export class ImageScene {
     const scroll = this.scrollY();
     this.layout.w = rect.width;
     this.layout.h = rect.height;
+    // A lazy 2:3 photo grows its 4:5 figure once it arrives. The original lays the strip out before those photos
+    // load, so each lazy figure is measured as its CSS frame, and what follows moves up by the growth above it.
+    // (The first images are loaded before the scene is built and keep their real size.)
+    const waited = this.mode === "gallery" ? SETTINGS.introCount : Infinity;
+    let growth = 0;
     for (const it of this.items) {
       const r = it.figure.getBoundingClientRect();
-      it.docRect = { left: r.left + window.scrollX, top: r.top + scroll, w: r.width || rect.width * 0.28, h: r.height || r.width * 1.25 };
+      const w = r.width || rect.width * 0.28;
+      const frame = it.index < waited ? null : frameHeight(it.figure, w);
+      const h = r.height ? Math.min(r.height, frame ?? r.height) : w * 1.25;
+      it.docRect = { left: r.left + window.scrollX, top: r.top + scroll - growth, w, h };
+      growth += r.height ? r.height - h : 0;
     }
     const wrapper = document.querySelector(".wrapper");
     if (wrapper) {
       const wr = wrapper.getBoundingClientRect();
-      const end = wr.bottom + scroll;
+      const end = wr.bottom + scroll - growth;
       this.layout.stackStart = Math.max(0, end - rect.height);
       this.layout.stackRelease = Math.max(0, this.layout.stackStart - rect.height * 0.18);
     }
@@ -481,6 +495,8 @@ export class ImageScene {
     const rect = this.frozen?.rect ?? this.canvasRect();
     if (!this.frozen && (Math.abs(rect.width - this.layout.w) > 0.5 || Math.abs(rect.height - this.layout.h) > 0.5)) this.resize();
     const scroll = this.frozen?.scroll ?? this.scrollY();
+    // the stacked card follows its placeholder, which scrolls past a fixed canvas on phones
+    if (this.mode === "gallery" && !this.frozen) this.layout.empty = this.box(document.querySelector(".empty"), rect);
     if (this.mode === "gallery" && this.intro.done && !this.frozen) this.updateStack(scroll);
     this.updateIntro(time, rect);
     this.updateFocus();
