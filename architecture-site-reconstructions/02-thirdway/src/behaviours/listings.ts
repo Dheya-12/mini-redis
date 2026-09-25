@@ -113,6 +113,10 @@ export function initProjectsIndex(root: HTMLElement): Cleanup | null {
   more?.addEventListener("click", onMore);
   offs.push(() => more?.removeEventListener("click", onMore));
 
+  // deep links such as /projects?team=Studio (used by "View all" on project pages)
+  const params = new URLSearchParams(location.search);
+  team = params.get("team");
+  sector = params.get("sector");
   const sectors = [...new Set(listing.projects.flatMap((p) => p.sectors))].sort();
   const teamNames = [...new Set(listing.projects.map((p) => p.team).filter(Boolean) as string[])].sort();
   $$<HTMLButtonElement>("button[aria-label='Sector']", root).forEach((b) => offs.push(dropdown(b, sectors, (v) => { sector = v; render(true); })));
@@ -130,6 +134,10 @@ export function initProjectsIndex(root: HTMLElement): Cleanup | null {
     render(true);
   };
   const g = () => setView("grid"), l = () => setView("list");
+  if (team || sector) {
+    $$<HTMLButtonElement>(`button[aria-label='${team ? "Team" : "Sector"}'] .cap-trim`, root).forEach((el) => (el.textContent = team ?? sector));
+    render(true);
+  }
   gridBtn?.addEventListener("click", g);
   listBtn?.addEventListener("click", l);
   offs.push(() => { gridBtn?.removeEventListener("click", g); listBtn?.removeEventListener("click", l); });

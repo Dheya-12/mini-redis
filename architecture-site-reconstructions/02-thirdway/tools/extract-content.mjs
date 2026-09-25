@@ -241,6 +241,25 @@ function attachData(tree, cls, list) {
   };
   walk(tree);
 }
+// Project pages: the desktop "View all" cell of the related-projects grid is rendered client-side on the
+// original; it is added here from the mobile link the server does render.
+function addRelatedViewAll(tree) {
+  const find = (n, test) => {
+    if (!Array.isArray(n)) return null;
+    if (test(n)) return n;
+    for (const k of n.slice(2)) { const r = find(k, test); if (r) return r; }
+    return null;
+  };
+  const cls = (n) => (n[1] && typeof n[1].className === 'string' ? n[1].className : '');
+  const section = find(tree, (n) => n[0] === 'section' && /project-related-projects|related-projects-block/.test(cls(n)));
+  if (!section) return;
+  const grid = find(section, (n) => cls(n).includes('site-grid'));
+  const link = find(section, (n) => n[0] === 'a' && n.slice(2).join('').trim() === 'View all');
+  if (!grid || !link) return;
+  grid.splice(3, 0, ['div', { className: 'col-span-4 mb-16 hidden items-end justify-end lg:flex xl:col-span-6' },
+    ['div', 0, ['a', { className: 'link-line-reverse', href: link[1].href }, 'View all']]]);
+}
+
 const teams = {};
 function collectTeams(n) {
   if (!Array.isArray(n)) return;
@@ -284,6 +303,7 @@ for (const f of files) {
   const tree = convert(raw.main, page, null);
   const rsc = rscText(fs.readFileSync(path.resolve(ssrDir, f), 'utf8'));
   attachData(tree, 'featured-projects-full-bleed', featuredData(rsc));
+  addRelatedViewAll(tree);
   collectTeams(tree);
   const og = raw.ogImage ? resolveImage([{ url: raw.ogImage, w: 0 }]) : null;
   const doc = { route, title: raw.title, description: raw.description, ogImage: og, main: tree };

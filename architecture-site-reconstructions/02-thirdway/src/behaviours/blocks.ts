@@ -77,16 +77,38 @@ function initProcess(section: HTMLElement): Cleanup | null {
       else { b = point; o = 0; }
       gsap.set(c, { x: b.x, y: b.y, width: b.w, height: b.h, zIndex: i + 1, autoAlpha: o > 0.01 && b.w > 0.5 ? o : 0 });
     });
-    show(Math.min(n - 1, Math.max(0, Math.round(s))));
   };
 
-  const ease = gsap.parseEase("power2.inOut");
-  // measured: pin length = 495px per step + 223px of hold at 900px tall (approach: 6 steps, ESG: 4)
+  // Measured on the live page: every 500px of scroll one step. For the first 250px the images drift
+  // 9.1 % of the way toward the next layout (scrubbed), then a timed 0.8 s swap completes the step.
+  // Pin length fits 495·n − 272 px (approach 6 steps → 2698, ESG 4 → 1708) at a 900px viewport.
   const vh = () => window.innerHeight / 900;
-  const stepPx = () => 495 * vh();
-  const holdPx = () => 223 * vh();
+  const STEP = () => 500 * vh();
+  const DRIFT = () => 250 * vh();
+  const TENSION = 0.091;
+  const total = () => (495 * n - 272) * vh();
+  const state = { s: 0 };
+  let settled = 0;
+  let swap: gsap.core.Tween | null = null;
+  const drive = (d: number) => {
+    const idx = Math.max(0, Math.min(n - 1, Math.floor((d + DRIFT()) / STEP())));
+    const q = idx < n - 1 ? Math.max(0, Math.min(1, (d - idx * STEP()) / DRIFT())) : 0;
+    const want = idx + TENSION * q;
+    if (idx !== settled) {
+      settled = idx;
+      swap?.kill();
+      swap = gsap.to(state, { s: want, duration: 0.8, ease: "power3.inOut", onUpdate: () => render(state.s), onComplete: () => { swap = null; } });
+    } else if (!swap) {
+      state.s = want;
+      render(want);
+    } // while a swap is in flight the next scroll update picks up the drift
+
+    show(idx);
+  };
   const pinned = section.firstElementChild as HTMLElement;
-  const st = ScrollTrigger.create({
+  // touch devices get the static first step (the original does not pin this block there)
+  const touch = ScrollTrigger.isTouch === 1;
+  const st = touch ? null : ScrollTrigger.create({
     trigger: pinned,
     // desktop: pin once the image frame sits 89px above the viewport bottom (measured at 1440×900)
     start: () => {
@@ -95,19 +117,14 @@ function initProcess(section: HTMLElement): Cleanup | null {
       const off = frame.top - pinned.getBoundingClientRect().top;
       return `top ${window.innerHeight - frame.height - 89 - off}px`;
     },
-    end: () => `+=${stepPx() * (n - 1) + holdPx()}`,
+    end: () => `+=${total()}`,
     pin: true,
-    scrub: true,
     invalidateOnRefresh: true,
-    onRefresh: (self) => { measure(); render(Math.min(n - 1, (self.progress * (stepPx() * (n - 1) + holdPx())) / stepPx())); },
-    onUpdate: (self) => {
-      const total = stepPx() * (n - 1) + holdPx();
-      const raw = Math.min(n - 1, (self.progress * total) / stepPx());
-      const k = Math.floor(raw);
-      render(Math.min(n - 1, k + ease(raw - k)));
-    },
+    onRefresh: (self) => { measure(); swap?.kill(); swap = null; settled = -1; drive(self.progress * total()); },
+    onUpdate: (self) => drive(self.progress * total()),
   });
-  const lineTween = [vLine, hLine].filter(Boolean).map((line, i) =>
+  const stepPx = STEP;
+  const lineTween = (touch ? [] : [vLine, hLine]).filter(Boolean).map((line, i) =>
     gsap.fromTo(line!, i === 0 ? { scaleY: 0 } : { scaleX: 0 }, {
       ...(i === 0 ? { scaleY: 1 } : { scaleX: 1 }),
       ease: "none",
@@ -136,8 +153,9 @@ function initProcess(section: HTMLElement): Cleanup | null {
     });
   };
   toggles.forEach((b) => b.addEventListener("click", onToggle));
+  if (touch) show(0);
   return () => {
-    st.kill();
+    st?.kill();
     lineTween.forEach((t) => t.scrollTrigger?.kill());
     toggles.forEach((b) => b.removeEventListener("click", onToggle));
   };
@@ -241,7 +259,9 @@ function initServices(section: HTMLElement): Cleanup | null {
   const slider = desk.querySelector<HTMLElement>(".relative > .relative.flex-col");
   const compact = desk.querySelector<HTMLElement>(".relative > .hidden");
   const rows = slider ? $$<HTMLElement>(":scope > .service-row", slider) : [];
-  const STEP = 473;
+  // each service slides up from the viewport bottom: step = viewport height − rows' offset in the panel
+  // (measured: 473px at 1440×900, 373 at 1280×800, 341 at 1024×768)
+  const step = () => window.innerHeight - (slider!.getBoundingClientRect().top - desk.getBoundingClientRect().top);
   let st: ScrollTrigger | null = null;
   const build = () => {
     if (!rows.length || !isDesktop()) return;
@@ -251,10 +271,10 @@ function initServices(section: HTMLElement): Cleanup | null {
       gsap.set(row, { zIndex: i + 1 });
       if (!i) return;
       gsap.set(row, { position: "absolute", top: 0, left: 0, right: 0 });
-      tl.fromTo($$(".service-slide", row), { y: STEP }, { y: 0, duration: 1 }, i - 1);
+      tl.fromTo($$(".service-slide", row), { y: () => step() }, { y: 0, duration: 1 }, i - 1);
       tl.fromTo(row.querySelector(".service-img"), { clipPath: "inset(100% 0% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 1 }, i - 1);
     });
-    st = ScrollTrigger.create({ trigger: desk, start: "top top", end: () => `+=${STEP * (rows.length - 1)}`, pin: true, scrub: true, animation: tl });
+    st = ScrollTrigger.create({ trigger: desk, start: "top top", end: () => `+=${step() * (rows.length - 1)}`, pin: true, scrub: true, animation: tl, invalidateOnRefresh: true });
   };
   build();
   const btn = desk.querySelector<HTMLButtonElement>("button[aria-expanded]");
@@ -333,19 +353,11 @@ function equalizeTitles(root: HTMLElement): Cleanup {
     const key = h.parentElement!.parentElement!.parentElement ?? root;
     groups.set(key, [...(groups.get(key) ?? []), h]);
   });
-  // titles always reserve two lines (the original sizes them for the narrowest layout)
-  const twoLines = (h: HTMLElement) => {
-    const probe = h.cloneNode() as HTMLElement;
-    probe.innerHTML = "A<br>A";
-    probe.style.cssText = "position:absolute;visibility:hidden;min-height:0";
-    h.parentElement!.append(probe);
-    const v = probe.offsetHeight;
-    probe.remove();
-    return v;
-  };
+  // measured: the original reserves the tallest title's height plus one extra line
   const apply = () => groups.forEach((hs) => {
     hs.forEach((h) => (h.style.minHeight = ""));
-    const max = Math.max(twoLines(hs[0]), ...hs.map((h) => h.offsetHeight));
+    const lh = parseFloat(getComputedStyle(hs[0]).lineHeight) || 0;
+    const max = Math.max(...hs.map((h) => h.offsetHeight)) + lh;
     hs.forEach((h) => (h.style.minHeight = `${max}px`));
   });
   apply();

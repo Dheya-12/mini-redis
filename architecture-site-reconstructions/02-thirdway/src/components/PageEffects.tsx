@@ -30,7 +30,8 @@ export default function PageEffects({ route }: { route: string }) {
       // the home hero choreographs its own headline/copy after the intro
       initReveals(main, (el) => !!homeHero?.contains(el) && !el.classList.contains("scroll-fill-notrim"));
     }, main);
-    const refresh = () => ScrollTrigger.refresh();
+    // pins are created block by block; refresh top-to-bottom so later pins shift earlier triggers correctly
+    const refresh = () => { ScrollTrigger.sort(); ScrollTrigger.refresh(); };
     const raf = requestAnimationFrame(refresh);
     window.addEventListener("load", refresh);
     emit("tw:page-ready", route);

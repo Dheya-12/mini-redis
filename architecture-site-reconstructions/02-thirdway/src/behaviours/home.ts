@@ -84,11 +84,19 @@ export function initFeaturedProjects(section: HTMLElement) {
 
   const tl = gsap.timeline({ defaults: { ease: "none" } });
   for (let i = 1; i < n; i++) tl.to(slides[i], { clipPath: "inset(0% 0px 0px)", duration: 1 }, i - 1);
+  // measured: the first image drifts 0 → +2 % as the section arrives, then +2 → −4 % while the next wipes in;
+  // later images arrive at +4 %, settle at 0 and leave at −4 %
   bgs.forEach((b, i) => {
-    if (!b) return;
-    if (i > 0) tl.to(b, { yPercent: 0, duration: 1 }, i - 1);
+    if (!b || i === 0) return;
+    tl.to(b, { yPercent: 0, duration: 1 }, i - 1);
     if (i < n - 1) tl.to(b, { yPercent: -4, duration: 1 }, i);
   });
+  // first image: half a viewport of entry drift, half a viewport of hold, then one segment of exit drift
+  const entry = bgs[0]
+    ? gsap.timeline({ defaults: { ease: "none" }, scrollTrigger: { trigger: section, start: "top bottom", end: () => `+=${2 * window.innerHeight}`, scrub: true } })
+        .fromTo(bgs[0], { yPercent: 0 }, { yPercent: 2, duration: 0.5 })
+        .to(bgs[0], { yPercent: -4, duration: 1 }, 1)
+    : null;
   const bar = q(".progress-amount");
   if (bar) tl.fromTo(bar, { scaleX: 0 }, { scaleX: 1, duration: n - 1, transformOrigin: "left center" }, 0);
 
@@ -165,6 +173,7 @@ export function initFeaturedProjects(section: HTMLElement) {
   hit?.addEventListener("pointerleave", leave);
   return () => {
     st.kill();
+    entry?.scrollTrigger?.kill();
     window.clearTimeout(swapTimer);
     hit?.removeEventListener("pointermove", move);
     hit?.removeEventListener("pointerenter", enter);

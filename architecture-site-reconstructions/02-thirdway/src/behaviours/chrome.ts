@@ -53,7 +53,8 @@ export function initHeader(): Cleanup {
   // slide in once the intro is out of the way
   gsap.set(header, { yPercent: -120, clearProps: "transform" });
   gsap.set(header, { yPercent: -120 });
-  afterIntro(() => gsap.to(header, { yPercent: 0, duration: 0.8, ease: "power3.inOut" }));
+  // cleared afterwards: a transformed header would trap its fixed-position menu overlay
+  afterIntro(() => gsap.to(header, { yPercent: 0, duration: 0.8, ease: "power3.inOut", clearProps: "transform" }));
 
   // light / dark scheme depending on what sits under the header
   const flippable = [row, ...$$("*", row)].filter((el) => !el.closest(".left-1\\/2") && [...el.classList].some((c) => FLIP[c]));

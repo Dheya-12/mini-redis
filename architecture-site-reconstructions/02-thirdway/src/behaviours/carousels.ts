@@ -6,16 +6,16 @@ import { Navigation } from "swiper/modules";
  * (e.g. .cards-teams-swiper + .cards-teams-swiper-prev). Slide geometry was measured on the
  * live site at 390 / 1024 / 1440px and expressed as slidesPerView + spaceBetween.
  */
-type Geometry = { mobile: [number, number]; desktop?: [number, number] };
+type Geometry = { mobile: [number, number]; desktop?: [number, number]; wide?: [number, number] };
 
 const GEOMETRY: Record<string, Geometry> = {
   "cards-teams-swiper": { mobile: [8 / 7, 12], desktop: [4, 16] },
   "values-swiper": { mobile: [8 / 7, 12], desktop: [4, 16] },
   "image-blocks-swiper": { mobile: [8 / 7, 12], desktop: [24 / 7, 16] },
   "project-image-carousel-swiper": { mobile: [1, 0], desktop: [1.194, 16] },
-  "project-related-projects-swiper": { mobile: [4 / 3, 12], desktop: [1.5, 16] },
-  "related-projects-block-swiper": { mobile: [4 / 3, 12], desktop: [1.5, 16] },
-  "people-projects-swiper": { mobile: [4 / 3, 12], desktop: [1.5, 16] },
+  "project-related-projects-swiper": { mobile: [4 / 3, 12], desktop: [4 / 3, 16], wide: [1.5, 16] },
+  "related-projects-block-swiper": { mobile: [4 / 3, 12], desktop: [4 / 3, 16], wide: [1.5, 16] },
+  "people-projects-swiper": { mobile: [4 / 3, 12], desktop: [4 / 3, 16], wide: [1.5, 16] },
 };
 
 const NAV_ALIASES: Record<string, string> = {
@@ -52,7 +52,10 @@ export function initCarousels(root: HTMLElement) {
       spaceBetween: g.mobile[1],
       speed: 600,
       watchOverflow: true,
-      breakpoints: { 1024: { slidesPerView: desktop[0], spaceBetween: desktop[1] } },
+      breakpoints: {
+        1024: { slidesPerView: desktop[0], spaceBetween: desktop[1] },
+        1440: { slidesPerView: (g.wide ?? desktop)[0], spaceBetween: (g.wide ?? desktop)[1] },
+      },
       // Swiper accepts element arrays here (desktop + mobile button pairs) although its types say single
       navigation: prev.length && next.length ? { prevEl: [...prev] as unknown as HTMLElement, nextEl: [...next] as unknown as HTMLElement, addIcons: false } : false,
     });
