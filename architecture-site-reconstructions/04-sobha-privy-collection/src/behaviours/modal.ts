@@ -133,9 +133,10 @@ class Modal {
     this.el.classList.remove("is-hidden", "modal--animating-out");
     this.el.classList.add("is-invisible");
     showImages(this.el);
-    this.setupFocus();
     this.beforeShow();
     transition(this.el, this.o.animationNameIn, { before: (el) => el.setAttribute("aria-hidden", "false") });
+    // the transition's first step has made the modal visible: it can take focus now
+    this.setupFocus();
   }
 
   hide() {
