@@ -1,14 +1,24 @@
 /**
  * The frame shared by the WebGL scenes: a transparent renderer at twice the pixel density (as on the original), a
  * perspective camera, a scene sized to its container, and a render loop that runs only while the container is on
- * screen. `onFrame` callbacks receive the time since the previous frame (ms, at most 60).
+ * screen. `onFrame` callbacks (before rendering) and `afterFrame` callbacks receive the time since the previous frame
+ * (ms, at most 60).
  */
 import * as THREE from "three";
 
-export type AppOptions = { fov?: number; near?: number; far?: number; position?: [number, number, number]; rotation?: [number, number, number] };
+export type AppOptions = {
+  fov?: number;
+  near?: number;
+  far?: number;
+  position?: [number, number, number];
+  rotation?: [number, number, number];
+  /** a see-through canvas (default); opaque scenes clear to black */
+  alpha?: boolean;
+  logarithmicDepthBuffer?: boolean;
+};
 
 export function createApp(container: HTMLElement, o: AppOptions = {}) {
-  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: o.alpha ?? true, logarithmicDepthBuffer: !!o.logarithmicDepthBuffer });
   renderer.toneMapping = THREE.NoToneMapping;
   renderer.setPixelRatio(2);
   container.prepend(renderer.domElement);
@@ -29,6 +39,7 @@ export function createApp(container: HTMLElement, o: AppOptions = {}) {
   ro.observe(container);
 
   const frames: ((dt: number) => void)[] = [];
+  const afterFrames: ((dt: number) => void)[] = [];
   let visible = false;
   let raf = 0;
   let last = performance.now() - 16;
@@ -39,6 +50,7 @@ export function createApp(container: HTMLElement, o: AppOptions = {}) {
     last = now;
     frames.forEach((f) => f(dt));
     renderer.render(scene, camera);
+    afterFrames.forEach((f) => f(dt));
   };
   const io = new IntersectionObserver((entries) => {
     visible = entries.some((e) => e.isIntersecting);
@@ -53,6 +65,7 @@ export function createApp(container: HTMLElement, o: AppOptions = {}) {
   return {
     renderer, scene, camera, size, loader, disposables,
     onFrame: (f: (dt: number) => void) => frames.push(f),
+    afterFrame: (f: (dt: number) => void) => afterFrames.push(f),
     dispose() {
       visible = false;
       cancelAnimationFrame(raf);
@@ -118,3 +131,44 @@ export const mapRange = (v: number, a: number, b: number, c: number, d: number) 
   const lo = Math.min(c, d), hi = Math.max(c, d);
   return Math.max(lo, Math.min(hi, ((v - a) / (b - a)) * (d - c) + c));
 };
+
+/** eases a value towards its target by `strength` per 60th of a second, whatever the frame rate */
+export const approach = (value: number, target: number, strength: number, dt: number) => value + (target - value) * (1 - Math.pow(1 - strength, dt / (1000 / 60)));
+
+/**
+ * The pointer across the window (0..1), eased by `strength` per frame. Like the original, the eased value starts at 0
+ * and jumps to the pointer on its first movement; touches park it in the middle.
+ */
+export function pointer(strength: number) {
+  const state = { x: 0, y: 0, tx: 0, ty: 0, dx: 0, set: false, touching: false };
+  let lastX = 0;
+  const move = (e: PointerEvent) => {
+    if (state.touching || e.pointerType === "touch") return;
+    const x = e.clientX / window.innerWidth, y = e.clientY / window.innerHeight;
+    if (!state.set) { state.x = state.tx = lastX = x; state.y = state.ty = y; state.set = true; }
+    else { state.tx = x; state.ty = y; }
+  };
+  const touch = () => { state.touching = true; state.set = false; state.x = state.tx = lastX = 0.5; state.y = state.ty = 0.5; };
+  let timer = 0;
+  const release = () => { clearTimeout(timer); timer = window.setTimeout(() => { state.touching = false; }, 500); };
+  window.addEventListener("pointermove", move);
+  window.addEventListener("touchstart", touch);
+  window.addEventListener("touchend", release);
+  window.addEventListener("touchcancel", release);
+  return {
+    state,
+    update(dt: number) {
+      state.x = approach(state.x, state.tx, strength, dt);
+      state.y = approach(state.y, state.ty, strength, dt);
+      state.dx = state.x - lastX;
+      lastX = state.x;
+    },
+    dispose() {
+      clearTimeout(timer);
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("touchstart", touch);
+      window.removeEventListener("touchend", release);
+      window.removeEventListener("touchcancel", release);
+    },
+  };
+}

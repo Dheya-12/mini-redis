@@ -10,7 +10,7 @@ import * as THREE from "three";
 import { Flow } from "three/examples/jsm/modifiers/CurveModifier.js";
 import { matches } from "@/lib/mq";
 import { createRun, easings } from "@/behaviours/parallax/engine";
-import { createApp, Ring, CARD, Keyframes, mapRange } from "./app";
+import { createApp, Ring, CARD, Keyframes, mapRange, pointer } from "./app";
 
 type Key = { position: [number, number, number]; rotation: [number, number, number] };
 const deg = Math.PI / 180;
@@ -28,41 +28,6 @@ const PHONE: Key[] = [
   { position: [0, -0.1, -20], rotation: [-180 * deg, 0, -8 * deg] },
   { position: [0, -0.1, -20], rotation: [-180 * deg, 0, -8 * deg] },
 ];
-
-/** follows the pointer (0..1 across the window) by a small share per frame */
-function pointer(strength: number) {
-  const state = { x: 0, y: 0, tx: 0, ty: 0, dx: 0, set: false, touching: false };
-  let lastX = 0;
-  const move = (e: PointerEvent) => {
-    if (state.touching) return;
-    const x = e.clientX / window.innerWidth, y = e.clientY / window.innerHeight;
-    if (!state.set) { state.x = state.tx = lastX = x; state.y = state.ty = y; state.set = true; }
-    else { state.tx = x; state.ty = y; }
-  };
-  const touch = () => { state.touching = true; state.set = false; state.x = state.tx = lastX = 0.5; state.y = state.ty = 0.5; };
-  let timer = 0;
-  const release = () => { clearTimeout(timer); timer = window.setTimeout(() => { state.touching = false; }, 500); };
-  window.addEventListener("pointermove", move);
-  window.addEventListener("touchstart", touch);
-  window.addEventListener("touchend", release);
-  window.addEventListener("touchcancel", release);
-  return {
-    state,
-    update(dt: number) {
-      const k = 1 - Math.pow(1 - strength, dt / (1000 / 60));
-      state.x += (state.tx - state.x) * k;
-      state.y += (state.ty - state.y) * k;
-      state.dx = state.x - lastX;
-      lastX = state.x;
-    },
-    dispose() {
-      window.removeEventListener("pointermove", move);
-      window.removeEventListener("touchstart", touch);
-      window.removeEventListener("touchend", release);
-      window.removeEventListener("touchcancel", release);
-    },
-  };
-}
 
 export function initHandpicked(container: HTMLElement) {
   const sticky = container.closest<HTMLElement>(".sticky");
@@ -91,12 +56,14 @@ export function initHandpicked(container: HTMLElement) {
     const material = new THREE.MeshBasicMaterial({ map, side: THREE.DoubleSide, transparent: true });
     const geometry = new THREE.PlaneGeometry(CARD.width, CARD.height, 10, 1);
     const flow = new Flow(new THREE.Mesh(geometry, material));
+    // Flow renders a copy of the material (bent by its shader): that copy is the one to fade
+    const shown = (flow.object3D as THREE.Mesh).material as THREE.MeshBasicMaterial;
     flow.updateCurve(0, ring);
     flow.moveAlongCurve(t / images.length);
     cards.add(flow.object3D);
-    if (t === 10) material.opacity = 0.25;
-    flows.push({ flow, material });
-    app.disposables.push(geometry, material, map);
+    if (t === 10) shown.opacity = 0.25;
+    flows.push({ flow, material: shown });
+    app.disposables.push(geometry, material, shown, map);
   });
   app.scene.add(cards);
 

@@ -120,7 +120,7 @@ export function initThreeWorlds(container: HTMLElement) {
     flow.moveAlongCurve(t * c0.cardItemOffsetOnLine + c0.cardOffsetOnLine);
     cards.add(flow.object3D);
     flows.push(flow);
-    disposables.push(geometry, material, colour);
+    disposables.push(geometry, material, (flow.object3D as THREE.Mesh).material as THREE.Material, colour);
     if (t < images.length - 1) {
       const raw = loader.load(url);
       const wm = new THREE.ShaderMaterial({ uniforms: { map: { value: raw }, uProgress: { value: 0 } }, vertexShader: WIPE_VERTEX, fragmentShader: WIPE_FRAGMENT, side: THREE.DoubleSide });
