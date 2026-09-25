@@ -184,7 +184,7 @@ People sticky team bar, the desktop "View all" cell in related-project grids, an
 projects wrapped at 1024px). Measured page heights now match the live site to within 3px.
 **To reverse:** delete `live/page-*.html` and re-run the extractor.
 
-### [12:20] Reproduced the original's scroll-history-dependent first-image drift
+### [11:55] Reproduced the original's scroll-history-dependent first-image drift
 
 **Fork:** On the pinned "featured projects" stack, the first image's vertical drift is not a function of scroll
 position on the original. It depends on the path: a jump across the pin start leaves it at +4 %, while slow scrolling
@@ -198,7 +198,7 @@ paths sampled except one Services path at 390 px (one frame).
 **To reverse:** replace `drift` with a plain scrubbed timeline (`fromTo 0→4` then `to −4`) on the same trigger.
 **Confidence:** Medium. The rule is empirical; the original's mechanism (likely tween overwrite order) was not recovered.
 
-### [12:25] **[LOW]** Phone-sized images are sharper than the original's
+### [12:00] **[LOW]** Phone-sized images are sharper than the original's
 
 **Fork:** On phones the original's full-bleed images request a 430 px-wide rendition and stretch it about 4×, so
 they look soft. The reconstruction ships one rendition per image (the largest the capture saw), without the
