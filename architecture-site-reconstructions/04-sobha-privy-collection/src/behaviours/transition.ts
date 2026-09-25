@@ -4,13 +4,17 @@
  * A named step X runs in three moments: before — `animation animation--X animation--X--inactive` with transitions
  * disabled (the start state applies instantly); transition — one frame and a short delay later the inactive class is
  * swapped for `animation--X--active` so the CSS transition runs; after — once the element's transition has ended the
- * classes are removed. Every "in" sequence ends by showing the element (removing the is-hidden / is-invisible classes).
+ * classes are removed. An "in" sequence ends by showing the element (removing the is-hidden / is-invisible classes), an
+ * "out" sequence (fade-out, slide-out-top …) by hiding it.
  */
 import { splitLines, splitTitle } from "./split";
 
 export type Step = { before?: (el: HTMLElement) => void; transition?: (el: HTMLElement) => void; after?: (el: HTMLElement) => void; delay?: number; duration?: number };
 
 const show: Step = { before: (el) => el.classList.remove("is-hidden", "is-invisible", "is-invisible--js", "is-invisible--md-up-js") };
+const hide: Step = { after: (el) => el.classList.add("is-hidden") };
+/** "fade-out", "slide-out-top" … end hidden; everything else ends shown */
+const isOut = (name: string) => /-out(-|$)/.test(name);
 
 const named = (name: string): Step => ({
   before: (el) => el.classList.add("animation", `animation--${name}`, `animation--${name}--inactive`, "disable-transitions"),
@@ -56,7 +60,7 @@ export function stopTransition(el: HTMLElement) { running.get(el)?.(); }
 export function transition(el: HTMLElement, names: string, extra: Step = {}, instant = false): Promise<void> {
   stopTransition(el);
   const steps: Step[] = [];
-  for (const n of names.split(/\s+/).filter(Boolean)) steps.push(...(SEQUENCES[n] ?? [named(n), show]));
+  for (const n of names.split(/\s+/).filter(Boolean)) steps.push(...(SEQUENCES[n] ?? [named(n), isOut(n) ? hide : show]));
   steps.push(extra);
   const run = (k: "before" | "transition" | "after") => steps.forEach((s) => s[k]?.(el));
   const delay = Math.max(16, ...steps.map((s) => s.delay ?? 0));

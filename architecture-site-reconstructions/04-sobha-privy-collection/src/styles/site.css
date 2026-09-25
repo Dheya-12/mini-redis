@@ -4127,7 +4127,7 @@ video.background--cover {
   position: sticky;
   top: 0;
 }
-:where(html[data-page="home"]) .has-scroll-smooth .sticky__layer--sticky {
+html.has-scroll-smooth:where([data-page="home"]) .sticky__layer--sticky {
   contain: unset;
   position: relative;
 }
@@ -4234,13 +4234,13 @@ video.background--cover {
     position: sticky;
     top: 0;
   }
-  :where(html[data-page="home"]) .has-scroll-smooth .sticky-slider__sticky {
+  html.has-scroll-smooth:where([data-page="home"]) .sticky-slider__sticky {
     overflow: visible;
   }
-  :where(html[data-page="home"]) .no-js .sticky-slider__sticky {
+  html.no-js:where([data-page="home"]) .sticky-slider__sticky {
     overflow-x: auto;
   }
-  :where(html[data-page="home"]) .has-scroll-smooth .sticky-slider__sticky {
+  html.has-scroll-smooth:where([data-page="home"]) .sticky-slider__sticky {
     position: relative;
   }
   :where(html[data-page="home"]) .sticky-slider__sticky.row,
@@ -4334,8 +4334,8 @@ video.background--cover {
   );
   transition-property: transform;
 }
-:where(html[data-page="home"]) .has-hover [data-plugin~="tooltip"]:hover .tooltip:not([data-side]),
-:where(html[data-page="home"]) .has-hover [data-plugin~="tooltip"]:hover + .tooltip:not([data-side]),
+html.has-hover:where([data-page="home"]) [data-plugin~="tooltip"]:hover .tooltip:not([data-side]),
+html.has-hover:where([data-page="home"]) [data-plugin~="tooltip"]:hover + .tooltip:not([data-side]),
 :where(html[data-page="home"]) [data-plugin~="tooltip"]:focus-visible .tooltip:not([data-side]),
 :where(html[data-page="home"]) [data-plugin~="tooltip"]:focus-visible + .tooltip:not([data-side]) {
   opacity: 1;
@@ -4477,7 +4477,7 @@ video.background--cover {
   position: absolute;
   z-index: 1;
 }
-:where(html[data-page="home"]) .with-cookie-consent .intro__arrow {
+html.with-cookie-consent:where([data-page="home"]) .intro__arrow {
   bottom: var(--md, 0) var(--n-md, calc(var(--scale-px) * 50));
 }
 :where(html[data-page="home"]) .l-luxury-images {
@@ -4651,7 +4651,7 @@ video.background--cover {
   top: 50%;
   transform: translate(-50%, -50%);
 }
-:where(html[data-page="home"]) .is-win .l-three-worlds-sticky__explore-progress p {
+html.is-win:where([data-page="home"]) .l-three-worlds-sticky__explore-progress p {
   --fos: -0.175em;
   --foe: -0.125em;
 }
@@ -4691,7 +4691,7 @@ video.background--cover {
 :where(html[data-page="home"]) .l-tenets-section {
   scroll-margin: -62svh;
 }
-:where(html[data-page="home"]) .no-scroll-smooth .l-tenets-section {
+html.no-scroll-smooth:where([data-page="home"]) .l-tenets-section {
   clip-path: inset(0 0 -100svh 0);
 }
 :where(html[data-page="home"]) .l-tenets-sticky {
@@ -4837,7 +4837,7 @@ video.background--cover {
     text-transform: uppercase;
     top: calc(var(--scale-px) * 60);
   }
-  :where(html[data-page="home"]) .is-win .l-expansive-card__title {
+  html.is-win:where([data-page="home"]) .l-expansive-card__title {
     --fos: -0.145em;
     --foe: -0.155em;
   }
@@ -4861,7 +4861,7 @@ video.background--cover {
     right: calc(var(--scale-px) * 120);
     z-index: 1;
   }
-  :where(html[data-page="home"]) .is-win .l-expansive-card__text {
+  html.is-win:where([data-page="home"]) .l-expansive-card__text {
     --fos: -0.175em;
     --foe: -0.125em;
   }
@@ -5147,7 +5147,7 @@ video.background--cover {
   grid-template-columns: 1fr;
   grid-template-rows: auto;
 }
-:where(html[data-page="home"]) .is-ios .l-location {
+html.is-ios:where([data-page="home"]) .l-location {
   content-visibility: auto;
 }
 :where(html[data-page="home"]) .l-location__layer {
@@ -5614,7 +5614,7 @@ video.background--cover {
   position: sticky;
   top: 0;
 }
-:where(html[data-page="location"]) .has-scroll-smooth .sticky__layer--sticky {
+html.has-scroll-smooth:where([data-page="location"]) .sticky__layer--sticky {
   contain: unset;
   position: relative;
 }
@@ -5771,7 +5771,7 @@ video.background--cover {
   background-size: 200% 200%;
   padding: 1px 0;
 }
-:where(html[data-page="location"]) .with-cookie-consent .location-arrow {
+html.with-cookie-consent:where([data-page="location"]) .location-arrow {
   bottom: var(--md, 0) var(--n-md, calc(var(--scale-px) * 50));
 }
 @keyframes textGradientScroll {
@@ -5948,8 +5948,8 @@ video.background--cover {
   right: -20px;
   top: -20px;
 }
-:where(html[data-page="location"]) .has-hover .location-pin:hover,
-:where(html[data-page="location"]) .has-hover .location-pin:hover:active,
+html.has-hover:where([data-page="location"]) .location-pin:hover,
+html.has-hover:where([data-page="location"]) .location-pin:hover:active,
 :where(html[data-page="location"]) .location-pin.is-active {
   color: var(--c-white);
 }
@@ -6015,13 +6015,13 @@ video.background--cover {
 :where(html[data-page="location"]) .location-pin--primary:hover .location-pin__content-label {
   transform: translate(-50%, calc(var(--scale-px) * -40));
 }
-:where(html[data-page="location"]) .has-hover .location-pin--secondary:hover .location-pin__content-bg,
-:where(html[data-page="location"]) .has-hover .location-pin--secondary:hover:active .location-pin__content-bg,
+html.has-hover:where([data-page="location"]) .location-pin--secondary:hover .location-pin__content-bg,
+html.has-hover:where([data-page="location"]) .location-pin--secondary:hover:active .location-pin__content-bg,
 :where(html[data-page="location"]) .location-pin--secondary.is-active .location-pin__content-bg {
   transform: scale(1.33333);
 }
-:where(html[data-page="location"]) .has-hover .location-pin--secondary:hover .location-pin__content-label,
-:where(html[data-page="location"]) .has-hover .location-pin--secondary:hover:active .location-pin__content-label,
+html.has-hover:where([data-page="location"]) .location-pin--secondary:hover .location-pin__content-label,
+html.has-hover:where([data-page="location"]) .location-pin--secondary:hover:active .location-pin__content-label,
 :where(html[data-page="location"]) .location-pin--secondary.is-active .location-pin__content-label {
   transform: translate(-50%, calc(var(--scale-px) * -5));
 }

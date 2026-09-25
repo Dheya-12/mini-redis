@@ -264,14 +264,18 @@ class ParallaxElement {
   private smooth: { value: number; strength: number } | null = null;
   private toggleVisibility = true;
 
-  constructor(readonly el: HTMLElement, private onToggle: () => void) {
+  constructor(readonly el: HTMLElement, private onToggle: () => void, explicit?: Pattern[]) {
     const ds = el.dataset;
     const options: Record<string, string> = {};
-    for (const [k, v] of Object.entries(ds)) if (k.startsWith("parallax") && k !== "parallaxPattern" && v !== undefined) options[k.charAt(8).toLowerCase() + k.slice(9)] = v;
-    for (const name of (ds.parallaxPattern ?? "").trim().split(/\s+/).filter(Boolean)) {
-      const pattern = patterns[name];
-      if (!pattern) { console.warn(`parallax pattern "${name}" is not defined`, el); continue; }
-      this.groups.push(new Group(el, pattern, name, options, onToggle));
+    if (explicit) {
+      explicit.forEach((pattern, i) => this.groups.push(new Group(el, pattern, `run-${i}`, options, onToggle)));
+    } else {
+      for (const [k, v] of Object.entries(ds)) if (k.startsWith("parallax") && k !== "parallaxPattern" && v !== undefined) options[k.charAt(8).toLowerCase() + k.slice(9)] = v;
+      for (const name of (ds.parallaxPattern ?? "").trim().split(/\s+/).filter(Boolean)) {
+        const pattern = patterns[name];
+        if (!pattern) { console.warn(`parallax pattern "${name}" is not defined`, el); continue; }
+        this.groups.push(new Group(el, pattern, name, options, onToggle));
+      }
     }
     const mobileSmooth = this.groups.find((g) => g.pattern.mobileSmooth)?.pattern.mobileSmooth ?? (options.mobileSmooth ? Number(options.mobileSmooth) || true : false);
     this.toggleVisibility = options.toggleCssVisibility !== "false";
@@ -331,31 +335,58 @@ class ParallaxElement {
 }
 
 // ---------------------------------------------------------------- the page's parallax elements
+/** every element with scroll-linked keyframes — from the markup, and runs created by other behaviours */
+const registry = new Set<ParallaxElement>();
+let scrollOf: () => number = () => window.scrollY;
+let raf = 0;
+function tick() {
+  raf = 0;
+  const s = Math.max(0, scrollOf());
+  let again = false;
+  for (const it of registry) if (it.update(s)) again = true;
+  if (again) raf = requestAnimationFrame(tick);
+}
+const request = () => { if (!raf) raf = requestAnimationFrame(tick); };
+function relayout(it: ParallaxElement) { it.reset(); it.measure(); it.update(Math.max(0, scrollOf())); }
+
 export function initParallax(root: HTMLElement, getScroll: () => number) {
+  scrollOf = getScroll;
   const items: ParallaxElement[] = [];
-  let raf = 0;
-  const tick = () => {
-    raf = 0;
-    const s = Math.max(0, getScroll());
-    let again = false;
-    for (const it of items) if (it.update(s)) again = true;
-    if (again) raf = requestAnimationFrame(tick);
-  };
-  const request = () => { if (!raf) raf = requestAnimationFrame(tick); };
-  const relayout = () => { reset(); measure(); tick(); };
   for (const el of Array.from(root.querySelectorAll<HTMLElement>('[data-plugin~="parallax"]'))) {
-    const it = new ParallaxElement(el, relayout);
-    if (it.groups.length) items.push(it);
+    const it: ParallaxElement = new ParallaxElement(el, () => relayout(it));
+    if (it.groups.length) { items.push(it); registry.add(it); }
   }
-  const reset = () => items.forEach((it) => it.reset());
-  const measure = () => items.forEach((it) => it.measure());
-  const offs = [addLayout("reset", reset), addLayout("measure", measure), addLayout("apply", () => tick())];
-  measure();
+  const offs = [
+    addLayout("reset", () => registry.forEach((it) => it.reset())),
+    addLayout("measure", () => registry.forEach((it) => it.measure())),
+    addLayout("apply", () => tick()),
+  ];
+  items.forEach((it) => it.measure());
   tick();
   return {
     update: () => tick(),
     request,
     items,
-    destroy() { cancelAnimationFrame(raf); offs.forEach((f) => f()); items.forEach((it) => it.destroy()); },
+    destroy() {
+      cancelAnimationFrame(raf);
+      raf = 0;
+      offs.forEach((f) => f());
+      items.forEach((it) => { it.destroy(); registry.delete(it); });
+    },
+  };
+}
+
+/**
+ * A scroll run created by code (a WebGL scene, a sticky content switcher): the same keyframes, measured and updated
+ * with the page's other runs. `group.position` / `group.values` hold the current state.
+ */
+export function createRun(el: HTMLElement, pattern: Pattern) {
+  const it: ParallaxElement = new ParallaxElement(el, () => relayout(it), [pattern]);
+  registry.add(it);
+  it.measure();
+  it.update(Math.max(0, scrollOf()));
+  return {
+    group: it.groups[0],
+    destroy() { it.destroy(); registry.delete(it); },
   };
 }

@@ -11,9 +11,12 @@ import { ensureSplitting } from "@/behaviours/split";
 import { initGravityWells } from "@/behaviours/smooth";
 import { initFilms } from "@/behaviours/films";
 import { initPreloader } from "@/behaviours/preloader";
+import { initHeader } from "@/behaviours/header";
+import { initContentAnimations } from "@/behaviours/contentAnimation";
+import { initThreeWorlds } from "@/gl/threeWorlds";
 
 /** Behaviour bound to one page's markup; everything it sets up is torn down when the page changes. */
-export default function PageEffects({ route }: { route: string }) {
+export default function PageEffects({ route, intro }: { route: string; intro: boolean }) {
   useEffect(() => {
     document.documentElement.setAttribute("data-page", route === "/" ? "home" : route.slice(1));
     const root = document.querySelector<HTMLElement>(`[data-route="${route}"]`);
@@ -27,8 +30,11 @@ export default function PageEffects({ route }: { route: string }) {
     ensureSplitting().then(() => { if (alive) offReveal = initReveal(root); });
     const offWells = initGravityWells(root);
     const offFilms = initFilms(root);
-    const offPreloader = initPreloader(root);
-    const onScroll = () => { sliders.update(); parallax.update(); };
+    const offPreloader = initPreloader(root, intro);
+    const header = initHeader(root, scrollY);
+    const offContent = initContentAnimations(root);
+    const offWorlds = Array.from(root.querySelectorAll<HTMLElement>('[data-plugin~="threeWorldsWebGl"]')).map((el) => initThreeWorlds(el));
+    const onScroll = () => { sliders.update(); parallax.update(); header.update(); };
     const offLenis = state.lenis?.on("scroll", onScroll);
     window.addEventListener("scroll", onScroll, { passive: true });
     // the layout settles as fonts and images arrive: measure again at those moments
@@ -43,6 +49,9 @@ export default function PageEffects({ route }: { route: string }) {
       window.removeEventListener("load", onLoad);
       window.removeEventListener("scroll", onScroll);
       offLenis?.();
+      offWorlds.forEach((f) => f());
+      offContent();
+      header.destroy();
       offPreloader();
       offFilms();
       offWells();
@@ -51,6 +60,6 @@ export default function PageEffects({ route }: { route: string }) {
       sliders.destroy();
       offAppear();
     };
-  }, [route]);
+  }, [route, intro]);
   return null;
 }

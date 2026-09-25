@@ -39,7 +39,8 @@ export function showImages(root: Element) {
   els.forEach(load);
 }
 
-const HIDDEN_NOW = () => [
+/** selector for everything hidden at the current breakpoint */
+export const HIDDEN_NOW = () => [
   ".is-hidden--js",
   document.documentElement.classList.contains("has-hover") ? ".is-hidden--hover" : ".is-hidden--no-hover",
   window.matchMedia("(orientation: landscape)").matches ? ".is-hidden--landscape" : ".is-hidden--portrait",

@@ -47,12 +47,22 @@ const FALLBACK = { 'TT Commons Pro': 'TT Commons Pro Fallback', 'TT Ramillas': '
 const withFallbacks = (v) => v.replace(/(["']?)(TT Commons Pro|TT Ramillas|altesse-std-(?:64|24)pt)\1/g, (m, q, fam) => `${m}, "${FALLBACK[fam]}"`);
 
 // ---------------------------------------------------------------- scoping of route stylesheets
+// classes the original sets on <html> (script state, input type, scroll mode, open modal …)
+const ROOT_CLASSES = new Set(['js', 'no-js', 'not-ready', 'is-ready', 'has-hover', 'no-hover', 'is-win', 'is-ios', 'has-scroll-init',
+  'has-scroll-smooth', 'has-scroll-scrolling', 'has-scroll-dragging', 'no-scroll-smooth', 'with-cookie-consent', 'with-modal',
+  'disable-smooth-scrolling']);
 function scope(selector, page) {
   const where = `html[data-page="${page}"]`;
   const s = selector.trim();
   // selectors that start at the root element carry the page attribute themselves
   const root = s.match(/^(html|:root)((?:[.#[:][^\s>+~]*)?)(.*)$/);
   if (root) return `html${root[2]}:where([data-page="${page}"])${root[3]}`;
+  // a first compound made only of root classes (".no-scroll-smooth .x", ".js:not(.js-no-reveal) .y") is the root too
+  const first = s.match(/^((?:\.[a-zA-Z0-9_-]+|:not\([^)]*\))+)(?=[\s>+~]|$)(.*)$/);
+  if (first) {
+    const classes = [...first[1].replace(/:not\([^)]*\)/g, '').matchAll(/\.([a-zA-Z0-9_-]+)/g)].map((m) => m[1]);
+    if (classes.length && classes.every((c) => ROOT_CLASSES.has(c))) return `html${first[1]}:where([data-page="${page}"])${first[2]}`;
+  }
   return `:where(${where}) ${s}`;
 }
 

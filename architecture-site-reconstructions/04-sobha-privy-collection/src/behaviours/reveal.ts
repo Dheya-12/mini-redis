@@ -12,6 +12,9 @@ import { transition } from "./transition";
 import { showImages } from "./appear";
 import type { Cleanup } from "@/lib/runtime";
 
+/** elements already watched (a page-wide reveal skips what a section already handles) */
+const attached = new WeakSet<Element>();
+
 const DEFAULTS = { groupDistance: "0px 0px -100px 0px", elementDistance: "0px 0px -100px 0px", groupThreshold: 0.5, elementThreshold: 0, staggerDelay: 180, delay: 30, enableMq: "md-up" };
 
 function attr<T>(el: Element, name: string, fallback: T): T | string | number | boolean {
@@ -31,6 +34,7 @@ const margin = (v: unknown) => (typeof v === "number" ? `${v}px 0px` : String(v)
  * for an element taller than the viewport, of the viewport's height (rounded down to a tenth).
  */
 function inview(el: Element, distance: string, threshold: number, enter: () => void, overshoot: () => void): Cleanup {
+  attached.add(el);
   const steps = threshold === 0 ? [0] : Array.from(new Set([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, threshold])).sort();
   const io = new IntersectionObserver((entries) => {
     let hit = false;
@@ -70,9 +74,9 @@ export function revealElement(el: HTMLElement, opts: { delay?: number } = {}, in
   }, instant);
 }
 
-export function initReveal(root: HTMLElement): Cleanup {
+export function initReveal(root: HTMLElement, opts: { asContainer?: boolean } = {}): Cleanup {
   const offs: Cleanup[] = [];
-  const containers = [root, ...Array.from(root.querySelectorAll<HTMLElement>('[data-plugin~="reveal"]'))].filter((c) => c.matches('[data-plugin~="reveal"]'));
+  const containers = opts.asContainer ? [root] : [root, ...Array.from(root.querySelectorAll<HTMLElement>('[data-plugin~="reveal"]'))].filter((c) => c.matches('[data-plugin~="reveal"]'));
   for (const c of containers) {
     const o = {
       ...DEFAULTS,
@@ -93,6 +97,7 @@ export function initReveal(root: HTMLElement): Cleanup {
     }
     const groups = [c, ...Array.from(c.querySelectorAll<HTMLElement>("[data-reveal-group]"))].filter((g) => g.hasAttribute("data-reveal-group") && (!g.getAttribute("data-reveal-group") || matches(g.getAttribute("data-reveal-group"))));
     for (const g of groups) {
+      if (attached.has(g)) continue;
       const distance = margin(attr(g, "data-reveal-distance", o.groupDistance));
       const threshold = Number(attr(g, "data-reveal-threshold", o.groupThreshold));
       const run = (instant: boolean) => {
@@ -104,6 +109,7 @@ export function initReveal(root: HTMLElement): Cleanup {
     const inGroup = (el: Element) => groups.some((g) => g.contains(el));
     const singles = [c, ...Array.from(c.querySelectorAll<HTMLElement>("[data-reveal]"))].filter((el) => el.hasAttribute("data-reveal") && !inGroup(el));
     for (const el of singles) {
+      if (attached.has(el)) continue;
       const distance = margin(attr(el, "data-reveal-distance", o.elementDistance));
       const threshold = Number(attr(el, "data-reveal-threshold", o.elementThreshold));
       offs.push(inview(el, distance, threshold, () => revealElement(el, {}, false, o), () => revealElement(el, {}, true, o)));
@@ -111,3 +117,9 @@ export function initReveal(root: HTMLElement): Cleanup {
   }
   return () => offs.forEach((f) => f());
 }
+
+/**
+ * After the preloader: everything in the page not already watched by a section — the header, the opening titles —
+ * is revealed the same way, with the page container as the reveal container.
+ */
+export const revealContent = (wrapper: HTMLElement) => initReveal(wrapper, { asContainer: true });

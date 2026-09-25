@@ -192,6 +192,25 @@ for (const slug of ['home', 'location', 'privacy-policy']) {
   if (slug === 'home') chrome = Object.fromEntries(Object.entries(raw.chrome).map(([k, v]) => [k, v ? convert(v, null) : null]));
 }
 await b.close();
+// media the WebGL scenes load from their scripts (not from the markup)
+const SCENE_IMAGES = [
+  ...[1, 2, 3].flatMap((n) => [`landing/6.three-worlds/image-${n}@md.webp`, `landing/6.three-worlds/image-${n}@xs.webp`]),
+  ...Array.from({ length: 13 }, (_, i) => `landing/9.handpicked-carousel/image-gallery-${i + 1}@md.webp`),
+  ...Array.from({ length: 6 }, (_, i) => `landing/9.handpicked-carousel/image-gallery-${i + 1}@xs.webp`),
+];
+for (const f of SCENE_IMAGES) localAsset(`/assets/images/media/${f}`);
+// the location page's 3D model, everything it references, and its mask
+for (const f of ['model.gltf', 'mask.png']) {
+  const file = path.join(PUBLIC, 'webgl/location', f);
+  if (!fs.existsSync(file)) curl(`${ORIGIN}/assets/webgl/location/${f}`, file);
+}
+{
+  const gltf = JSON.parse(fs.readFileSync(path.join(PUBLIC, 'webgl/location/model.gltf'), 'utf8'));
+  for (const u of [...(gltf.buffers ?? []), ...(gltf.images ?? [])].map((x) => x.uri).filter((u) => u && !u.startsWith('data:'))) {
+    const file = path.join(PUBLIC, 'webgl/location', decodeURIComponent(u));
+    if (!fs.existsSync(file)) curl(`${ORIGIN}/assets/webgl/location/${u}`, file);
+  }
+}
 // the icon sprite and the favicons referenced from <head>
 for (const f of ['icons.svg']) localAsset(`/assets/images/${f}`);
 for (const f of ['favicon-32x32.png', 'favicon-16x16.png', 'apple-touch-icon.png']) {

@@ -47,3 +47,4 @@ next-env.d.ts
 
 # heavy media ships in the ZIP (zips/04-sobha-privy-collection-nextjs.zip); regenerate with tools/extract-content.mjs
 /public/media/
+/public/webgl/
