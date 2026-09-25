@@ -55,6 +55,8 @@ Swiper 14.2, lottie-web 5.13.
   in `localStorage`. No analytics.
 - **Video:** films are served as local MP4 files instead of Vimeo, Mux or HLS streams. Long journal films are 360p.
   The YouTube embed on one article is kept.
+- **Images:** each image ships as one rendition (the largest the original served) without `srcset`. On phones the
+  original stretches a 430px-wide rendition across the screen, so these images look sharper here.
 - **Out of scope:** projects and articles that are only reachable through "Load More" link to the original site.
   See `DECISIONS.md` at the repository root.
 
