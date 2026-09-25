@@ -34,8 +34,7 @@ export function initHomeHero(section: HTMLElement) {
   const syncCookieShift = () => {
     const on = runtime.cookieBannerVisible;
     H1_SHIFT.forEach((c) => h1?.classList.toggle(c, on));
-    CUE_SHIFT.forEach((c) => cue?.classList.toggle(c, on));
-    if (cue) gsap.to(cue, { autoAlpha: on ? 0 : 1, duration: 0.5 });
+    CUE_SHIFT.forEach((c) => cue?.classList.toggle(c, on)); // measured: the cue only moves, it stays visible
   };
   window.addEventListener("tw:cookie-banner", syncCookieShift);
 

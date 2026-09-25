@@ -34,7 +34,7 @@ function initProcess(section: HTMLElement): Cleanup | null {
       const grid = stage.querySelector(":scope > .site-grid")!;
       const big = rel(grid.children[0], o);
       const marker = rel(grid.children[1], o);
-      const pv = big.h * 0.398125;
+      const pv = Math.max(200, big.h * 0.398125); // measured: 239px at 1440×900, 200px at 1024×768
       stage.style.setProperty("--pv-size", `${pv}px`);
       const small = { x: marker.x, y: big.y + big.h - pv, w: pv, h: pv };
       geo = { big, small, point: { x: small.x + pv + 15, y: big.y + big.h - 1, w: 1, h: 1 }, gone: { x: big.x, y: big.y, w: 0, h: 0 } };
