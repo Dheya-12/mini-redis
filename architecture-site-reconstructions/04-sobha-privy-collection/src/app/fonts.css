@@ -1,0 +1,77 @@
+/*
+ * Typefaces.
+ *
+ * The original uses three commercial families: TT Commons Pro and TT Ramillas (TypeType, self-hosted by the site)
+ * and Altesse Std 64pt (Adobe Fonts). They are NOT redistributed. With a licence, copy the files to
+ * public/fonts/licensed/ (git-ignored) under the names below and they are used automatically.
+ *
+ * Without them every stack falls through to an open-licence stand-in (SIL OFL), metric-matched to the original:
+ * size-adjust matches the average advance width on the site's own words; the ascent / descent overrides reproduce
+ * the original line box, so layout does not move when the licensed file is missing.
+ */
+
+@font-face {
+  font-family: "TT Commons Pro";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/licensed/TTCommonsPro-Md.woff2") format("woff2");
+}
+@font-face {
+  font-family: "TT Commons Pro";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/fonts/licensed/TTCommonsPro-Db.woff2") format("woff2");
+}
+@font-face {
+  font-family: "TT Ramillas";
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url("/fonts/licensed/TTRamillas-Light.woff2") format("woff2");
+}
+@font-face {
+  font-family: "altesse-std-64pt";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/licensed/altesse-std-64pt.woff2") format("woff2");
+}
+
+/* Outfit (OFL) for TT Commons Pro: closest shapes and near-identical vertical metrics */
+@font-face {
+  font-family: "TT Commons Pro Fallback";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/fonts/fallback/Outfit-latin.woff2") format("woff2");
+  size-adjust: 98.8%;
+  ascent-override: 101.2%;
+  descent-override: 25.3%;
+  line-gap-override: 0%;
+}
+/* Bodoni Moda (OFL) for TT Ramillas Light: the closest high-contrast capitals */
+@font-face {
+  font-family: "TT Ramillas Fallback";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/fonts/fallback/BodoniModa-latin.woff2") format("woff2");
+  size-adjust: 97.3%;
+  ascent-override: 106.9%;
+  descent-override: 36%;
+  line-gap-override: 0%;
+}
+/* Pinyon Script (OFL) for Altesse Std: a formal copperplate script like the original */
+@font-face {
+  font-family: "Altesse Fallback";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/fonts/fallback/PinyonScript-latin.woff2") format("woff2");
+  size-adjust: 87.8%;
+  ascent-override: 110.5%;
+  descent-override: 31.9%;
+  line-gap-override: 0%;
+}

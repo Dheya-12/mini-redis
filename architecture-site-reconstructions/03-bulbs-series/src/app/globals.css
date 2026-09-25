@@ -1,0 +1,283 @@
+@import "tailwindcss";
+@import "./fonts.css";
+@source "../content";
+
+/* design tokens (measured from the original's computed styles) */
+@theme {
+  --breakpoint-s: 640px;
+  --breakpoint-m: 1025px;
+  --font-sans: "Special Gothic", sans-serif;
+  --font-title: "Big Caslon FB", "Big Caslon Fallback", serif;
+  --text-base: 1.6rem;
+  --text-base--line-height: 1.5;
+  --text-14: 1.4rem;
+  --text-12: 1.2rem;
+  --text-11: 1.1rem;
+  --spacing-container: var(--padding-container);
+  --spacing-grid: 2rem;
+  --spacing-10: 1rem;
+  --spacing-16: 1.6rem;
+  --spacing-100: 10rem;
+  --z-index-nav: 100;
+}
+
+/* the root font size scales with the viewport: 1rem = 10px at 375px (phones) and at 1440px (desktop) */
+:root {
+  --size: 375;
+  --font-size: clamp(1px, 10px, 10 * 100vw / var(--size));
+  --padding-container: 1rem;
+  --spacing-grid: 1rem;
+  --power-2-ease-in-out: cubic-bezier(0.645, 0.045, 0.355, 1);
+  --power-4-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+}
+@media (min-width: 640px) {
+  :root {
+    --size: 1440;
+    --font-size: clamp(1px, 100px, 10 * 100vw / var(--size));
+    --padding-container: 2rem;
+    --spacing-grid: 2rem;
+  }
+}
+
+@layer base {
+  html {
+    font-size: var(--font-size);
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  html::-webkit-scrollbar {
+    display: none;
+  }
+  body {
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    line-height: var(--tw-leading, var(--text-base--line-height));
+    font-kerning: none;
+    text-rendering: optimizeSpeed;
+    -webkit-font-smoothing: antialiased;
+    background: #fff;
+    color: #000;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-title);
+    --tw-leading: 1.2;
+    line-height: 1.2;
+    font-weight: 400;
+    text-transform: uppercase;
+  }
+}
+
+/* project utilities of the original */
+@layer utilities {
+  h2,
+  .h2 {
+    margin-bottom: 0;
+    font-size: 1.5rem;
+  }
+  @media (min-width: 1025px) {
+    h2,
+    .h2 {
+      font-size: 1.25rem;
+    }
+  }
+  :is(h2, .h2).--is-active {
+    opacity: 1;
+  }
+  .\-container {
+    width: 100%;
+    padding-inline: var(--spacing-container);
+    margin-inline: auto;
+  }
+  .\-grid {
+    display: grid;
+    column-gap: var(--spacing-grid);
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+  }
+  @media (min-width: 640px) {
+    .\-grid {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+    }
+  }
+  a.underline {
+    text-decoration-line: none;
+    position: relative;
+  }
+  a.underline::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 0.1rem;
+    background-color: #000;
+  }
+}
+
+/* ---------------------------------------------------------------- components */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: var(--z-index-nav);
+  width: 100%;
+  font-size: var(--text-14);
+}
+.header-back {
+  position: absolute;
+  top: 0;
+  right: 0;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.header-collection {
+  position: absolute;
+  top: 0;
+  right: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+.header-sound__labels {
+  display: inline-grid;
+}
+.header-sound__labels > span {
+  grid-area: 1 / 1;
+}
+.header-sound [data-sound-mute],
+.header-sound[aria-pressed="true"] [data-sound-enable] {
+  opacity: 0;
+}
+.header-sound[aria-pressed="true"] [data-sound-mute] {
+  opacity: 1;
+}
+body:has(.cover) .header-about,
+body:has(.cover) .header-home {
+  display: none;
+}
+body:has(.cover) .header-collection,
+body:has(.product-fallback) .header-collection {
+  position: static;
+  opacity: 1;
+  pointer-events: auto;
+}
+@media (min-width: 640px) {
+  body:has(.cover) .header-sound-slot {
+    grid-column-start: 7;
+  }
+}
+body.product-focus-active .header-back {
+  pointer-events: auto;
+}
+body.product-focus-active :is(.header-catalogue, .header-sound, .header-about, .header-collection) {
+  pointer-events: none;
+}
+
+/* WebGL layer: absolute inside the home page's sticky frame, fixed elsewhere */
+.gl {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.gl.--is-fixed {
+  position: fixed;
+  z-index: 1;
+}
+.gl canvas {
+  position: absolute;
+  inset: 0;
+}
+@media (max-width: 639px) {
+  .gl {
+    position: fixed;
+  }
+}
+
+/* images drawn in WebGL keep their DOM box for layout */
+[gl-media] {
+  opacity: 0;
+  width: 100%;
+}
+body.product-medias-preview .product-slider > :not(.product-fallback) [gl-media] {
+  opacity: 1;
+}
+.gallery__image img {
+  height: 100%;
+}
+.image img {
+  display: block;
+  width: 100%;
+}
+
+.gallery__credits,
+.credits {
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.3s var(--power-2-ease-in-out), visibility 0s 0.3s;
+}
+.gallery__credits.--is-visible,
+.credits.--is-visible {
+  visibility: visible;
+  opacity: 1;
+  transition-delay: 0s;
+}
+.gallery.--is-stacked .gallery__credits {
+  visibility: hidden;
+  opacity: 0;
+  transition: none;
+}
+
+.cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.about-transition-dim,
+.about-transition-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.about-transition-dim {
+  z-index: 1000;
+  opacity: 0;
+  background: #000;
+}
+.about-transition-canvas {
+  z-index: 1001;
+}
+
+/* text effects: hidden until their reveal runs (src/behaviours/text.ts) */
+c-title,
+c-shuffle,
+c-paragraph {
+  display: block;
+  visibility: hidden;
+}
+.word,
+.char {
+  display: inline-block;
+}
+c-media {
+  display: block;
+  position: relative;
+  overflow: hidden;
+}
+c-media > * {
+  will-change: transform;
+  transform: translateZ(0);
+}
+c-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+html.sound-prompt,
+html.sound-prompt * {
+  cursor: pointer !important;
+}

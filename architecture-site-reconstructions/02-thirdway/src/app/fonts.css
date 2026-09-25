@@ -1,0 +1,47 @@
+/*
+ * Typefaces
+ * ---------
+ * The site is set in two commercial faces: KMR Waldenburg (Medium) and ABC Marist (Book).
+ * They are licensed per-domain and are NOT redistributed with this project. If you hold a
+ * licence, drop the files into /public/fonts/licensed/ with the names below and they are used
+ * automatically. Otherwise the open-licence stand-ins (Inter Tight / Newsreader, SIL OFL) take
+ * over; they are metric-matched (size-adjust + ascent/descent overrides measured against the
+ * originals) so line breaks and vertical rhythm stay close to the real typography.
+ */
+@font-face {
+  font-family: "waldenburg";
+  src: url("/fonts/licensed/KMRWaldenburg-Medium.woff2") format("woff2");
+  font-weight: 400 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "marist";
+  src: url("/fonts/licensed/ABCMarist-Book.woff2") format("woff2");
+  font-weight: 350 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* width ratio 1.0994, ascent .959, descent .245, line gap .10 (Waldenburg metrics) */
+@font-face {
+  font-family: "waldenburg Fallback";
+  src: url("/fonts/fallback/InterTight-latin.woff2") format("woff2");
+  font-weight: 400 500;
+  font-display: swap;
+  size-adjust: 109.94%;
+  ascent-override: 87.23%;
+  descent-override: 22.28%;
+  line-gap-override: 9.1%;
+}
+/* width ratio 0.9216, ascent .88, descent .23, no line gap (Marist metrics) */
+@font-face {
+  font-family: "marist Fallback";
+  src: url("/fonts/fallback/Newsreader-latin.woff2") format("woff2");
+  font-weight: 350 400;
+  font-display: swap;
+  size-adjust: 92.16%;
+  ascent-override: 95.49%;
+  descent-override: 24.96%;
+  line-gap-override: 0%;
+}

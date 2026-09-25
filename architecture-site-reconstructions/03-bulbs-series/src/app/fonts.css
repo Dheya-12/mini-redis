@@ -1,0 +1,28 @@
+/* Special Gothic (SIL Open Font License) — the same file the original loads from Google Fonts, self-hosted */
+@font-face {
+  font-family: "Special Gothic";
+  font-style: normal;
+  font-weight: 400 700;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url("/fonts/SpecialGothic-latin.woff2") format("woff2");
+}
+
+/* Big Caslon FB is commercial (Font Bureau) and is not redistributed: drop a licensed copy here (see README) */
+@font-face {
+  font-family: "Big Caslon FB";
+  font-display: swap;
+  src: url("/fonts/licensed/BigCaslonFB-Roman.woff") format("woff");
+}
+
+/* open-licence stand-in (Libre Caslon Text, SIL OFL), matched to Big Caslon's metrics:
+   average width 99 %, ascent 0.95 em, descent 0.25 em (measured in Chromium) */
+@font-face {
+  font-family: "Big Caslon Fallback";
+  font-display: swap;
+  src: url("/fonts/fallback/LibreCaslonText-latin.woff2") format("woff2");
+  size-adjust: 99%;
+  ascent-override: 96%;
+  descent-override: 25.3%;
+  line-gap-override: 0%;
+}

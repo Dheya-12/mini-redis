@@ -1,0 +1,112 @@
+[
+ {
+  "slug": "about",
+  "route": "/about",
+  "title": "About | Bulbs by Simon Dupety"
+ },
+ {
+  "slug": "home",
+  "route": "/",
+  "title": "Bulbs by Simon Dupety"
+ },
+ {
+  "slug": "products_circa-7.4",
+  "route": "/products/circa-7.4",
+  "title": "CIRCA 7.4 | Bulbs by Simon Dupety"
+ },
+ {
+  "slug": "products_cirva-1.x",
+  "route": "/products/cirva-1.x",
+  "title": "CIRVA 1.X | Bulbs by Simon Dupety"
+ },
+ {
+  "slug": "products_cirva-3.4",
+  "route": "/products/cirva-3.4",
+  "title": "CIRVA 3.4 | Bulbs by Simon Dupety"
+ },
+ {
+  "slug": "products_influorescence-c2.3",
+  "route": "/products/influorescence-c2.3",
+  "title": "CIRVA 2.3 | Bulbs by Simon Dupety"
+ },
+ {
+  "slug": "products_influorescence-c4.2.1",
+  "route": "/products/influorescence-c4.2.1",
+  "title": "CIRVA 4.2.1 | Bulbs by Simon Dupety"
+ },
+ {
+  "slug": "products_influorescence-c4.3.1",
+  "route": "/products/influorescence-c4.3.1",
+  "title": "CIRVA 4.3.1 | Bulbs by Simon Dupety"
+ },
+ {
+  "slug": "products_influorescence-c4.3.2",
+  "route": "/products/influorescence-c4.3.2",
+  "title": "CRIVA 4.3.2 | Bulbs by Simon Dupety"
+ },
+ {
+  "slug": "products_influorescence-c5.1",
+  "route": "/products/influorescence-c5.1",
+  "title": "CIRVA 5.1 | Bulbs by Simon Dupety"
+ },
+ {
+  "slug": "products_influorescence-c6.5",
+  "route": "/products/influorescence-c6.5",
+  "title": "CIRVA 6.X | Bulbs by Simon Dupety"
+ },
+ {
+  "slug": "products_influorescence-c7.1",
+  "route": "/products/influorescence-c7.1",
+  "title": "CIRVA 7.1 | Bulbs by Simon Dupety"
+ },
+ {
+  "slug": "products_influorescence-c8.1",
+  "route": "/products/influorescence-c8.1",
+  "title": "CIRVA 8.1 | Bulbs by Simon Dupety"
+ },
+ {
+  "slug": "products_influorescence-c9.2",
+  "route": "/products/influorescence-c9.2",
+  "title": "CIRVA 9.1 | Bulbs by Simon Dupety"
+ },
+ {
+  "slug": "products_influorescence-c9.3",
+  "route": "/products/influorescence-c9.3",
+  "title": "CIRVA 9.3 | Bulbs by Simon Dupety"
+ },
+ {
+  "slug": "products_influorescence-c9.5",
+  "route": "/products/influorescence-c9.5",
+  "title": "CIRVA 9.5 | Bulbs by Simon Dupety"
+ },
+ {
+  "slug": "products_influorescence-c9.x",
+  "route": "/products/influorescence-c9.x",
+  "title": "CIRVA 9.X | Bulbs by Simon Dupety"
+ },
+ {
+  "slug": "products_influorescence-s1.1",
+  "route": "/products/influorescence-s1.1",
+  "title": "SÈVRES 1.1 | Bulbs by Simon Dupety"
+ },
+ {
+  "slug": "products_influorescence-s3.1",
+  "route": "/products/influorescence-s3.1",
+  "title": "SÈVRES 3.1 | Bulbs by Simon Dupety"
+ },
+ {
+  "slug": "products_influorescence-s4.1",
+  "route": "/products/influorescence-s4.1",
+  "title": "SÈVRES 4.X | Bulbs by Simon Dupety"
+ },
+ {
+  "slug": "products_influorescence-s5.1",
+  "route": "/products/influorescence-s5.1",
+  "title": "SÈVRES 5.1 | Bulbs by Simon Dupety"
+ },
+ {
+  "slug": "products_sevres-2.1",
+  "route": "/products/sevres-2.1",
+  "title": "SÈVRES 2.1 | Bulbs by Simon Dupety"
+ }
+]

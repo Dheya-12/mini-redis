@@ -1,0 +1,66 @@
+@layer components {
+  /*
+   * Load curtain: seven ink stripes cover the page until the hero media can play,
+   * then lift right-to-left on a staggered delay ramp. The stripes are the only
+   * opaque layer, so lifting them reveals the live page beneath.
+   */
+  .curtain {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    overflow: hidden;
+  }
+  .curtain__stripes {
+    position: absolute;
+    inset: 0;
+    display: flex;
+  }
+  .curtain__stripes i {
+    flex: 1 1 0;
+    height: 100%;
+    background: var(--ink);
+    transform: translateY(0);
+    transition: transform 0.62s var(--ease-curtain);
+    transition-delay: calc((8 - var(--n)) * 0.03s); /* stripe 1 → .21s … stripe 7 → .03s */
+  }
+  .curtain--lift .curtain__stripes i {
+    transform: translateY(-101%);
+  }
+  .curtain__lockup {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+    pointer-events: none;
+  }
+  .curtain__lockup img {
+    width: clamp(150px, 18vw, 240px);
+    filter: invert(1) blur(22px);
+    will-change: filter;
+  }
+  .curtain__pct {
+    font: 600 10px var(--sans);
+    letter-spacing: 0.28em;
+    color: rgba(255, 255, 255, 0.5);
+    animation: curtain-pct-in 0.55s ease 0.25s backwards;
+  }
+  .curtain__pct::after {
+    content: "%";
+  }
+  @keyframes curtain-pct-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  html[data-preloader="active"] body {
+    overflow: hidden;
+  }
+  html[data-preloader="done"] .curtain {
+    display: none;
+  }
+}

@@ -1,0 +1,79 @@
+/*
+ * Tailwind is limited to this project's own components (src/components). Automatic source detection is off so the
+ * original's class names in src/content (e.g. `sticky`, `text-center`, `pt-0`) never produce conflicting utilities,
+ * and there is no preflight: the original ships its own normalize (in site.css).
+ */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities) source(none);
+@source "../components";
+
+@import "./fonts.css";
+@import "../styles/site.css";
+
+/* the original's inline <head> style */
+body {
+  background: #1a1919;
+  color: #1a1919;
+}
+a {
+  color: #1a1919;
+}
+.js.not-ready,
+.js.not-ready * {
+  transition: none !important;
+}
+
+/* ---- reconstruction additions ---------------------------------------------------------------------------------- */
+
+/*
+ * Scrolling: the stylesheet's native-scroll mode (`no-scroll-smooth`) scrolls a fixed page container; here the window
+ * scrolls (smoothed by Lenis), so the container stays in the normal flow. Like the original on desktop, no scrollbar.
+ */
+.no-scroll-smooth .page-content-wrapper {
+  height: auto;
+  left: auto;
+  overflow: visible;
+  overscroll-behavior: auto;
+  position: relative;
+  right: auto;
+  scroll-behavior: auto;
+}
+/*
+ * The original's scrolling container also clips what spills out sideways (decorative images overhang the screen on
+ * phones). `clip` keeps sticky layers working, where `hidden` would make the wrapper their scroll container.
+ */
+.no-scroll-smooth .page-content-wrapper {
+  overflow-x: clip;
+}
+/*
+ * The original scrolls a fixed container, where the browser never anchors the scroll position to content; on the
+ * window it would, nudging the page when a layer above changes size as a section initialises.
+ */
+html,
+body {
+  overflow-anchor: none;
+}
+html.js.has-hover,
+html.js.has-hover body {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+html.js.has-hover::-webkit-scrollbar,
+html.js.has-hover body::-webkit-scrollbar {
+  display: none;
+}
+
+/*
+ * films: the original embeds Kinescope players; ours are plain muted loops in the same place, laid out by the same
+ * rules (tools/extract-styles.mjs gives `video.film` every rule written for those iframes). Inside that box the
+ * picture covers, as the player's does.
+ */
+video.film {
+  object-fit: cover;
+}
+
+/* while a modal is open the page holds still (Lenis is stopped; this also stops native touch and keyboard scrolling) */
+html.lenis-stopped {
+  overflow: hidden;
+}

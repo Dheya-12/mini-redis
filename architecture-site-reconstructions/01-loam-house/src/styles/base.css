@@ -1,0 +1,197 @@
+/* ── Design tokens ─────────────────────────────────────────────── */
+:root {
+  --ink: #1e211d;
+  --paper: #f1eee7;
+  --chalk: #fbfaf6;
+  --clay: #8d4f36;
+  --olive: #626852;
+  --line: rgba(30, 33, 29, 0.18);
+  --serif: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+  --sans: var(--font-dmsans), "DM Sans", Arial, sans-serif;
+  --gutter: 6vw;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  /* Display type sits on a hard, 2.2%-of-an-em ink shadow. */
+  --type-shadow: 0 0.022em 0 rgba(20, 22, 18, 0.4);
+  --ease-curtain: cubic-bezier(0.76, 0, 0.24, 1);
+  --ease-pill: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+@media (max-width: 800px) {
+  :root {
+    --gutter: 26px;
+  }
+}
+
+@layer base {
+  /* Elements only: pseudo-elements stay content-box (the stepper dots rely on it). */
+  * {
+    box-sizing: border-box;
+  }
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-weight: 300;
+    overflow-x: hidden;
+  }
+  img {
+    display: block;
+    width: 100%;
+  }
+  /* <picture> only selects a source; it must never become a grid/flex item itself. */
+  picture {
+    display: contents;
+  }
+  picture > source {
+    display: none;
+  }
+  a {
+    color: inherit;
+  }
+  h1,
+  h2,
+  h3,
+  p {
+    margin-top: 0;
+  }
+  h1,
+  h2,
+  h3 {
+    font-family: var(--serif);
+    font-weight: 400;
+  }
+  h1 em,
+  h2 em {
+    font-weight: 400;
+  }
+
+  @media (max-width: 800px) {
+    html {
+      overflow-x: hidden;
+    }
+    /* every mobile chapter is full-bleed dark: keep sub-pixel seams from flashing paper */
+    body {
+      background: #121612;
+    }
+  }
+}
+
+@layer components {
+  /* Small uppercase label that sits above headings. */
+  .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    font-size: 10px;
+    font-weight: 600;
+    margin: 0 0 30px;
+  }
+
+  /* A line produced by the headline splitter keeps a little room for descenders. */
+  .split-line {
+    padding-bottom: 0.12em;
+  }
+
+  /* Chapter plate: a serif numeral over the chapter title, each in its own mask. */
+  .plate {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    user-select: none;
+    -webkit-user-select: none;
+    text-shadow: var(--type-shadow);
+  }
+  .plate__mask {
+    display: block;
+    overflow: hidden;
+  }
+  .plate__mask + .plate__mask {
+    margin-top: -4px;
+  }
+  .plate__num {
+    display: block;
+    font: 400 clamp(52px, 4.8vw, 76px) / 1 var(--serif);
+    letter-spacing: 0;
+  }
+  .plate__title {
+    display: block;
+  }
+
+  /* "Artist's impression" disclosure on every full-bleed render. */
+  .impression {
+    position: absolute;
+    right: var(--gutter);
+    bottom: 22px;
+    z-index: 4;
+    font-size: 9px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.5);
+    pointer-events: none;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  }
+  @media (max-width: 800px) {
+    .impression {
+      bottom: 16px;
+      font-size: 8px;
+    }
+  }
+
+  /* Monitor-footage texture over full-bleed media: scanlines + a faint RGB grille (desktop only). */
+  @media (min-width: 801px) {
+    .scanlines {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      opacity: 0.2;
+      mix-blend-mode: soft-light;
+      background:
+        repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.55) 0 1px, transparent 1px 2.5px),
+        repeating-linear-gradient(
+          90deg,
+          rgba(255, 0, 0, 0.1) 0 1px,
+          rgba(0, 255, 0, 0.08) 1px 2px,
+          rgba(0, 80, 255, 0.1) 2px 3px
+        );
+    }
+  }
+
+  /* Every top-level section is a one-viewport "chapter" on desktop. */
+  @media (min-width: 801px) {
+    .chapter {
+      position: relative;
+      min-height: 100svh;
+    }
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .lead-error {
+    margin: 12px 0 0;
+    font-size: 12px;
+    line-height: 1.55;
+    color: #e8b19a;
+  }
+}
+
+/* Motion is opt-out: with reduced motion, nothing is hidden or scrubbed. */
+@media (prefers-reduced-motion: reduce) {
+  .curtain {
+    display: none;
+  }
+}
