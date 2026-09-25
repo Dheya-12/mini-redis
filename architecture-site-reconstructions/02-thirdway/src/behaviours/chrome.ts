@@ -167,6 +167,8 @@ export function initHeader(): Cleanup {
       const href = a.getAttribute("href") || "";
       a.style.color = href !== "/" && (path === href || path.startsWith(href + "/")) ? "rgb(32 34 26 / 0.4)" : "";
     });
+    // the footer's Explore list dims the current page instead
+    $$<HTMLAnchorElement>("footer ul a[href^='/']").forEach((a) => a.classList.toggle("opacity-60", a.getAttribute("href") === path));
   };
   markActive();
   window.addEventListener("tw:page-ready", markActive);

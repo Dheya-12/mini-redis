@@ -106,16 +106,22 @@ function initProcess(section: HTMLElement): Cleanup | null {
     show(idx);
   };
   const pinned = section.firstElementChild as HTMLElement;
+  const hints = $$<HTMLElement>("span.body", stage)
+    .filter((e) => e.textContent?.trim() === "Scroll")
+    .map((e) => e.parentElement!.parentElement!);
   const touch = false; // the original pins on touch devices too (verified at 390px)
   const st = touch ? null : ScrollTrigger.create({
     trigger: pinned,
-    // desktop: the block pins vertically centred (measured: top 90px at 1440×900, 107px at 1024×768)
-    start: () => (isDesktop() ? "center center" : "top top"),
+    // the block pins vertically centred (measured: top 90px at 1440×900, 107px at 1024×768, 53px at 390×844)
+    start: "center center",
     end: () => `+=${total()}`,
     pin: true,
     invalidateOnRefresh: true,
     onRefresh: (self) => { measure(); swap?.kill(); swap = null; settled = -1; drive(self.progress * total()); },
     onUpdate: (self) => drive(self.progress * total()),
+    // the "Scroll" hint fades once the block pins and returns above it (measured on both layouts)
+    onEnter: () => gsap.to(hints, { autoAlpha: 0, duration: 0.3, overwrite: true }),
+    onLeaveBack: () => gsap.to(hints, { autoAlpha: 1, duration: 0.3, overwrite: true }),
   });
   const stepPx = STEP;
   const lineTween = (touch ? [] : [vLine, hLine]).filter(Boolean).map((line, i) =>
@@ -195,7 +201,7 @@ function initCaseStudies(section: HTMLElement): Cleanup | null {
   const teams = list.map((li) => li.querySelector(".team-logo")?.getAttribute("aria-label") || "");
   const offs: Cleanup[] = [];
 
-  const setup = (wrap: HTMLElement | null, masksSel: string, cardSel: string, contentSel: string) => {
+  const setup = (wrap: HTMLElement | null, masksSel: string, cardSel: string, contentSel: string, mobile = false) => {
     if (!wrap) return;
     const masks = $$<HTMLElement>(masksSel, wrap);
     const card = wrap.querySelector<HTMLElement>(cardSel);
@@ -216,28 +222,40 @@ function initCaseStudies(section: HTMLElement): Cleanup | null {
       $$<HTMLElement>("[style*='opacity']", l).forEach((el) => gsap.set(el, { opacity: 1, y: 0, clearProps: "transform" }));
     });
     masks.forEach((m, i) => gsap.set(m, { zIndex: i, clipPath: i ? "inset(100% 0% 0% 0%)" : "inset(0% 0% 0% 0%)" }));
+    if (mobile) {
+      // measured: the mobile card is as tall as its tallest entry (from the hidden sizing copies); the image takes the rest
+      const sizer = card.querySelector<HTMLElement>(":scope > .invisible");
+      const fit = () => {
+        if (sizer) card.style.height = `${Math.max(0, ...[...sizer.children].map((c) => (c as HTMLElement).offsetHeight))}px`;
+      };
+      fit();
+      window.addEventListener("resize", fit);
+      offs.push(() => window.removeEventListener("resize", fit));
+    }
     let current = 0;
-    const tl = gsap.timeline({ defaults: { ease: "none" } });
-    for (let i = 1; i < masks.length; i++) tl.to(masks[i], { clipPath: "inset(0% 0% 0% 0%)", duration: 1 }, i - 1);
+    // desktop scrubs the image wipe; mobile plays it (0.55s) once the switch point is crossed
+    const tl = mobile ? null : gsap.timeline({ defaults: { ease: "none" } });
+    for (let i = 1; tl && i < masks.length; i++) tl.to(masks[i], { clipPath: "inset(0% 0% 0% 0%)", duration: 1 }, i - 1);
     const st = ScrollTrigger.create({
       trigger: wrap,
       start: "top top",
       end: "bottom bottom",
-      scrub: true,
-      animation: tl,
+      scrub: !mobile,
+      animation: tl ?? undefined,
       onUpdate: (self) => {
-        // measured: the card switches about a third of the way into the image wipe
-        const k = Math.min(list.length - 1, Math.floor(self.progress * (list.length - 1) + 0.65));
+        // measured: the card switches about a third of the way into the image wipe (mobile: at 32 % of the pin)
+        const k = Math.min(list.length - 1, Math.floor(self.progress * (list.length - 1) + (mobile ? 0.68 : 0.65)));
         if (k === current) return;
         current = k;
-        layers.forEach((l, i) => gsap.to(l, { opacity: i === k ? 1 : 0, duration: 0.4 }));
+        if (mobile) masks.forEach((m, i) => gsap.to(m, { clipPath: i <= k ? "inset(0% 0% 0% 0%)" : "inset(100% 0% 0% 0%)", duration: 0.55, ease: "power1.out", overwrite: true }));
+        layers.forEach((l, i) => gsap.to(l, { opacity: i === k ? 1 : 0, duration: mobile ? 0.3 : 0.4 }));
         gsap.to(card, { backgroundColor: TEAM_COLOURS[teams[k]] ?? "#444828", duration: 0.5 });
       },
     });
     offs.push(() => st.kill());
   };
   setup(section.querySelector(":scope > .relative.hidden"), ".gsap--image-masks", ".max-w-\\[900px\\]", ":scope > div > div");
-  setup(section.querySelector(":scope > .relative.z-0.flex"), ".gsap--image-masks-mob", ".rounded-b-sm.lg\\:hidden", ":scope > div.absolute.inset-0 > div");
+  setup(section.querySelector(":scope > .relative.z-0.flex"), ".gsap--image-masks-mob", ".rounded-b-sm.lg\\:hidden", ":scope > div.absolute.inset-0 > div", true);
   return () => offs.forEach((f) => f());
 }
 
@@ -345,14 +363,14 @@ function initPeopleHero(section: HTMLElement): Cleanup | null {
 function equalizeTitles(root: HTMLElement): Cleanup {
   const groups = new Map<Element, HTMLElement[]>();
   $$<HTMLElement>(".item.group.relative > h3", root).forEach((h) => {
-    const key = h.parentElement!.parentElement!.parentElement ?? root;
+    // one group per block: every title in the block shares the reserved height
+    const key = [...root.children].find((c) => c.contains(h)) ?? root;
     groups.set(key, [...(groups.get(key) ?? []), h]);
   });
-  // measured: the original reserves the tallest title's height plus one extra line
+  // measured: the original reserves the tallest title's height, rounded up to whole pixels
   const apply = () => groups.forEach((hs) => {
     hs.forEach((h) => (h.style.minHeight = ""));
-    const lh = parseFloat(getComputedStyle(hs[0]).lineHeight) || 0;
-    const max = Math.max(...hs.map((h) => h.offsetHeight)) + lh;
+    const max = Math.ceil(Math.max(...hs.map((h) => h.getBoundingClientRect().height)));
     hs.forEach((h) => (h.style.minHeight = `${max}px`));
   });
   apply();
