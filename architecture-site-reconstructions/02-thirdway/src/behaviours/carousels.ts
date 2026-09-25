@@ -54,7 +54,7 @@ export function initCarousels(root: HTMLElement) {
       watchOverflow: true,
       breakpoints: { 1024: { slidesPerView: desktop[0], spaceBetween: desktop[1] } },
       // Swiper accepts element arrays here (desktop + mobile button pairs) although its types say single
-      navigation: prev.length && next.length ? { prevEl: [...prev] as unknown as HTMLElement, nextEl: [...next] as unknown as HTMLElement } : false,
+      navigation: prev.length && next.length ? { prevEl: [...prev] as unknown as HTMLElement, nextEl: [...next] as unknown as HTMLElement, addIcons: false } : false,
     });
     swipers.push(s);
   });

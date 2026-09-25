@@ -105,12 +105,26 @@ export function scrollFill(el: HTMLElement) {
 const isTextOnly = (el: Element): boolean =>
   [...el.children].every((c) => ["BR", "SPAN", "EM", "STRONG"].includes(c.tagName) && isTextOnly(c));
 
+// headings the original splits into lines although the server renders them visible (from the mutation logs)
+const EXTRA_SPLITS = [
+  ".team-name-and-leader > span.h3",
+  ".col-span-8.flex.flex-col > h2.cap-trim.whitespace-pre-line",
+  ".mb-\\[98px\\].flex.items-end > h2.cap-trim.font-sans",
+  ".mb-8.lg\\:mb-16.lg\\:flex > h2.h5",
+  ".title-container > span.h3.whitespace-pre-line",
+  ".container > h2.inline-block.h3.text-warm-black",
+];
+
 export function initReveals(root: HTMLElement, skip: (el: Element) => boolean = () => false) {
   root.querySelectorAll<HTMLElement>(".scroll-fill-notrim").forEach((el) => !skip(el) && scrollFill(el));
+  const split = new Set<HTMLElement>();
   root.querySelectorAll<HTMLElement>("[style*='visibility']").forEach((el) => {
     if (skip(el) || el.style.visibility !== "hidden" || el.style.opacity) return;
-    if (isTextOnly(el)) revealLines(el);
+    if (isTextOnly(el)) { revealLines(el); split.add(el); }
     else revealFade(el);
+  });
+  root.querySelectorAll<HTMLElement>(EXTRA_SPLITS.join(",")).forEach((el) => {
+    if (!split.has(el) && !skip(el) && isTextOnly(el) && !el.classList.contains("split-up")) revealLines(el);
   });
   findFadeTargets(root).forEach((el) => !skip(el) && revealFade(el));
 }

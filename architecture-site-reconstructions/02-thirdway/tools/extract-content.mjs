@@ -303,6 +303,15 @@ if (liveDir) {
   for (const f of fs.readdirSync(liveDir).filter((x) => x.endsWith('.html'))) {
     await tab.goto('file://' + path.resolve(liveDir, f));
     const raw = await tab.evaluate((ser) => new Function('return ' + ser)()(document.body.firstElementChild), serialize.toString());
+    // page-<slug>-<name>.html: client-rendered UI appended to that page's <main>; anything else is chrome
+    const m = /^page-([^-]+)-(.+)\.html$/.exec(f);
+    if (m) {
+      const file = path.join(OUT_PAGES, m[1] + '.json');
+      const doc = JSON.parse(fs.readFileSync(file, 'utf8'));
+      doc.main.push(convert(raw, { slug: m[1], route: '/' + m[1] }, null));
+      fs.writeFileSync(file, JSON.stringify(doc));
+      continue;
+    }
     chrome[path.basename(f, '.html')] = convert(raw, { slug: 'chrome', route: '/' }, null);
   }
 }

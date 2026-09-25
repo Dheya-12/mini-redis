@@ -61,6 +61,7 @@
     font-size: 16px;
   }
   button, [role="button"] { cursor: pointer; }
+  button:disabled, [role="button"]:disabled { cursor: default; }
   :root {
     --header-space: calc(84px + env(safe-area-inset-top, 0px));
   }
@@ -377,6 +378,7 @@
     letter-spacing: -0.04em;
     @media (width >= 1024px) { font-size: 28px; letter-spacing: -0.06em; }
   }
+  & > p + :is(h2, h3, h4, h5) { margin-top: calc(var(--spacing) * 16); }
   & > ul { padding-left: 16px !important; list-style: outside; }
   & ul li + li { margin-top: 10px; }
 }
@@ -533,3 +535,12 @@ html.lenis, html.lenis body { height: auto; }
 /* intro sheet only exists for the first paint of the home page */
 .intro-overlay { display: none; }
 html[data-intro="1"] .intro-overlay, .intro-overlay.is-playing { display: block; }
+
+/* page frame: its own stacking context so fixed hero films (z-index -1) sit above the body background */
+#transition-frame { isolation: isolate; }
+#smooth-content { overflow-x: clip; }
+
+/* rich text: every text block inside is cap-trimmed; links carry a retracting underline */
+.wysiwyg-flow :is(h1, h2, h3, h4, h5, h6, p, li, blockquote) { text-box-trim: trim-both; text-box-edge: cap alphabetic; }
+.wysiwyg a { background-image: linear-gradient(currentColor, currentColor); background-position: 0 100%; background-repeat: no-repeat; background-size: 100% 1px; transition: background-size 0.25s ease-out; }
+.wysiwyg a:hover { background-size: 0% 1px; }

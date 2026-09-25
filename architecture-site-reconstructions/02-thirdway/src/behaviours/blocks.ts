@@ -1,4 +1,4 @@
-import { gsap, ScrollTrigger, isDesktop } from "@/lib/motion";
+import { gsap, ScrollTrigger, isDesktop, runtime } from "@/lib/motion";
 import { initCounters, initJournalIndex, initProjectsIndex } from "./listings";
 
 type Cleanup = () => void;
@@ -80,8 +80,11 @@ function initProcess(section: HTMLElement): Cleanup | null {
     show(Math.min(n - 1, Math.max(0, Math.round(s))));
   };
 
-  const ease = gsap.parseEase("power1.inOut");
-  const stepPx = () => (isDesktop() ? 540 : window.innerHeight * 0.6);
+  const ease = gsap.parseEase("power2.inOut");
+  // measured: pin length = 495px per step + 223px of hold at 900px tall (approach: 6 steps, ESG: 4)
+  const vh = () => window.innerHeight / 900;
+  const stepPx = () => 495 * vh();
+  const holdPx = () => 223 * vh();
   const pinned = section.firstElementChild as HTMLElement;
   const st = ScrollTrigger.create({
     trigger: pinned,
@@ -92,13 +95,14 @@ function initProcess(section: HTMLElement): Cleanup | null {
       const off = frame.top - pinned.getBoundingClientRect().top;
       return `top ${window.innerHeight - frame.height - 89 - off}px`;
     },
-    end: () => `+=${stepPx() * (n - 1)}`,
+    end: () => `+=${stepPx() * (n - 1) + holdPx()}`,
     pin: true,
     scrub: true,
     invalidateOnRefresh: true,
-    onRefresh: (self) => { measure(); render(self.progress * (n - 1)); },
+    onRefresh: (self) => { measure(); render(Math.min(n - 1, (self.progress * (stepPx() * (n - 1) + holdPx())) / stepPx())); },
     onUpdate: (self) => {
-      const raw = self.progress * (n - 1);
+      const total = stepPx() * (n - 1) + holdPx();
+      const raw = Math.min(n - 1, (self.progress * total) / stepPx());
       const k = Math.floor(raw);
       render(Math.min(n - 1, k + ease(raw - k)));
     },
@@ -241,9 +245,10 @@ function initServices(section: HTMLElement): Cleanup | null {
   let st: ScrollTrigger | null = null;
   const build = () => {
     if (!rows.length || !isDesktop()) return;
+    desk.style.height = "100vh"; // the pinned panel is exactly one viewport tall
     const tl = gsap.timeline({ defaults: { ease: "none" } });
     rows.forEach((row, i) => {
-      gsap.set(row, { zIndex: i + 1, backgroundColor: "var(--color-warm-white)" });
+      gsap.set(row, { zIndex: i + 1 });
       if (!i) return;
       gsap.set(row, { position: "absolute", top: 0, left: 0, right: 0 });
       tl.fromTo($$(".service-slide", row), { y: STEP }, { y: 0, duration: 1 }, i - 1);
@@ -261,7 +266,7 @@ function initServices(section: HTMLElement): Cleanup | null {
     compact?.classList.toggle("hidden", !open);
     slider?.classList.toggle("hidden", open);
     slider?.classList.toggle("flex", !open);
-    if (open) { st?.kill(true); st = null; } else build();
+    if (open) { st?.kill(true); st = null; desk.style.height = ""; } else build();
     ScrollTrigger.refresh();
   };
   btn?.addEventListener("click", toggle);
@@ -320,6 +325,78 @@ function initPeopleHero(section: HTMLElement): Cleanup | null {
   return () => { gsap.ticker.remove(tick); stage.remove(); };
 }
 
+/* ------------------------------------------------------------------ equal-height item titles (values grid / carousel) */
+
+function equalizeTitles(root: HTMLElement): Cleanup {
+  const groups = new Map<Element, HTMLElement[]>();
+  $$<HTMLElement>(".item.group.relative > h3", root).forEach((h) => {
+    const key = h.parentElement!.parentElement!.parentElement ?? root;
+    groups.set(key, [...(groups.get(key) ?? []), h]);
+  });
+  // titles always reserve two lines (the original sizes them for the narrowest layout)
+  const twoLines = (h: HTMLElement) => {
+    const probe = h.cloneNode() as HTMLElement;
+    probe.innerHTML = "A<br>A";
+    probe.style.cssText = "position:absolute;visibility:hidden;min-height:0";
+    h.parentElement!.append(probe);
+    const v = probe.offsetHeight;
+    probe.remove();
+    return v;
+  };
+  const apply = () => groups.forEach((hs) => {
+    hs.forEach((h) => (h.style.minHeight = ""));
+    const max = Math.max(twoLines(hs[0]), ...hs.map((h) => h.offsetHeight));
+    hs.forEach((h) => (h.style.minHeight = `${max}px`));
+  });
+  apply();
+  window.addEventListener("resize", apply);
+  return () => window.removeEventListener("resize", apply);
+}
+
+/* ------------------------------------------------------------------ people: sticky team navigator */
+
+function initPeopleNav(root: HTMLElement): Cleanup | null {
+  const nav = root.querySelector<HTMLElement>(".people-nav-block");
+  const pill = nav?.querySelector<HTMLElement>(".people-nav-block-bar .absolute.top-0.left-0");
+  if (!nav || !pill) return null;
+  const links = $$<HTMLAnchorElement>("a[href^='/people']", nav);
+  const targets = links.map((a) => (a.hash ? document.getElementById(a.hash.slice(1)) : null));
+  let current = -1;
+  const select = (i: number) => {
+    if (i === current) return;
+    current = i;
+    links.forEach((l, k) => {
+      const plain = l.querySelector<HTMLElement>(":scope > span.body-small");
+      const active = l.querySelector<HTMLElement>(":scope > .active");
+      const on = k === i && !!active;
+      plain?.classList.toggle("opacity-0", on);
+      plain?.classList.toggle("opacity-100", !on);
+      active?.classList.toggle("opacity-100", on);
+      active?.classList.toggle("opacity-0", !on);
+    });
+    const a = links[i];
+    const w = Math.max(a.offsetWidth, a.querySelector<HTMLElement>(".active")?.offsetWidth ?? 0);
+    pill.style.width = `${w}px`;
+    pill.style.transform = `translateX(${a.offsetLeft + a.offsetWidth / 2 - w / 2}px)`;
+  };
+  const tick = () => {
+    let i = 0;
+    targets.forEach((t, k) => { if (t && t.getBoundingClientRect().top <= window.innerHeight * 0.5) i = k; });
+    select(i);
+  };
+  const onClick = (e: Event) => {
+    const a = (e.target as Element).closest<HTMLAnchorElement>("a[href^='/people']");
+    if (!a) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const t = a.hash ? document.getElementById(a.hash.slice(1)) : null;
+    runtime.lenis?.scrollTo(t ?? 0, { offset: t ? -96 : 0 });
+  };
+  gsap.ticker.add(tick);
+  nav.addEventListener("click", onClick, true);
+  return () => { gsap.ticker.remove(tick); nav.removeEventListener("click", onClick, true); };
+}
+
 /* ------------------------------------------------------------------ registry */
 
 export function initBlocks(root: HTMLElement): Cleanup {
@@ -333,5 +410,7 @@ export function initBlocks(root: HTMLElement): Cleanup {
   if (root.querySelector(".project-card")) offs.push(initProjectsIndex(root));
   if (root.querySelector("input[type=search]")) offs.push(initJournalIndex(root));
   offs.push(initCounters(root));
+  offs.push(equalizeTitles(root));
+  offs.push(initPeopleNav(root));
   return () => offs.forEach((f) => f?.());
 }
