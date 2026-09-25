@@ -249,3 +249,42 @@ journal videos at 360p, and the menu's Mux clip at 270p, to keep the ZIP under G
 (~40 MB of video). Vimeo still frames are used as posters. A YouTube embed on one
 article stays a YouTube iframe.
 **To reverse:** re-run `tools/fetch_hls.py` with a higher height.
+
+## Site #3 — Bulbs Series
+
+### [14:20] URL resolution
+
+**Fork:** The brief says "RESOLVE FIRST"; no URL given. A search for "Bulbs Series" "Joffrey Spitzer" found only his portfolio.
+**Investigated:** joffreyspitzer.com's works list (Aerleum, Ambrosia, Hélène Blanck, Merrell) has no Bulbs project. The
+Awwwards entry `awwwards.com/sites/bulbs-series` ("Sculptural glass lighting series by Simon Dupety"; nominee,
+2026-09-23; GSAP, GLSL, Astro) credits Joffrey Spitzer and links to https://bulbs.simondupety.com/. The live page
+(title "Bulbs by Simon Dupety") links back to joffreyspitzer.com in its credits.
+**Chose:** https://bulbs.simondupety.com/. **Confidence:** High.
+
+### [14:40] Architecture: markup as data, WebGL written from scratch
+
+**Fork:** The original is an Astro site whose images are all drawn by a bespoke three.js layer (about 1,400 lines,
+with custom vertex shaders for the page roll, stacking, intro and product slides). We could transcribe that code from
+the public bundle, or write our own implementation of the same observable effects.
+**Chose:** Our own. The page markup is served from the captured HTML as data, as for Thirdway. The image layer
+(`src/gl`) is new code: a cylindrical page roll, stacking with a corner wave, an unfolding intro and a focus flight,
+tuned with values measured from the running site (pivot 0.58, roll radius 0.5 vh, focal length 1040 px, easing
+constants, durations and thresholds). The sound (Web Audio synthesis) and the custom text elements are
+re-implemented in the same way.
+**Why:** The brief is a clean-room reconstruction: reproduce what is observable, never copy code. Tuning values are
+measurements; the shader code is ours.
+**To reverse:** n/a (a design constraint).
+**Confidence:** Medium — fine details (paper wobble, cloth noise on product slides) are simplified; see FIDELITY.md.
+
+### [14:45] **[LOW]** About transition simplified
+
+**Fork:** Navigating to About plays a dedicated WebGL flight of the cover photo over a dimmed page.
+**Chose:** Dim (50 % black over 0.7 s) plus the standard fade. The static About page matches.
+**To reverse:** add a cover-flight mode to `src/gl/scene.ts`, triggered from `src/behaviours/navigation.ts`.
+
+### [14:50] Media and fonts
+
+Images: one rendition per photo (the 1600/2400 px JPEG the original serves), 115 files, 26 MB, shipped in the ZIP and
+git-ignored in the repo (as for Thirdway). Special Gothic is OFL and self-hosted. Big Caslon FB is commercial: a
+git-ignored drop-in slot, with Libre Caslon Text (OFL) metric-matched as the fallback (size-adjust 99 %).
+
