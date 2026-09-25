@@ -12,7 +12,7 @@ const routes = arg('--routes', '/').split(',');
 const STEP = +arg('--step', '1');
 const SETTLE = +arg('--settle', '1600');
 // regions driven by wall-clock time (clock, marquees, drifting portraits, scroll-distance counter)
-const MASK = ['header .number-pill', '.vimeo-video', "[data-cookie-banner] .min-w-0", "[class*='mask-image']", '.people-hero-block .slot', 'footer .w-\\[9\\.32px\\]', ...arg('--mask', '').split(',').filter(Boolean)];
+const MASK = ['header .number-pill', '.vimeo-video', "[data-cookie-banner] .min-w-0", "[class*='mask-image']", '.people-hero-block .slot', 'footer .w-\\[9\\.32px\\]', '.all-text-items-inner > .mix-blend-exclusion', ...arg('--mask', '').split(',').filter(Boolean)];
 fs.mkdirSync(out, { recursive: true });
 
 const local = /localhost|127\.0\.0\.1/.test(origin);

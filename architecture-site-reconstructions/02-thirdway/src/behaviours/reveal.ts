@@ -1,4 +1,4 @@
-import { gsap, SplitText, EASE } from "@/lib/motion";
+import { gsap, SplitText, EASE, isDesktop } from "@/lib/motion";
 import fadeTargets from "./fade-targets.json";
 
 /**
@@ -85,8 +85,8 @@ export function revealFade(el: HTMLElement) {
     autoAlpha: 1,
     duration: 1,
     ease: EASE.reveal,
-    // the trigger is measured while the element sits 24px low, so start 24px earlier to match the original
-    scrollTrigger: { trigger: el, start: `top-=24 ${START.split(" ")[1]}`, once: true },
+    // measured on the original (with the element still 24px low): fires when that top reaches 75.4 % of the viewport
+    scrollTrigger: { trigger: el, start: "top 75.4%", once: true },
   });
 }
 
@@ -103,8 +103,13 @@ export function scrollFill(el: HTMLElement) {
   });
 }
 
+// number pills sit in text-only markup but the original fades them rather than splitting them
 const isTextOnly = (el: Element): boolean =>
+  !el.classList.contains("number-pill") &&
   [...el.children].every((c) => ["BR", "SPAN", "EM", "STRONG"].includes(c.tagName) && isTextOnly(c));
+
+// fades the original only runs on the desktop layout (measured at 390px: the values cards are shown as-is)
+const DESKTOP_ONLY_FADES = ".col-span-full.lg\\:col-span-4.xl\\:col-span-8 > .h-full";
 
 // headings the original splits into lines although the server renders them visible (from the mutation logs)
 const EXTRA_SPLITS = [
@@ -128,5 +133,8 @@ export function initReveals(root: HTMLElement, skip: (el: Element) => boolean = 
   root.querySelectorAll<HTMLElement>(EXTRA_SPLITS.join(",")).forEach((el) => {
     if (!split.has(el) && !skip(el) && isTextOnly(el) && !el.classList.contains("split-up")) revealLines(el);
   });
-  findFadeTargets(root).forEach((el) => !skip(el) && revealFade(el));
+  findFadeTargets(root).forEach((el) => {
+    if (skip(el) || (!isDesktop() && el.matches(DESKTOP_ONLY_FADES))) return;
+    revealFade(el);
+  });
 }

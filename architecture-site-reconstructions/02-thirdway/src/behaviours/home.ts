@@ -91,11 +91,49 @@ export function initFeaturedProjects(section: HTMLElement) {
     tl.to(b, { yPercent: 0, duration: 1 }, i - 1);
     if (i < n - 1) tl.to(b, { yPercent: -4, duration: 1 }, i);
   });
-  // first image: one viewport of entry drift, then one segment of exit drift
-  const entry = bgs[0]
-    ? gsap.timeline({ defaults: { ease: "none" }, scrollTrigger: { trigger: section, start: "top bottom", end: () => `+=${2 * window.innerHeight}`, scrub: true } })
-        .fromTo(bgs[0], { yPercent: 0 }, { yPercent: 4, duration: 1 })
-        .to(bgs[0], { yPercent: -4, duration: 1 }, 1)
+  // First image, as measured on the original: two overlapping scrubbed drifts. The entry drift runs 0 → +4 % over
+  // the viewport before the pin; the exit drift runs +4 → −4 % from 14 % of a viewport before the pin to the end of
+  // the first wipe. Which one shows depends on how the section was reached (all eight scroll paths we sampled):
+  //  - the entry drift normally renders last, so a jump across the pin start leaves the image at +4 %;
+  //  - if the section is entered in one jump from above (entry drift not started yet), the exit drift wins and keeps
+  //    winning until the entry drift is back at its start.
+  const first = bgs[0];
+  let last = [-1, -1];
+  let exitOwns = false;
+  const drift = (self: ScrollTrigger) => {
+    if (!first) return;
+    const vh = window.innerHeight;
+    const y = self.scroll();
+    const clamp = (v: number) => Math.min(1, Math.max(0, v));
+    const pin = self.start + vh;
+    const exit = clamp((y - (pin - 0.14 * vh)) / (1.14 * vh));
+    const enter = clamp((y - self.start) / vh);
+    const [prevEnter, prevExit] = last;
+    const enterMoved = enter !== prevEnter;
+    const exitMoved = exit !== prevExit;
+    if (enter === 0) exitOwns = false;
+    else if (enterMoved && exitMoved && prevEnter === 0) exitOwns = true;
+    let v: number | null = null;
+    if (exitMoved) v = 4 - 8 * exit;
+    if (enterMoved && !exitOwns) v = 4 * enter;
+    last = [enter, exit];
+    if (v !== null) gsap.set(first, { yPercent: v });
+  };
+  const entry = first
+    ? ScrollTrigger.create({
+        trigger: section,
+        start: "top bottom",
+        end: () => `+=${2 * window.innerHeight}`,
+        onUpdate: drift,
+        // after a refresh, start from the value continuous scrolling would give
+        onRefresh: (self) => {
+          const vh = window.innerHeight;
+          const enter = Math.min(1, Math.max(0, (self.scroll() - self.start) / vh));
+          last = enter < 1 ? [-1, 0] : [1, -1];
+          exitOwns = false;
+          drift(self);
+        },
+      })
     : null;
   const bar = q(".progress-amount");
   if (bar) tl.fromTo(bar, { scaleX: 0 }, { scaleX: 1, duration: n - 1, transformOrigin: "left center" }, 0);
@@ -152,8 +190,8 @@ export function initFeaturedProjects(section: HTMLElement) {
     pinSpacing: false,
     scrub: true,
     animation: tl,
-    // captions switch when the next image is half wiped in (services: still the first caption at 29 %)
-    onUpdate: (self) => setIndex(Math.min(n - 1, Math.floor(self.progress * (n - 1) + 0.5))),
+    // measured: captions switch about 35 % into each image wipe (desktop and mobile)
+    onUpdate: (self) => setIndex(Math.min(n - 1, Math.floor(self.progress * (n - 1) + 0.65))),
   });
 
   // "View project" cursor that follows the pointer on desktop
@@ -173,7 +211,7 @@ export function initFeaturedProjects(section: HTMLElement) {
   hit?.addEventListener("pointerleave", leave);
   return () => {
     st.kill();
-    entry?.scrollTrigger?.kill();
+    entry?.kill();
     window.clearTimeout(swapTimer);
     hit?.removeEventListener("pointermove", move);
     hit?.removeEventListener("pointerenter", enter);
