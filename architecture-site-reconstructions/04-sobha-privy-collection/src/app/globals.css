@@ -1,0 +1,38 @@
+/*
+ * Tailwind is limited to this project's own components (src/components). Automatic source detection is off so the
+ * original's class names in src/content (e.g. `sticky`, `text-center`, `pt-0`) never produce conflicting utilities,
+ * and there is no preflight: the original ships its own normalize (in site.css).
+ */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities) source(none);
+@source "../components";
+
+@import "./fonts.css";
+@import "../styles/site.css";
+
+/* the original's inline <head> style */
+body {
+  background: #1a1919;
+  color: #1a1919;
+}
+a {
+  color: #1a1919;
+}
+.js.not-ready,
+.js.not-ready * {
+  transition: none !important;
+}
+
+/* ---- reconstruction additions ---------------------------------------------------------------------------------- */
+
+/* films: the original embeds Kinescope players sized to cover their box; ours are plain muted loops that cover it */
+video.film {
+  display: block;
+  height: 100%;
+  left: 0;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}

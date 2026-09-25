@@ -308,3 +308,43 @@ and the card lands 411–569 px (original 411–568).
 height.
 **Confidence:** Medium. When figure 8's photo happens to load first, the original draws it at 2:3 and later images
 71 px lower.
+
+## Site #4 — Sobha Privy Collection
+
+### [15:35] URL resolution
+
+**Fork:** The brief says "RESOLVE FIRST" and gives no URL.
+**Investigated:** A search for "Sobha Privy Collection" "Vide Infra" finds the Awwwards entry
+`awwwards.com/sites/sobha-privy-collection` (Site of the Day, 7.37; tags WebGL, Three.js, 3D gallery, 3D map). It
+credits Vide Infra and links to https://sobha-privy-collection.com/. The live page (title "Sobha Privy Collection –
+Luxury Villas & Penthouses in Dubai") links to videinfra.com in its footer credit.
+**Chose:** https://sobha-privy-collection.com/ with its linked routes `/location` and `/privacy-policy`.
+**Confidence:** High.
+
+### [15:40] Films
+
+**Fork:** The films are Kinescope embeds. In headless Chromium they show "Protected playback is not available".
+**Investigated:** The HLS playlists have no `EXT-X-KEY`, so the streams are not encrypted. The message is the player
+failing because the open-source Chromium build has no H.264, the same limitation as Thirdway's Vimeo films.
+**Chose:** Self-host each loop as a single MP4 (the public stream, unmodified). Compare film regions masked on both
+sides.
+**To reverse:** point the video elements back at the Kinescope embed URLs kept in the content.
+
+### [15:40] **[LOW]** Stylesheet captured as data, like the markup
+
+**Fork:** Sites 1–3 styled their markup with regenerated Tailwind utilities plus hand-written component CSS. This
+site uses a custom CSS framework: 504 classes, a `--md`/`--n-md` toggle-variable system, and aspect-ratio-aware
+breakpoints (for example, `md` is 568–667 px portrait or ≥ 668 px). Its public stylesheets total about 11,600
+formatted lines, and no utility framework exists to regenerate them from.
+**Investigated:** Hand-writing it from computed styles loses the fluid and aspect-ratio rules between the measured
+widths. The lift-to-source method prefers reading authored values from the matching CSS rules for layout.
+**Chose:** `tools/extract-styles.mjs` treats the public stylesheets as captured data, as the markup already is:
+- it keeps only the rules whose selectors can match these routes' markup or the state classes their behaviour adds
+  (1,627 kept, 2,724 dropped);
+- it rewrites asset URLs, drops the commercial @font-face rules, and scopes route sheets with `:where()`;
+- it writes `src/styles/site.css`, marked as generated.
+All behaviour (scroll, parallax, reveals, WebGL, forms) is new code.
+**To reverse:** replace `src/styles/site.css` with hand-written component CSS, one component at a time, and use the
+pixel diff to guard each step.
+**Confidence:** Low as a policy call: this is closer to reuse than the "no file copied" line taken for Loam House.
+Technically it is the most faithful option.

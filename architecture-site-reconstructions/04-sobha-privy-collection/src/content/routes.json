@@ -1,0 +1,17 @@
+[
+ {
+  "slug": "home",
+  "route": "/",
+  "title": "Sobha Privy Collection – Luxury Villas & Penthouses in Dubai"
+ },
+ {
+  "slug": "location",
+  "route": "/location",
+  "title": "Location | Sobha Privy Collection"
+ },
+ {
+  "slug": "privacy-policy",
+  "route": "/privacy-policy",
+  "title": "Sobha Privy Collection – Luxury Villas & Penthouses in Dubai"
+ }
+]
