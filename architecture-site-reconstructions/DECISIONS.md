@@ -289,7 +289,7 @@ git-ignored in the repo (as for Thirdway). Special Gothic is OFL and self-hosted
 git-ignored drop-in slot, with Libre Caslon Text (OFL) metric-matched as the fallback (size-adjust 99 %).
 
 
-### [15:20] Ribbon layout measured before lazy photos arrive
+### [15:00] Ribbon layout measured before lazy photos arrive
 
 **Fork:** At 390 px the home ribbon drifted from the original by up to 30 % per frame after the eighth image. Six
 of the twenty photos are 2:3 inside 4:5 figures; when such a photo loads, it grows its figure by 71 px and pushes the

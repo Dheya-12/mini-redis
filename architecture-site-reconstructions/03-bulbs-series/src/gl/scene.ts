@@ -35,7 +35,8 @@ const SETTINGS = {
   productRevealStagger: 0.06,
   productFocusDuration: 0.78,
   productFocusExit: 0.72,
-  productSlideDuration: 1.25,
+  productSlideDelay: 0.08,
+  productSlideDuration: 1.22,
 };
 
 const clamp = (v: number, a = 0, b = 1) => Math.min(b, Math.max(a, v));
@@ -143,6 +144,7 @@ export class ImageScene {
         uIntroCurveScale: { value: 1 },
         uIntroHeight: { value: 1 },
         uReveal: { value: this.mode === "product" && revealProduct ? 0 : 1 },
+        uWipe: { value: -1 },
       },
     });
     const mesh = new THREE.Mesh(geometry, material);
@@ -377,7 +379,8 @@ export class ImageScene {
     if (this.slide.active || this.items.length < 2 || this.focus.index === null) return;
     const from = this.focus.index, to = (from + 1) % this.items.length;
     this.slide = { active: true, p: 0, from, to };
-    gsap.to(this.slide, { p: 1, duration: SETTINGS.productSlideDuration, ease: "none", onComplete: () => { this.focus.index = to; this.slide = { active: false, p: 0, from: 0, to: 0 }; } });
+    // the next image is uncovered from the bottom up, behind a wavy edge
+    gsap.to(this.slide, { p: 1, delay: SETTINGS.productSlideDelay, duration: SETTINGS.productSlideDuration, ease: "sine.inOut", onComplete: () => { this.focus.index = to; this.slide = { active: false, p: 0, from: 0, to: 0 }; } });
   }
 
   private updateFocus() {
@@ -542,13 +545,19 @@ export class ImageScene {
       if (this.mode !== "gallery") {
         let box = { x: cx, y: cy, w: d.w, h: d.h };
         if (this.mode === "product" && this.focus.index !== null) {
-          // product pages: the clicked image grows into the large slot
-          const isFocus = it.index === this.focus.index || (this.slide.active && it.index === this.slide.to);
-          const k = isFocus ? sineInOut(fc) : 0;
-          const target = this.layout.focusBox ?? box;
-          box = { x: mix(cx, target.x, k), y: mix(cy, target.y, k), w: mix(d.w, target.w, k), h: mix(d.h, target.h, k) };
-          if (this.slide.active && it.index === this.slide.to) u.uReveal.value = s5(this.slide.p);
-          it.mesh.renderOrder = this.slide.active && it.index === this.slide.to ? n + 1 : isFocus ? n : it.index;
+          // product pages: the clicked image grows into the large slot; the others slide in under it on the way
+          // and wait there, in the order they will come up
+          const f = this.items[this.focus.index].docRect;
+          const fx = f.left - window.scrollX - rect.left + f.w / 2 - rect.width / 2;
+          const fy = rect.height / 2 - (f.top + f.h / 2 - scroll - rect.top);
+          const target = this.layout.focusBox ?? { x: fx, y: fy, w: f.w, h: f.h };
+          const k = sineInOut(fc);
+          const lead = { x: mix(fx, target.x, k), y: mix(fy, target.y, k), w: mix(f.w, target.w, k), h: mix(f.h, target.h, k) };
+          const gather = it.index === this.focus.index ? 1 : s5(fc / 0.6);
+          box = { x: mix(cx, lead.x, gather), y: mix(cy, lead.y, gather), w: mix(d.w, lead.w, gather), h: mix(d.h, lead.h, gather) };
+          const incoming = this.slide.active && it.index === this.slide.to;
+          u.uWipe.value = incoming ? this.slide.p : -1;
+          it.mesh.renderOrder = incoming ? n + 1 : n - ((it.index - this.focus.index + n) % n);
         } else it.mesh.renderOrder = it.index;
         it.mesh.visible = true;
         this.apply(it, box, rect);

@@ -40,12 +40,13 @@ three.js r184, Lenis 1.3.21. Next 16.3.6, React 19.2, Tailwind CSS 4.
 
 ## Differences from the live site
 
-- **WebGL effects are our own shaders.** The effects look the same: the page roll, the stacking wave and the
-  unfolding intro. Tuning values (pivot, radius, focal length, fold depths, durations and eases) were measured on the
-  original. The small paper-wave and cloth-noise details of the original's product-page slide are simplified to a
-  cross-fade.
+- **WebGL effects are our own shaders.** They reproduce the original's effects: the page roll, the stacking wave,
+  the unfolding intro, and the product-page enlarge and wipe. Tuning values were measured on the original: pivot,
+  radius, focal length, fold depths, durations, eases and edge positions. While photographs travel into the product
+  slot, the original also wobbles their edges like cloth; here they move flat.
 - **About transition:** the page dims and fades; the original's animated WebGL cover flight is not reproduced.
-- **Phones** scroll the window rather than a fixed `<main>` container; the layout is the same.
+- **Lazy photographs:** the image strip is laid out as it is before lazily loaded photographs arrive, which is the
+  original's usual outcome (its own layout depends on load order; see `FIDELITY.md`).
 - **Analytics** (Umami) is removed. The Price List link still opens the original's PDF on Google Drive.
 
 All photographs and copy belong to Simon Dupety and the credited photographers and are included only so the

@@ -11,12 +11,12 @@ node tools/visual-diff/capture.mjs https://bulbs.simondupety.com work/ref/1440 1
 node tools/visual-diff/capture.mjs http://localhost:3000          work/tgt/1440 1440 900 --routes $R
 #    (repeat with 1024 768, and 390 844 --mobile)
 node tools/visual-diff/compare.mjs work/ref/1440 work/tgt/1440 work/diff/1440
-node tools/visual-diff/summary.mjs work/diff/1440
+node tools/visual-diff/summary.mjs work/diff 1440 1024 390
 
 # interaction states: intro, stack, title hover, flight to a product, product enlarge / next, sound on
 node tools/visual-diff/interactions.mjs https://bulbs.simondupety.com work/ix/ref
 node tools/visual-diff/interactions.mjs http://localhost:3000          work/ix/tgt
-node tools/visual-diff/quickdiff.mjs work/ix/ref/stack.png work/ix/tgt/stack.png
+node tools/visual-diff/quickdiff.mjs work/ix/ref work/ix/tgt
 ```
 
 Determinism: both sides render WebGL with the same software rasteriser (`--use-gl=swiftshader`) and are

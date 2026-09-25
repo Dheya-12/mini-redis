@@ -132,6 +132,7 @@ precision highp float;
 uniform sampler2D tMap;
 uniform vec2 uCoverScale;   // object-fit: cover
 uniform float uReveal;
+uniform float uWipe;        // product slide progress (-1 = off)
 uniform float uStack;
 uniform float uFlat;
 varying vec2 vUv;
@@ -142,6 +143,11 @@ void main() {
   vec4 color = texture2D(tMap, uv);
   float feather = mix(0.008, 0.0005, max(uFlat, uStack));
   float mask = smoothstep(0.0, feather, vUv.x) * (1.0 - smoothstep(1.0 - feather, 1.0, vUv.x));
+  // product slide: uncovered from the bottom up behind an edge that waves most mid-way
+  if (uWipe >= 0.0) {
+    float edge = uWipe * 1.006 - 0.003 + 0.035 * sin(vUv.x * 5.2 + uWipe * 7.0) * sin(uWipe * 3.14159265);
+    mask *= 1.0 - smoothstep(edge - 0.003, edge + 0.003, vUv.y);
+  }
   // (the original computes a cylinder shade but never applies it to the colour; neither do we)
   gl_FragColor = vec4(color.rgb, color.a * mask * vAlpha * uReveal);
   #include <colorspace_fragment>
