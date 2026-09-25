@@ -1,0 +1,196 @@
+@layer components {
+  /*
+   * Mobile menu sheet: five ink stripes drop in (left→right), then the links slide
+   * up through their masks one by one. Closing reverses the stripe ramp; visibility
+   * is held for .72s so the retract can finish before the sheet disappears.
+   */
+  .menu-sheet {
+    display: none;
+  }
+
+  @media (max-width: 800px) {
+    .menu-sheet {
+      position: fixed;
+      inset: 0;
+      z-index: 36;
+      display: flex;
+      flex-direction: column;
+      color: var(--chalk);
+      pointer-events: none;
+      overflow: hidden;
+      visibility: hidden;
+      transition: visibility 0s linear 0.72s;
+    }
+    .menu-sheet--open {
+      pointer-events: auto;
+      visibility: visible;
+      transition: visibility 0s;
+    }
+  }
+
+  .menu-sheet__stripes {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    z-index: 0;
+  }
+  .menu-sheet__stripes i {
+    flex: 1 1 0;
+    height: 100%;
+    background: var(--ink);
+    transform: translateY(-101%);
+    transition: transform 0.62s var(--ease-curtain);
+    transition-delay: calc((6 - var(--n)) * 0.04s);
+  }
+  .menu-sheet--open .menu-sheet__stripes i {
+    transform: translateY(0);
+    transition-delay: calc(var(--n) * 0.04s);
+  }
+
+  .menu-sheet__inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+  }
+  .menu-sheet__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: calc(64px + var(--safe-top));
+    padding: var(--safe-top) 30px 0;
+    flex: 0 0 auto;
+  }
+  .menu-sheet__head .wordmark {
+    width: 150px;
+  }
+
+  .menu-sheet__nav {
+    display: flex;
+    flex-direction: column;
+    padding: 3vh 30px 0;
+  }
+  .menu-sheet__link {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    overflow: hidden;
+    border-top: 1px solid transparent;
+    transition: border-color 0.5s ease;
+    font: 500 13px/1 var(--sans);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #fff;
+    text-decoration: none;
+  }
+  .menu-sheet__link:last-child {
+    border-bottom: 1px solid transparent;
+  }
+  .menu-sheet--open .menu-sheet__link {
+    border-color: rgba(255, 255, 255, 0.12);
+    transition-delay: 0.3s;
+  }
+  .menu-sheet__link-inner {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 22px 0;
+    transform: translateY(112%);
+    transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .menu-sheet--open .menu-sheet__link-inner {
+    transform: translateY(0);
+    transition-delay: calc(0.3s + var(--n) * 0.07s);
+  }
+  .menu-sheet__index {
+    font: 600 10px/1 var(--sans);
+    font-style: normal;
+    letter-spacing: 0.16em;
+    color: #c99a63;
+    width: 22px;
+    flex: 0 0 auto;
+  }
+
+  .menu-sheet__head,
+  .menu-sheet__foot {
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  .menu-sheet--open .menu-sheet__head {
+    opacity: 1;
+    transition-delay: 0.28s;
+  }
+  .menu-sheet--open .menu-sheet__foot {
+    opacity: 1;
+    transition-delay: 0.55s;
+  }
+
+  .menu-sheet__foot {
+    margin-top: auto;
+    padding: 34px 30px calc(34px + var(--safe-bottom));
+  }
+  .menu-sheet__ctas {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 30px;
+  }
+  .menu-sheet__cta {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    min-width: 0;
+    height: 58px;
+    margin: 0;
+    padding: 0 20px;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    overflow: hidden;
+    font: 600 10px var(--sans);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+  }
+  .menu-sheet__cta--solid {
+    background: var(--chalk);
+    color: var(--ink);
+    border-color: var(--chalk);
+  }
+  .menu-sheet__cta--ghost {
+    background: transparent;
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.42);
+  }
+  .menu-sheet__cta:active {
+    transform: scale(0.985);
+  }
+  .menu-sheet__cta svg {
+    display: block;
+    width: 16px;
+    height: 16px;
+  }
+  .menu-sheet__cta-label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    letter-spacing: 0.13em;
+  }
+  .menu-sheet__contact {
+    margin-top: 26px;
+  }
+  .menu-sheet__contact p {
+    margin: 0;
+    font-size: 11px;
+    line-height: 1.7;
+    letter-spacing: 0.03em;
+    color: rgba(255, 255, 255, 0.5);
+  }
+}

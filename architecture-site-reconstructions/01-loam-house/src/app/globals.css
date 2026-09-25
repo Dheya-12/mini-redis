@@ -1,0 +1,35 @@
+/*
+ * Tailwind v4, theme + utilities only (no preflight — see DECISIONS.md).
+ * Component styles live in src/styles and sit in the `components` layer so
+ * utilities can still override them.
+ */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+@import "../styles/base.css";
+@import "../styles/masthead.css";
+@import "../styles/curtain.css";
+@import "../styles/menu-sheet.css";
+@import "../styles/hero.css";
+@import "../styles/ink-card.css";
+@import "../styles/frames.css";
+@import "../styles/place.css";
+@import "../styles/precinct.css";
+@import "../styles/contact.css";
+@import "../styles/booking.css";
+@import "../styles/legal.css";
+
+/* Tokens are defined once in styles/base.css; Tailwind utilities read them. */
+@theme inline {
+  --color-ink: var(--ink);
+  --color-paper: var(--paper);
+  --color-chalk: var(--chalk);
+  --color-clay: var(--clay);
+  --color-olive: var(--olive);
+  --color-line: var(--line);
+  --font-serif: var(--serif);
+  --font-sans: var(--sans);
+  --breakpoint-tablet: 801px;
+  --breakpoint-desktop: 1051px;
+}

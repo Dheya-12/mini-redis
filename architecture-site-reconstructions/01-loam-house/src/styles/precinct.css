@@ -1,0 +1,477 @@
+@layer components {
+  /* ── Chapter shell ── */
+  .precinct {
+    position: relative;
+    min-height: 100svh;
+    background: #b9cdd0;
+    overflow: hidden;
+  }
+  .precinct__stage {
+    position: relative;
+    height: 100svh;
+    backface-visibility: hidden;
+  }
+  @supports (-moz-appearance: none) {
+    .precinct__stage {
+      backface-visibility: visible;
+    }
+  }
+  /* Ink scrim from the top and left so the chapter copy reads white. */
+  .precinct__stage::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background:
+      linear-gradient(90deg, rgba(20, 22, 18, 0.78), rgba(20, 22, 18, 0.32) 34%, rgba(20, 22, 18, 0) 56%),
+      linear-gradient(180deg, rgba(20, 22, 18, 0.6), rgba(20, 22, 18, 0) 38%);
+  }
+  .precinct .plate {
+    position: absolute;
+    top: 104px;
+    left: 6vw;
+    z-index: 6;
+    width: calc(100% - 12vw);
+    color: #fff;
+  }
+
+  /* ── The map itself: the viewBox is the camera ── */
+  .precinct__map {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    touch-action: pan-y;
+  }
+  .precinct__map text {
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  /* While a dot fills the screen the vector map contributes nothing — stop painting it. */
+  .precinct__map--occluded {
+    visibility: hidden;
+  }
+  .map-roads,
+  .map-suburbs {
+    transition: opacity 0.45s ease;
+  }
+
+  .map-building-label {
+    font-family: var(--sans);
+    font-weight: 500;
+    font-size: 13px;
+    letter-spacing: 2.8px;
+    fill: #2c3128;
+    opacity: 0.46;
+    text-transform: uppercase;
+    pointer-events: none;
+  }
+  .map-suburb-label {
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 1.8px;
+    fill: #66230f;
+    text-transform: uppercase;
+    pointer-events: none;
+    text-anchor: middle;
+  }
+  .map-landmark-label {
+    font-family: var(--sans);
+    font-weight: 500;
+    font-size: 6.5px;
+    letter-spacing: 0.4px;
+    fill: #66230f;
+    pointer-events: none;
+    text-anchor: middle;
+  }
+  .map-road-label {
+    font-family: var(--sans);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 5.5px;
+    fill: #4a4f43;
+    opacity: 0.75;
+    letter-spacing: 0.3px;
+    pointer-events: none;
+    text-anchor: middle;
+    dominant-baseline: central;
+  }
+  .map-station circle {
+    fill: #fff;
+    stroke: #40453b;
+    stroke-width: 1;
+    pointer-events: none;
+  }
+  .map-station__label {
+    font-family: var(--sans);
+    font-weight: 500;
+    font-size: 9.5px;
+    fill: #33382e;
+    pointer-events: none;
+  }
+  .map-marker__halo {
+    transform-box: fill-box;
+    transform-origin: center;
+    opacity: 0;
+    pointer-events: none;
+  }
+  @media (hover: hover) {
+    .map-station:hover > .map-marker__halo,
+    .map-bus-stop:hover > .map-marker__halo {
+      animation: marker-halo 1.4s ease-out infinite;
+    }
+  }
+  @keyframes marker-halo {
+    from {
+      transform: scale(1);
+      opacity: 0.7;
+    }
+    to {
+      transform: scale(6);
+      opacity: 0;
+    }
+  }
+
+  /* ── Amenity dots: breathe, and release a ping on each contraction ── */
+  .amenity-dot {
+    cursor: pointer;
+  }
+  .amenity-dot__hit {
+    fill: transparent;
+    stroke: none;
+    pointer-events: all;
+  }
+  .amenity-dot__halo,
+  .amenity-dot__pulse,
+  .amenity-dot__core,
+  .amenity-dot__num {
+    pointer-events: none;
+  }
+  .amenity-dot__pulse {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: dot-breath var(--pulse-period, 2.6s) ease-in-out infinite;
+  }
+  @keyframes dot-breath {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(var(--breath-scale, 1.06));
+    }
+  }
+  .amenity-dot__ping {
+    transform-box: fill-box;
+    transform-origin: center;
+    pointer-events: none;
+    animation: dot-ping var(--pulse-period, 2.6s) ease-out infinite;
+  }
+  @keyframes dot-ping {
+    0% {
+      transform: scale(1);
+      opacity: var(--ping-op, 0.35);
+    }
+    70%,
+    100% {
+      transform: scale(var(--ping-scale, 2.4));
+      opacity: 0;
+    }
+  }
+  .amenity-dot__core {
+    transform-box: fill-box;
+    transform-origin: center;
+    transition: transform 0.4s cubic-bezier(0.3, 1.4, 0.4, 1);
+  }
+  @media (hover: hover) {
+    .map-dots:not(.map-dots--diving) .amenity-dot:hover .amenity-dot__core {
+      transform: scale(1.14);
+    }
+  }
+  .amenity-dot__halo {
+    opacity: 1;
+    transition: opacity 0.45s;
+  }
+  .map-dots--diving .amenity-dot__halo {
+    opacity: 0;
+  }
+  .amenity-dot__num {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 12px;
+    fill: #fff;
+    text-anchor: middle;
+    opacity: var(--num-op, 1);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .amenity-dot__ping,
+    .amenity-dot__pulse {
+      animation: none;
+    }
+    .amenity-dot__ping {
+      opacity: 0;
+    }
+  }
+  @supports (-moz-appearance: none) {
+    /* Gecko jerks on fill-box transform transitions; swell the radius instead. */
+    .amenity-dot__core {
+      transition: r 0.4s cubic-bezier(0.3, 1.4, 0.4, 1);
+      r: 10px;
+    }
+    @media (hover: hover) {
+      .map-dots:not(.map-dots--diving) .amenity-dot:hover .amenity-dot__core {
+        transform: none;
+        r: 11.4px;
+      }
+    }
+  }
+
+  /* ── The lens: the dived amenity's photograph, revealed through a circle riding the dot ── */
+  .precinct__lens {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    pointer-events: none;
+    opacity: 0;
+    clip-path: circle(0px at 50% 50%);
+    will-change: clip-path, opacity;
+    background: #7a3b26;
+  }
+  .precinct__lens img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .precinct__lens::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(52deg, rgba(20, 22, 18, 0.82) 0%, rgba(20, 22, 18, 0.5) 30%, rgba(20, 22, 18, 0) 60%);
+  }
+
+  /* ── Chapter copy, bottom-left over the plan ── */
+  .precinct__note {
+    position: absolute;
+    left: 6vw;
+    bottom: 9vh;
+    z-index: 6;
+    max-width: 760px;
+    color: #fff;
+    pointer-events: none;
+    transition:
+      opacity 0.6s ease,
+      filter 0.6s ease;
+  }
+  .precinct__note--dived {
+    opacity: 0;
+    filter: blur(8px);
+  }
+  .precinct__note .eyebrow {
+    display: inline-block;
+    margin: 0 0 24px;
+    padding: 0 0 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.34);
+  }
+  /* Hovering a dot whispers its name above the note. */
+  .precinct__dot-name {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    margin: 0 0 16px;
+    font: italic 500 clamp(22px, 2.1vw, 30px) / 1.1 var(--serif);
+    color: #fff;
+    opacity: 0;
+    transform: translateY(10px);
+    transition:
+      opacity 0.45s,
+      transform 0.45s cubic-bezier(0.3, 1.3, 0.4, 1);
+    pointer-events: none;
+    white-space: nowrap;
+  }
+  .precinct__dot-name--on {
+    opacity: 1;
+    transform: none;
+  }
+  .precinct__title {
+    font-size: clamp(50px, 7vw, 112px);
+    line-height: 0.85;
+    letter-spacing: -0.03em;
+    margin: 0 0 24px;
+    text-shadow: var(--type-shadow);
+  }
+  .precinct__lede {
+    font-size: clamp(14px, 1.15vw, 17px);
+    line-height: 1.6;
+    max-width: min(46ch, 38vw);
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 300;
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  /* ── Amenity panels (the copy of a dived dot) ── */
+  .precinct__panels {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    pointer-events: none;
+    transform: translateZ(0);
+  }
+  .amenity-panel {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: flex-end;
+    opacity: 0;
+    overflow: hidden;
+    padding: 0 8vw 16vh;
+    color: #fff;
+    will-change: opacity;
+    pointer-events: none;
+  }
+  .amenity-panel__inner {
+    position: relative;
+    max-width: 640px;
+  }
+  .amenity-panel__eyebrow {
+    display: inline-block;
+    text-transform: uppercase;
+    letter-spacing: 0.28em;
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.72);
+    margin: 0 0 26px;
+    padding: 0 0 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.34);
+  }
+  .amenity-panel__title {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(52px, 8vw, 120px);
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+    margin: 0 0 22px;
+    text-wrap: balance;
+  }
+  .amenity-panel__body {
+    font-size: clamp(15px, 1.3vw, 19px);
+    line-height: 1.6;
+    max-width: 46ch;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 300;
+    margin: 0 0 40px;
+  }
+  .amenity-panel__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.6);
+  }
+  .amenity-panel__back::before {
+    content: "";
+    width: 26px;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.5);
+  }
+
+  /* ── Journey control: expand to the neighbourhood / contract back ── */
+  .precinct__journey {
+    position: absolute;
+    left: 26px;
+    bottom: 52px;
+    z-index: 10;
+    transition: opacity 0.5s;
+  }
+  @media (min-width: 801px) {
+    .precinct__journey {
+      left: 42vw;
+    }
+  }
+  .journey-btn {
+    border: 0;
+    background: none;
+    padding: 9px;
+    cursor: pointer;
+    display: block;
+    color: #2c3128;
+    transition: color 0.25s;
+  }
+  .journey-btn:hover {
+    color: #8d4f36;
+  }
+  .journey-btn svg {
+    display: block;
+    width: 26px;
+    height: 26px;
+  }
+  .journey-btn__corner {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .journey-btn__back,
+  .precinct[data-mode="neighbourhood"] .journey-btn__out {
+    display: none;
+  }
+  .journey-btn__out,
+  .precinct[data-mode="neighbourhood"] .journey-btn__back {
+    display: block;
+  }
+  @media (hover: hover) {
+    .journey-btn:hover .journey-btn__out .journey-btn__corner--tr,
+    .journey-btn:hover .journey-btn__back .journey-btn__corner--bl {
+      transform: translate(1.6px, -1.6px);
+    }
+    .journey-btn:hover .journey-btn__out .journey-btn__corner--bl,
+    .journey-btn:hover .journey-btn__back .journey-btn__corner--tr {
+      transform: translate(-1.6px, 1.6px);
+    }
+  }
+
+  /* ── ≤800 ── */
+  @media (max-width: 800px) {
+    html,
+    body {
+      touch-action: none;
+    }
+    .precinct__stage::after {
+      background:
+        linear-gradient(90deg, rgba(20, 22, 18, 0.83), rgba(20, 22, 18, 0.37) 34%, rgba(20, 22, 18, 0) 56%),
+        linear-gradient(180deg, rgba(20, 22, 18, 0.65), rgba(20, 22, 18, 0) 38%);
+    }
+    .precinct .plate {
+      top: 124px;
+      left: 26px;
+      width: calc(100% - 52px);
+    }
+    .precinct__map {
+      touch-action: none;
+    }
+    .precinct__note {
+      left: 26px;
+      right: 26px;
+      top: 225px;
+      bottom: auto;
+      max-width: none;
+    }
+    .precinct__note .eyebrow {
+      margin: 0 0 14px;
+      padding: 0 0 10px;
+    }
+    .precinct__title {
+      margin: 0 0 14px;
+    }
+    .precinct__lede {
+      font-size: 14px;
+      max-width: 20ch;
+    }
+    .amenity-panel {
+      padding: 0 26px 14vh;
+    }
+  }
+}

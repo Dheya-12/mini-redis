@@ -1,0 +1,83 @@
+@layer components {
+  /*
+   * Stand-in for the third-party scheduling popup (see DECISIONS.md): an ink
+   * overlay with a chalk sheet, opened by every "Book an appointment" control.
+   */
+  .booking {
+    position: fixed;
+    inset: 0;
+    z-index: 120;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background: rgba(18, 22, 18, 0.72);
+    backdrop-filter: blur(6px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease;
+  }
+  .booking--open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .booking__sheet {
+    position: relative;
+    width: min(560px, 100%);
+    padding: 44px 40px 36px;
+    background: var(--chalk);
+    color: var(--ink);
+    box-shadow: 0 28px 80px rgba(8, 10, 7, 0.45);
+    transform: translateY(18px);
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .booking--open .booking__sheet {
+    transform: none;
+  }
+  .booking__title {
+    font: 400 clamp(34px, 4vw, 48px) / 0.95 var(--serif);
+    letter-spacing: -0.02em;
+    margin: 0 0 18px;
+  }
+  .booking__body {
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0 0 26px;
+    color: rgba(30, 33, 29, 0.78);
+  }
+  .booking__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .booking__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 46px;
+    padding: 0 24px;
+    border-radius: 999px;
+    border: 1px solid var(--ink);
+    background: var(--ink);
+    color: var(--chalk);
+    font: 600 10px var(--sans);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .booking__btn--ghost {
+    background: transparent;
+    color: var(--ink);
+    border-color: var(--line);
+  }
+  .booking__close {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    border: 0;
+    background: none;
+    font: 300 28px/1 var(--sans);
+    color: var(--ink);
+    cursor: pointer;
+  }
+}

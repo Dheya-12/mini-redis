@@ -1,0 +1,234 @@
+@layer components {
+  /*
+   * Cinematic frame: full-bleed render, bottom-anchored copy, an eyebrow over a
+   * hairline, a two-line serif headline (roman + italic), one lede, and optional
+   * stat figures.
+   */
+  .frame {
+    position: relative;
+    min-height: 100svh;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+    background: var(--ink);
+    color: #fff;
+  }
+  .frame__image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+  .frame__swap {
+    opacity: 0;
+    transition: opacity 0.9s ease;
+  }
+  .frame__swap--on {
+    opacity: 1;
+  }
+  .frame__shade {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(0deg, rgba(22, 24, 19, 0.82), rgba(22, 24, 19, 0.3) 40%, rgba(22, 24, 19, 0) 67%),
+      linear-gradient(90deg, rgba(22, 24, 19, 0.52), rgba(22, 24, 19, 0) 50%);
+  }
+  .frame--centered .frame__shade {
+    background: linear-gradient(0deg, rgba(24, 26, 21, 0.82), rgba(24, 26, 21, 0.3) 42%, rgba(24, 26, 21, 0) 68%);
+  }
+
+  .frame__copy {
+    position: relative;
+    z-index: 2;
+    padding: 0 0 7vh;
+    width: 100%;
+  }
+  /* The max-width includes the gutter on purpose: wide windows stack the headlines. */
+  .frame__inner {
+    padding: 0 6vw;
+    max-width: 760px;
+  }
+  .frame--centered .frame__copy {
+    display: flex;
+    justify-content: center;
+    padding: 0 6vw 9vh;
+  }
+  .frame--centered .frame__inner {
+    max-width: 680px;
+    text-align: center;
+    padding: 0;
+  }
+  /* Mirrored frame (finishes): copy set right. */
+  .frame--mirrored .frame__copy {
+    display: flex;
+    justify-content: flex-end;
+  }
+  .frame--mirrored .frame__inner {
+    text-align: right;
+  }
+
+  .frame__eyebrow {
+    display: inline-block;
+    letter-spacing: 0.26em;
+    color: rgba(255, 255, 255, 0.82);
+    margin: 0 0 26px;
+    padding: 0 0 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.32);
+  }
+  .frame__title {
+    font-size: clamp(50px, 7vw, 112px);
+    line-height: 0.85;
+    letter-spacing: -0.03em;
+    margin: 0 0 24px;
+    text-wrap: balance;
+    color: #fff;
+    text-shadow: var(--type-shadow);
+  }
+  .frame__lede {
+    font-size: clamp(14px, 1.15vw, 17px);
+    line-height: 1.6;
+    max-width: 48ch;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 300;
+    margin: 0;
+    text-wrap: pretty;
+  }
+  .frame--centered .frame__lede {
+    margin: 0 auto;
+    max-width: 46ch;
+  }
+  .frame--mirrored .frame__lede {
+    margin-left: auto;
+  }
+
+  /* ── Stat figures ── */
+  .stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px 56px;
+    margin-top: 34px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.32);
+  }
+  /* Wide variant spans the content width under the copy column. */
+  .stats--wide {
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    gap: 16px;
+    margin: 34px 6vw 0;
+    padding-top: 24px;
+  }
+  /* The collection label is the stat block's first row; its mask lets it drop in under the rule. */
+  .stats__label {
+    flex: 0 0 100%;
+    overflow: hidden;
+  }
+  .stats__label .eyebrow {
+    display: inline-block;
+    letter-spacing: 0.26em;
+    color: rgba(255, 255, 255, 0.82);
+    margin: 0;
+  }
+  .stat__value {
+    display: block;
+    font: 400 clamp(42px, 4.8vw, 72px) / 1 var(--serif);
+  }
+  .stat__caption {
+    display: block;
+    font-size: 9.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.66);
+    margin-top: 8px;
+  }
+
+  /* ── Finish tags: each swaps the frame's render with a cross-dissolve ── */
+  .frame__tags {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 10px 26px;
+    margin-top: 26px;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.72);
+  }
+  .frame__tag {
+    all: unset;
+    cursor: pointer;
+    transition: color 0.3s;
+  }
+  .frame__tag:hover,
+  .frame__tag:focus-visible {
+    color: #fff;
+  }
+
+  /* ── Chapter plate placement on frames ── */
+  .frame .plate {
+    position: absolute;
+    top: 110px;
+    left: 6vw;
+    z-index: 3;
+    width: calc(100% - 12vw);
+    color: rgba(255, 255, 255, 0.8);
+  }
+  /* The size chapter's four-line headline reaches up; lift its plate clear. */
+  .frame--tall .plate {
+    top: 88px;
+  }
+  .frame--mirrored .impression {
+    right: auto;
+    left: var(--gutter);
+  }
+
+  /* ── ≤800 ── */
+  @media (max-width: 800px) {
+    .frame__image {
+      object-position: var(--mobile-position, center);
+    }
+    .frame__inner {
+      padding: 0 26px;
+    }
+    .frame__lede {
+      max-width: 100%;
+      font-size: 15px;
+    }
+    .stats {
+      gap: 30px;
+    }
+    .stats--wide {
+      gap: 10px;
+      margin: 26px 26px 0;
+      padding-top: 20px;
+    }
+    .stat__value {
+      font-size: 31px;
+    }
+    .stat__caption {
+      font-size: 7.5px;
+      letter-spacing: 0.07em;
+      margin-top: 6px;
+      white-space: nowrap;
+    }
+    .frame__tags {
+      gap: 8px 18px;
+      font-size: 9px;
+    }
+    .frame--centered .frame__copy {
+      padding: 0 26px calc(8vh + 26px);
+    }
+    .frame .plate,
+    .frame--tall .plate {
+      top: 124px;
+      left: 26px;
+      width: calc(100% - 52px);
+    }
+    .frame__title {
+      font-size: 16vw;
+      line-height: 0.88;
+    }
+  }
+}

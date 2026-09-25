@@ -1,0 +1,31 @@
+@layer components {
+  /* Prose for the plain legal documents. */
+  .legal p:not([class]),
+  .legal li {
+    font-size: 16px;
+    line-height: 1.7;
+  }
+  .legal p:not([class]) {
+    margin: 1em 0;
+  }
+  .legal h2 {
+    font: 400 30px/1.1 var(--serif);
+    letter-spacing: -0.02em;
+    margin: 48px 0 14px;
+  }
+  .legal ul {
+    padding-left: 20px;
+    margin: 0 0 16px;
+  }
+  .legal li {
+    margin: 0 0 6px;
+  }
+  .legal a {
+    color: var(--ink);
+  }
+  @media (max-width: 800px) {
+    .legal h2 {
+      font-size: 26px;
+    }
+  }
+}

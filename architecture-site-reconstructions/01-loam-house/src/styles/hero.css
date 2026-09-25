@@ -1,0 +1,190 @@
+@layer components {
+  /*
+   * Hero and the enquiry chapter share one three-column grid on desktop:
+   *   [ copy 1fr ] [ card clamp(320px, 28vw, 400px) ] [ breathing room .12fr ]
+   * The enquiry chapter is a separate section overlaid on the hero's first screen,
+   * so the card lands in the middle column while the copy owns the first.
+   */
+  .hero,
+  .enquiry {
+    --hero-cols: minmax(0, 1fr) clamp(320px, 28vw, 400px) minmax(0, 0.12fr);
+  }
+
+  .hero {
+    min-height: 100svh;
+    position: relative;
+    color: #fff;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: var(--hero-cols);
+    column-gap: 4vw;
+    align-items: center;
+    padding: 0 6vw;
+  }
+  .hero__media {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .hero__video {
+    background: var(--ink);
+  }
+  .hero__video--ambient {
+    opacity: 0;
+  }
+  .hero--ambient .hero__video--ambient {
+    opacity: 1;
+  }
+  .hero__still {
+    display: none;
+  }
+  .hero__shade {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, rgba(14, 17, 13, 0.58), rgba(14, 17, 13, 0.04) 70%),
+      linear-gradient(0deg, rgba(14, 17, 13, 0.45), transparent 40%);
+  }
+  .hero__copy {
+    position: relative;
+    z-index: 2;
+    min-height: 100svh;
+    padding: 17vh 0 5vh;
+    display: flex;
+    flex-direction: column;
+  }
+  .hero__eyebrow {
+    color: rgba(255, 255, 255, 0.78);
+  }
+  .hero__title {
+    font-weight: 300;
+    font-size: clamp(76px, 8.5vw, 138px);
+    line-height: 0.74;
+    letter-spacing: -0.045em;
+    margin: 9vh 0 auto;
+    text-shadow: var(--type-shadow);
+  }
+  .hero__title em {
+    color: #d2ab68;
+    font-weight: 300;
+  }
+  .hero__summary {
+    font-size: 18px;
+    line-height: 1.5;
+  }
+
+  /* ── The enquiry chapter ── */
+  .enquiry {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100svh;
+    z-index: 5;
+    pointer-events: none;
+    display: grid;
+    grid-template-columns: var(--hero-cols);
+    column-gap: 4vw;
+    align-items: center;
+    padding: 0 6vw;
+  }
+  .enquiry .ink-card {
+    grid-column: 2;
+    pointer-events: auto;
+  }
+  .enquiry__bg,
+  .enquiry__shade {
+    display: none;
+  }
+
+  /* ── ≤1050: the hero copy becomes a block; the card narrows ── */
+  @media (max-width: 1050px) {
+    .hero {
+      display: block;
+      padding: 0;
+    }
+    .hero__copy {
+      padding: 16vh 6vw 4vh;
+    }
+    .enquiry .ink-card {
+      max-width: 480px;
+      padding: 30px 28px 26px;
+    }
+  }
+
+  /* ── ≤800: full-screen still with a faded foot; the card becomes its own chapter ── */
+  @media (max-width: 800px) {
+    .hero {
+      background: var(--ink);
+    }
+    .hero__video {
+      display: none;
+    }
+    .hero__still {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100svh;
+      object-fit: cover;
+      object-position: 50% 42%;
+      mask-image: linear-gradient(to bottom, #000 78%, rgba(0, 0, 0, 0.4) 92%, transparent 100%);
+    }
+    .hero__copy {
+      min-height: 100svh;
+      padding: 15vh 30px 6vh;
+    }
+    .hero__eyebrow {
+      margin-bottom: -6vh;
+    }
+    .hero__title {
+      font-size: 16.5vw;
+      line-height: 0.79;
+    }
+    .hero__bottom {
+      position: relative;
+      top: 1vh;
+      transform: translateY(-36px);
+    }
+
+    .enquiry {
+      position: relative;
+      overflow: hidden;
+      height: auto;
+      min-height: 100svh;
+      display: grid;
+      place-items: center;
+      grid-template-columns: 1fr;
+      column-gap: 0;
+      padding: 80px 24px 30px;
+      background: #121612;
+      pointer-events: auto;
+    }
+    .enquiry__bg {
+      display: block;
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      z-index: 0;
+    }
+    .enquiry__shade {
+      display: block;
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background: linear-gradient(
+        0deg,
+        rgba(14, 16, 12, 0.65),
+        rgba(14, 16, 12, 0.5) 45%,
+        rgba(14, 16, 12, 0.52) 70%,
+        rgba(14, 16, 12, 0.6)
+      );
+    }
+  }
+}

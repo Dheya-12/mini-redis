@@ -1,0 +1,238 @@
+@layer components {
+  /* The enquiry card: ink panel, hairline fields, chalk + ghost pills. */
+  .ink-card {
+    position: relative;
+    z-index: 4;
+    align-self: center;
+    width: 100%;
+    padding: 32px 34px 28px;
+    background: rgba(18, 22, 18, 0.9);
+    color: #fff;
+    box-shadow: 0 28px 80px rgba(8, 10, 7, 0.45);
+  }
+
+  .ink-card__eyebrow {
+    display: inline-block;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    font-size: 10px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.75);
+    margin: 0 0 18px;
+  }
+  /* The mask hugs the text; the hairline sits outside it. */
+  .ink-card__eyebrow-mask {
+    display: block;
+    overflow: hidden;
+  }
+  .ink-card__eyebrow-text {
+    display: block;
+  }
+  .ink-card__rule {
+    display: block;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.3);
+    margin-top: 12px;
+  }
+  .ink-card__intro {
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0 0 24px;
+    font-weight: 300;
+  }
+
+  /* ── Fields ── */
+  .ink-field {
+    position: relative;
+    margin: 0 0 20px;
+  }
+  .ink-field__label {
+    display: block;
+    overflow: hidden;
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 6px;
+  }
+  .ink-field__label span {
+    display: block;
+  }
+  .ink-field__input {
+    width: 100%;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 0;
+    padding: 7px 0 10px;
+    font: 300 16px var(--sans);
+    color: #fff;
+    outline: none;
+  }
+  .ink-field__input:focus {
+    border-bottom-color: rgba(255, 255, 255, 0.85);
+  }
+  .ink-field__input:-webkit-autofill,
+  .ink-field__input:-webkit-autofill:hover,
+  .ink-field__input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px #161a16 inset;
+    -webkit-text-fill-color: #fff;
+    caret-color: #fff;
+    transition: background-color 99999s;
+  }
+  /* Bright underline that draws in from the left on focus (driven by GSAP). */
+  .ink-field__focus {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.95);
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+  }
+  /* A resting caret blinks in the empty name field until it is focused. */
+  .ink-field__caret {
+    position: absolute;
+    left: 1px;
+    bottom: 12px;
+    width: 1px;
+    height: 17px;
+    background: #fff;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .ink-field__input:placeholder-shown:not(:focus) ~ .ink-field__caret {
+    animation: ink-caret 1.06s step-end infinite;
+  }
+  @keyframes ink-caret {
+    0%,
+    49% {
+      opacity: 1;
+    }
+    50%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  /* The phone field only exists in call-back mode; it expands in. */
+  .ink-card__phone {
+    overflow: hidden;
+    height: 0;
+  }
+
+  /* ── Pills ── */
+  .ink-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    height: 46px;
+    margin: 0 0 8px;
+    border-radius: 999px;
+    font: 600 10px var(--sans);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .ink-btn--primary {
+    background: var(--chalk);
+    color: var(--ink);
+    border: 1px solid var(--chalk);
+  }
+  .ink-btn--ghost {
+    background: transparent;
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.42);
+  }
+  .ink-btn:disabled {
+    cursor: progress;
+  }
+  .ink-card__trust {
+    display: block;
+    margin-top: 14px;
+    font-size: 8.5px;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.42);
+    text-align: center;
+  }
+
+  /* ── Thank-you state ── */
+  .ink-card__success {
+    display: none;
+    padding: 26px 0 18px;
+    text-align: center;
+  }
+  .ink-card__success-line span {
+    display: block;
+    font: 400 clamp(26px, 2.4vw, 32px) / 1.15 var(--serif);
+    letter-spacing: -0.02em;
+  }
+  .ink-card__success-line .ink-card__email {
+    font: 400 clamp(16px, 1.5vw, 19px) / 1.5 var(--sans);
+    letter-spacing: 0.03em;
+    color: rgba(255, 255, 255, 0.92);
+    margin-top: 12px;
+  }
+  .ink-card__view {
+    margin: 20px 0 2px;
+  }
+  .ink-card__upsell {
+    margin-top: 34px;
+    text-align: left;
+  }
+  .ink-card__upsell-intro {
+    font-size: 12px;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.75);
+    margin: 0 0 22px;
+  }
+  .ink-card__upsell-done {
+    margin: 0;
+    padding: 14px 0 6px;
+    text-align: center;
+    font: 400 clamp(24px, 2.2vw, 30px) / 1.3 var(--serif);
+    letter-spacing: -0.015em;
+    color: rgba(255, 255, 255, 0.95);
+    text-wrap: balance;
+  }
+
+  /* ── ≤800: flat content on the chapter image, no panel ── */
+  @media (max-width: 800px) {
+    .enquiry .ink-card {
+      grid-column: auto;
+      width: 100%;
+      max-width: 440px;
+      padding: 22px 24px 18px;
+      margin: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+    .enquiry .ink-card__eyebrow {
+      margin: 0 0 16px;
+    }
+    .enquiry .ink-card__intro {
+      margin: 0 0 22px;
+      font-size: 13.5px;
+    }
+    .enquiry .ink-field {
+      margin: 0 0 22px;
+    }
+    .enquiry .ink-field__input {
+      padding: 9px 0 12px;
+      font-size: 16px;
+    }
+    .enquiry .ink-btn {
+      height: 48px;
+      margin: 0 0 8px;
+    }
+    .enquiry .ink-card__trust {
+      margin-top: 16px;
+    }
+  }
+}
