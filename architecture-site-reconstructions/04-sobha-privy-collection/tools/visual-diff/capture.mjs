@@ -55,6 +55,9 @@ for (const route of routes) {
     const name = `${slug}-${String(i).padStart(2, '0')}`;
     await scrollTo(page, y);
     if (reached.has(name) && reached.get(name) !== y) { await page.waitForTimeout(300); await scrollTo(page, reached.get(name)); }
+    // both sides run a layout pass whenever an image arrives (desktop); on the live site that depends on network
+    // timing, so after each jump one pass is triggered on both, the same way (a load event from an image)
+    await page.evaluate(() => document.querySelector('main img, img')?.dispatchEvent(new Event('load')));
     await page.waitForTimeout(SETTLE);
     await page.screenshot({ path: path.join(out, name + '.png'), timeout: 180000 });
     const actual = Math.round(await current(page));
