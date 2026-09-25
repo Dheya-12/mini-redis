@@ -99,3 +99,86 @@ hard limit).
 **Alternatives if it becomes a problem:** track `zips/*.zip` with Git LFS, attach ZIPs to GitHub Releases instead,
 or stop committing `NN-*/public/assets` (the ZIP stays complete).
 **To reverse:** `git rm --cached architecture-site-reconstructions/zips/*.zip` and adopt one of the alternatives.
+
+---
+
+## Site #2 — Thirdway
+
+### [08:40] URL and identity
+
+**Fork:** URL was given (https://www.thirdway.com/); no studio to verify against.
+**Investigated:** Page title "Thirdway"; footer credits How&How (howandhow.com) and Hambly Freeman (hamblyfreeman.com).
+Next.js 16 (Turbopack) + Tailwind v4 + DatoCMS images + Vimeo HLS video + Lenis 1.3.25 + GSAP 3.15.0 + Swiper.
+**Chose:** Reconstruct https://www.thirdway.com/ as given. **Confidence:** High.
+
+### [08:45] **[LOW]** Commercial fonts are not redistributed
+
+**Fork:** The site's typefaces are commercial (KMR Waldenburg Medium by Kimera; ABC Marist Book by Dinamo).
+Bundling the woff2 files in a public repo/ZIP would redistribute licensed fonts.
+**Chose:** The project declares `@font-face` for "waldenburg"/"marist" pointing at `public/fonts/licensed/*.woff2`
+(git-ignored, excluded from the ZIP). Without them the site falls back to open-licence lookalikes that ship with it
+(Inter Tight for Waldenburg, Newsreader for Marist). Visual validation was run *with* the licensed files present
+locally (so layout is measured against the real metrics) and is also reported without them.
+**To reverse:** drop licensed files into `public/fonts/licensed/` (names in README), or change the fallbacks in
+`src/app/fonts.css`.
+
+### [09:10] Architecture: server markup as data + hand-written behaviour modules
+
+**Fork:** ~25 CMS block types across 60 routes. Hand-writing JSX for every block, or rendering the site's own
+public server-side markup (SSR HTML, fetched per route) from data and re-implementing all behaviour.
+**Investigated:** No source maps; the SSR HTML is clean, pre-hydration markup (no GSAP inline state, no SplitText
+wrappers). Everything interactive (reveals, pins, carousels, menu, cookies, contact dialog, counters, filters) is
+client JavaScript.
+**Chose:** `tools/extract-content.mjs` serialises each route's `<main>` (and the shared header / footer / cookie UI /
+contact dialog) into compact JSON element trees with React-shaped props and self-hosted media URLs
+(`src/content/**`). `src/lib/tree.ts` renders them in server components. All motion and interaction is new code in
+`src/behaviours/*` (GSAP / ScrollTrigger / SplitText / Lenis / Swiper), keyed to block class names, with timings
+measured from the live page by recording its DOM mutations (`reveal.ts` documents the measured eases/offsets).
+**Why:** Reproduces every page's markup exactly (verifiable by diff) while keeping the implementation our own; the
+original's JavaScript was never used or recovered.
+**To reverse:** any block can be replaced by a JSX component: render it instead of the tree node in
+`src/app/[[...slug]]/page.tsx` and drop its entry from `src/behaviours/blocks.ts`.
+**Confidence:** Medium — markup-as-data is less editable than hand-written JSX.
+
+### [09:40] **[LOW]** Route scope: 60 pages; the rest of the archive links out
+
+**Fork:** The Projects and Journal indexes list 87 projects and 27 articles behind "Load More"; only 21 + 21 are
+linked from pages without clicking Load More. All 114 pages' images would push the ZIP far past 100 MB.
+**Chose:** Reconstruct the 59 routes reachable without Load More, plus /project/forge (linked from the home
+carousel). Load More / Sector / Team / search / sort still work over the full listing (card data + thumbnails taken
+from the site's data payload); cards for pages outside the build link to the original site.
+**To reverse:** save the extra routes' server HTML into the capture folder and re-run the extractor. They build with
+no code changes (about 3 MB of media per project page).
+
+### [09:45] **[LOW]** Heavy media not committed to the repository
+
+**Chose:** `02-thirdway/public/media/` (~90 MB) is git-ignored in the repo copy; the ZIP carries it. This keeps the
+repository growing only by the ZIP, not by the ZIP plus a second copy of the media.
+**To reverse:** remove the `/public/media/` line from `02-thirdway/.gitignore`.
+
+### [09:50] Values measured on the live site (not guessed)
+
+Lenis `lerp: 0.13`. Line reveals rise from 130 % with opacity 0, `power4.out` over 1 s, 0.1 s stagger. Fade reveals
+rise 24 px. Scroll-fill characters go from 30 % opacity. The intro panels open to a 415 × 36 px slit, then a portrait
+window, then fully, while the film scales from 0.6422. Featured projects pin for 3 × 100 lvh and wipe bottom-up.
+Services pin for 473 px per service. Process steps pin with the frame 89 px above the viewport bottom, and images
+fly between the frame, a 0.398 × frame-height thumbnail and a point beyond it. Logo marquees drift at 51 px/s.
+Swiper geometry was measured at 390/1024/1440 px (`carousels.ts`). Menu panel: 172 × 44 → 680 px wide.
+Footer ruler: 96 px = 2.54 cm.
+**Approximated (not observable):** People-hero portrait anchors 5–7 and drift speed; case-study colours for teams
+other than Studio/Boutique; the easing of the process-step transitions; counter durations.
+
+### [09:55] Integrations stubbed
+
+Contact dialog validates locally and acknowledges (no backend). Cookie consent is stored in `localStorage`
+(`cookieConsent`) and gates only the banner; there are no analytics to gate. The intro animation's Lottie data (a
+14 KB public asset in the site's bundle) is played with lottie-web.
+
+### [08:55] Media handling
+
+**Chose:** Images are the exact bytes the browser received (AVIF from DatoCMS at the requested widths). Renditions
+the capture never requested are fetched once at the width closest to 1440 px (~570 files, ~50 MB in total). Vimeo HLS streams are converted to single MP4 files: background loops (home, vision) at 720p; long-form
+journal videos at 360p, and the menu's Mux clip at 270p, to keep the ZIP under GitHub's 100 MB file limit
+(~40 MB of video). Vimeo still frames are used as posters. A YouTube embed on one
+article stays a YouTube iframe.
+**To reverse:** re-run `tools/fetch_hls.py` with a higher height.

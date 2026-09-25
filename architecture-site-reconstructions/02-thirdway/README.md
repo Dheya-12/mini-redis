@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Thirdway — clean-room Next.js reconstruction
 
-## Getting Started
-
-First, run the development server:
+Reconstruction of [thirdway.com](https://www.thirdway.com/) (brand & website by How&How, built by Hambly Freeman)
+as a Next.js 16 App Router project. 60 routes are statically generated: the home page, the 16 top-level and legal
+pages, 22 project case studies and 21 journal articles.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev        # http://localhost:3000
+npm run build && npm start
+npm run lint && npm run typecheck && npm test
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Typefaces (read this first)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The site uses two commercial typefaces, **KMR Waldenburg Medium** and **ABC Marist Book**. They are licensed per
+domain and are **not** included. If you have a licence, copy the files to:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+public/fonts/licensed/KMRWaldenburg-Medium.woff2
+public/fonts/licensed/ABCMarist-Book.woff2
+```
 
-## Learn More
+They are picked up automatically, and the folder is git-ignored. Without them the site uses open-licence stand-ins
+(Inter Tight and Newsreader, SIL OFL, in `public/fonts/fallback/`). These are metric-matched to the originals, so
+line breaks and spacing stay close; see `src/app/fonts.css`.
 
-To learn more about Next.js, take a look at the following resources:
+## How it is built
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Path | What it is |
+|------|------------|
+| `src/content/pages/*.json` | One file per route: the page's server-rendered markup as a compact element tree (`[tag, props, ...children]`), with media pointing at `/media/*` |
+| `src/content/chrome.json` | Header and menu, footer, cookie banner and preferences, page-transition curtain, contact dialog, footer "you've scrolled" facts |
+| `src/content/listing.json` | Full project (87) and article (27) listings behind Load More, the filters and search |
+| `src/content/teams.json`, `intro-lottie.json` | Team wordmarks (SVG trees) and the intro monogram animation |
+| `src/lib/tree.ts` | Renders element trees in server components |
+| `src/app/[[...slug]]/page.tsx` | Static route generation plus per-page metadata |
+| `src/components/SiteEffects.tsx` | Persistent chrome behaviour: Lenis smooth scroll, header clock and colour scheme, menu, cookie UI, contact dialog, footer ruler, page transitions |
+| `src/components/PageEffects.tsx` | Per-route wiring of the block behaviours below |
+| `src/components/IntroLoader.tsx` | First-visit home intro (monogram, then panels opening onto the hero film) |
+| `src/behaviours/reveal.ts` | Line reveals (SplitText), fade-ups, scroll-fill paragraphs |
+| `src/behaviours/home.ts` | Home hero, pinned featured-projects stack, client-logo marquees |
+| `src/behaviours/blocks.ts` | Process steps, case-study scroller, services stack, People hero |
+| `src/behaviours/listings.ts` | Projects and Journal index controls, stat counters |
+| `src/behaviours/carousels.ts` | Every Swiper carousel, using geometry measured on the live site |
+| `tools/extract-content.mjs` | Build-time extractor that produced `src/content` from the captured public HTML |
+| `tools/visual-diff/` | Capture and pixel-diff harness used for `FIDELITY.md` |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Libraries: Next 16.3.6, React 19.2, Tailwind CSS 4, GSAP 3.15 (ScrollTrigger, SplitText), Lenis 1.3.25,
+Swiper 14.2, lottie-web 5.13.
 
-## Deploy on Vercel
+## Differences from the live site
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Integrations:** the contact dialog validates and acknowledges locally (no backend). Cookie choices are stored
+  in `localStorage`. No analytics.
+- **Video:** films are served as local MP4 files instead of Vimeo, Mux or HLS streams. Long journal films are 360p.
+  The YouTube embed on one article is kept.
+- **Out of scope:** projects and articles that are only reachable through "Load More" link to the original site.
+  See `DECISIONS.md` at the repository root.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+All images, films and copy belong to Thirdway and are included only so the reconstruction can be compared with the
+original.

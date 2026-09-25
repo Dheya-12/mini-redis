@@ -337,6 +337,27 @@ const listing = { projects: [], articles: [] };
 fs.writeFileSync(path.join(ROOT, 'src/content/listing.json'), JSON.stringify(listing));
 fs.writeFileSync(path.join(ROOT, 'src/content/routes.json'), JSON.stringify(index, null, 1));
 
+// links to pages outside the reconstruction (or broken on the original) point at the original site
+{
+  const outside = (h) => typeof h === 'string' && h.startsWith('/') && !h.startsWith('/media/') && !known.has((h.split(/[?#]/)[0].replace(/\/$/, '')) || '/');
+  const fix = (n) => {
+    if (!Array.isArray(n)) return;
+    if (n[1] && outside(n[1].href)) n[1].href = 'https://www.thirdway.com' + n[1].href;
+    n.slice(2).forEach(fix);
+  };
+  for (const f of fs.readdirSync(OUT_PAGES)) {
+    const file = path.join(OUT_PAGES, f);
+    const doc = JSON.parse(fs.readFileSync(file, 'utf8'));
+    fix(doc.main);
+    fs.writeFileSync(file, JSON.stringify(doc));
+  }
+  const cf = path.join(ROOT, 'src/content/chrome.json');
+  const c = JSON.parse(fs.readFileSync(cf, 'utf8'));
+  Object.values(c).forEach(fix);
+  for (const f of c.scrollFacts || []) if (outside(f.href)) f.href = 'https://www.thirdway.com' + f.href;
+  fs.writeFileSync(cf, JSON.stringify(c));
+}
+
 // fetch media the capture never saw (mobile-only renditions etc.)
 const extFix = new Map();
 for (const [url, name] of downloads) {

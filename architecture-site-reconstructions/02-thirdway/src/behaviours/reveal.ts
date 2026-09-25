@@ -7,7 +7,7 @@ import fadeTargets from "./fade-targets.json";
  *  - wrappers the original fades in (24px rise) are matched by their measured DOM signature,
  *  - "scroll-fill" paragraphs brighten character by character as they scroll through.
  */
-const START = "top 90%";
+const START = "top 75%"; // measured: reveals start when the element reaches 73–75 % of the viewport
 
 type Sig = [string, string[]][];
 const sigs = fadeTargets as unknown as Sig[];
