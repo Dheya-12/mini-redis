@@ -59,3 +59,8 @@ video.film {
   top: 0;
   width: 100%;
 }
+
+/* while a modal is open the page holds still (Lenis is stopped; this also stops native touch and keyboard scrolling) */
+html.lenis-stopped {
+  overflow: hidden;
+}

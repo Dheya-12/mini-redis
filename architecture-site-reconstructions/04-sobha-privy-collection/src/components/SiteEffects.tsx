@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
-import { initSmoothScroll } from "@/behaviours/smooth";
+import { initSmoothScroll, initHashLinks } from "@/behaviours/smooth";
+import { initCookieConsent } from "@/behaviours/cookies";
 import { initLayoutEvents } from "@/lib/layout";
 
 /** Behaviour that lives for the whole visit (smooth scroll, layout passes on resize). */
@@ -12,8 +13,10 @@ export default function SiteEffects() {
     html.classList.add("is-ready");
     const offScroll = initSmoothScroll();
     const offLayout = initLayoutEvents();
+    const offLinks = initHashLinks();
+    const offCookie = initCookieConsent();
     console.log("%cReconstruction of sobha-privy-collection.com (website by Vide Infra)", "padding: 8px;");
-    return () => { offLayout(); offScroll(); };
+    return () => { offCookie(); offLinks(); offLayout(); offScroll(); };
   }, []);
   return null;
 }

@@ -13,26 +13,7 @@ import { load, HIDDEN_NOW } from "./appear";
 import { revealContent } from "./reveal";
 import { transition } from "./transition";
 import { ensureSplitting } from "./split";
-
-/** a value that follows its target by a fixed share per frame */
-class Follower {
-  value = 0;
-  target = 0;
-  private raf = 0;
-  constructor(private strength: number, private onUpdate: (v: number) => void) {}
-  set(t: number) {
-    this.target = t;
-    if (!this.raf) this.raf = requestAnimationFrame(this.tick);
-  }
-  private tick = () => {
-    this.raf = 0;
-    this.value += (this.target - this.value) * this.strength;
-    if (Math.abs(this.target - this.value) < 1e-4) this.value = this.target;
-    this.onUpdate(this.value);
-    if (this.value !== this.target) this.raf = requestAnimationFrame(this.tick);
-  };
-  stop() { cancelAnimationFrame(this.raf); this.raf = 0; }
-}
+import { Follower } from "@/lib/follow";
 
 /** media within the first two screens, visible at this breakpoint and not inside a modal */
 function introMedia(root: HTMLElement): Element[] {
@@ -80,9 +61,9 @@ export function initPreloader(root: HTMLElement, hasIntro: boolean): Cleanup {
   let alive = true;
 
   const followers = playIntro
-    ? Array.from(intro!.querySelectorAll<SVGElement>(".js-preloader-item")).map((item) => new Follower(0.15, (v) => item.style.setProperty("--progress-svg", String(v))))
+    ? Array.from(intro!.querySelectorAll<SVGElement>(".js-preloader-item")).map((item) => new Follower<number>(0, 0.15, (v: number) => item.style.setProperty("--progress-svg", String(v))))
     : [];
-  const overall = new Follower(0.15, (v) => {
+  const overall = new Follower<number>(0, 0.15, (v: number) => {
     intro?.style.setProperty("--progress", String(v));
     intro?.style.setProperty("--progress-percent", String(Math.round(v * 100)));
   });

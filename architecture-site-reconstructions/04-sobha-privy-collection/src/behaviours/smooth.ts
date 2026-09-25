@@ -97,3 +97,55 @@ export function initGravityWells(root: HTMLElement): Cleanup {
   const off = addLayout("measure", measureWells);
   return () => { off(); wells = []; };
 }
+
+const firstValue = (el: Element, prop: string) => parseFloat(getComputedStyle(el).getPropertyValue(prop).trim().split(/\s+/)[0]) || 0;
+
+/** the scroll position that brings an element to the top of the screen (respecting its scroll padding / margin) */
+export function elementScroll(el: Element, offset = 0) {
+  return Math.max(0, pageOffset(el).scrollTop + offset + firstValue(el, "scroll-padding-top") - firstValue(el, "scroll-margin-top"));
+}
+
+/** scrolls to an element: smoothly, or at once with `immediate` */
+export function scrollToElement(el: Element, o: { immediate?: boolean; offset?: number } = {}) {
+  const y = elementScroll(el, o.offset);
+  if (state.lenis) state.lenis.scrollTo(y, { immediate: !!o.immediate, force: true });
+  else window.scrollTo({ top: y, behavior: o.immediate ? "instant" : "smooth" });
+}
+
+/** an element an in-page address points to, if it can be scrolled to */
+function hashTarget(hash: string): HTMLElement | null {
+  const id = decodeURIComponent(hash.replace(/^#/, ""));
+  if (!id) return null;
+  const el = document.getElementById(id);
+  if (!el || el.matches(".modal") || el.closest(".modal")) return null;
+  const cs = getComputedStyle(el);
+  if (cs.display === "none" || cs.position === "fixed") return null;
+  return el;
+}
+
+/**
+ * In-page links (`#top`, `/#tenets` on the home page) scroll there smoothly; an address with a section in it opens
+ * the page at that section. Links to modals are left to the modals.
+ */
+export function initHashLinks(): Cleanup {
+  const onClick = (e: MouseEvent) => {
+    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    const a = (e.target as Element | null)?.closest("a");
+    const href = a?.getAttribute("href");
+    if (!a || !href || !href.includes("#") || a.target === "_blank") return;
+    const path = href.replace(/#.*/, "");
+    if (path && path.replace(/\/+$/, "") !== location.pathname.replace(/\/+$/, "")) return;
+    const target = hashTarget(href.replace(/.*#/, ""));
+    if (!target) return;
+    e.preventDefault();
+    scrollToElement(target);
+  };
+  document.addEventListener("click", onClick);
+  return () => document.removeEventListener("click", onClick);
+}
+
+/** opens the page at the section named in the address */
+export function scrollToHash() {
+  const target = hashTarget(location.hash);
+  if (target) setTimeout(() => scrollToElement(target, { immediate: true }), 16);
+}

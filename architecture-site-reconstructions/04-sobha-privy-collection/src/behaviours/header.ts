@@ -10,8 +10,8 @@ import { addLayout } from "@/lib/layout";
 import { pageOffset } from "./parallax/engine";
 import type { Cleanup } from "@/lib/runtime";
 
-const uiClasses = (el: Element) => Array.from(el.classList).filter((c) => c.startsWith("ui-"));
-function setUi(el: Element, theme: string) {
+export const uiClasses = (el: Element) => Array.from(el.classList).filter((c) => c.startsWith("ui-"));
+export function setUi(el: Element, theme: string) {
   el.classList.remove(...uiClasses(el));
   el.classList.add(...theme.split(/\s+/).filter(Boolean));
 }
