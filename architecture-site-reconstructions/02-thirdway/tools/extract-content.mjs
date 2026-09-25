@@ -56,13 +56,22 @@ function slugFor(url) {
   const base = path.basename(u.pathname).replace(/\.[a-z0-9]+$/i, '').replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 60);
   return base + '-' + crypto.createHash('sha1').update(url).digest('hex').slice(0, 6);
 }
+// the query parameters that change which part of the picture is shown (imgix / DatoCMS)
+function cropKey(url) {
+  let q;
+  try { q = new URL(url, 'https://x').searchParams; } catch { return ''; }
+  const k = ['ar', 'fit', 'crop', 'rect', 'fp-x', 'fp-y', 'fp-z'].map((n) => `${n}=${q.get(n) ?? ''}`);
+  const w = +(q.get('w') || 0), h = +(q.get('h') || 0);
+  if (h && w) k.push(`r=${(w / h).toFixed(2)}`);
+  return k.join('&');
+}
 function resolveImage(cands) {
   const found = cands.filter((c) => manifest[c.url]).sort((a, b) => b.w - a.w);
   if (found.length) return pub(found[0].url);
-  // same asset fetched with other parameters?
+  // same asset fetched with other parameters? Only reuse it if it has the same crop (aspect ratio / fit / focal point)
   for (const c of cands) {
-    const alt = byPath.get(c.url.split('?')[0]);
-    if (alt) return pub(alt.sort((a, b) => (manifest[b].bytes || 0) - (manifest[a].bytes || 0))[0]);
+    const alt = (byPath.get(c.url.split('?')[0]) || []).filter((u) => cropKey(u) === cropKey(c.url));
+    if (alt.length) return pub(alt.sort((a, b) => (manifest[b].bytes || 0) - (manifest[a].bytes || 0))[0]);
   }
   if (!cands.length) return null;
   // never seen by the capture: fetch the candidate closest to a 1440px layout
