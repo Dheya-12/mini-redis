@@ -35,7 +35,7 @@ export function initPageTransitions(router: Router, routeList: string[]): Cleanu
 
   const go = (url: URL, kind: "loader" | "tabs") => {
     const href = url.pathname + url.search + url.hash;
-    state.navigation = { kind, route: path(url.pathname) };
+    state.navigation = { kind, route: path(url.pathname), scroll: state.lenis?.scroll ?? window.scrollY };
     if (kind === "tabs") { router.push(href, { scroll: false }); return; }
     const screen = preloader();
     if (!screen) { router.push(href, { scroll: false }); return; }
@@ -67,7 +67,7 @@ export function initPageTransitions(router: Router, routeList: string[]): Cleanu
   // back / forward: the router swaps the page at once; the screen covers it until the page is ready
   const onPop = () => {
     const screen = preloader();
-    state.navigation = { kind: "loader", route: path(location.pathname) };
+    state.navigation = { kind: "loader", route: path(location.pathname), scroll: 0 };
     if (screen) { stopTransition(screen); screen.classList.remove("is-hidden", "is-invisible"); screen.setAttribute("aria-hidden", "false"); }
   };
   document.addEventListener("click", onClick);

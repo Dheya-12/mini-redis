@@ -11,7 +11,7 @@ export const state = {
   firstLoaded: false,
   lenis: null as Lenis | null,
   /** the page change in progress, set by a link and read by the arriving page (see behaviours/navigation.ts) */
-  navigation: null as null | { kind: "loader" | "tabs"; route: string },
+  navigation: null as null | { kind: "loader" | "tabs"; route: string; scroll: number },
 };
 
 export type Cleanup = () => void;

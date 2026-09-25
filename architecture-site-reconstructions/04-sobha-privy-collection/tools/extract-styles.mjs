@@ -11,6 +11,7 @@
 //   <cssDir> holds global.css, landing.css, location.css, privacy-policy.css as served by the site
 import fs from 'node:fs';
 import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 import postcss from 'postcss';
 
 const [cssDir, ssrDir] = process.argv.slice(2);
@@ -40,7 +41,13 @@ const unescapeClass = (s) => s.replace(/\\(.)/g, '$1');
 const classesOf = (sel) => [...sel.matchAll(/\.((?:\\.|[a-zA-Z0-9_-])+)/g)].map((m) => unescapeClass(m[1]));
 
 // ---------------------------------------------------------------- url rewriting
-const rewriteUrls = (v) => v.replace(/url\((['"]?)(\/assets\/images\/(?:media\/)?)([^'")?#]+)(?:\?[^'")#]*)?(#[^'")]*)?\1\)/g, (_, q, _p, rest, hash) => `url(${q}/media/${rest}${hash || ''}${q})`);
+// images the kept rules refer to are downloaded next to the markup's (public/media), once
+const ORIGIN = 'https://sobha-privy-collection.com';
+const assets = new Map();
+const rewriteUrls = (v) => v.replace(/url\((['"]?)(\/assets\/images\/(?:media\/)?)([^'")?#]+)(?:\?[^'")#]*)?(#[^'")]*)?\1\)/g, (_, q, prefix, rest, hash) => {
+  assets.set(rest, prefix + rest);
+  return `url(${q}/media/${rest}${hash || ''}${q})`;
+});
 
 // ---------------------------------------------------------------- font stacks
 const FALLBACK = { 'TT Commons Pro': 'TT Commons Pro Fallback', 'TT Ramillas': 'TT Ramillas Fallback', 'altesse-std-64pt': 'Altesse Fallback', 'altesse-std-24pt': 'Altesse Fallback' };
@@ -95,6 +102,13 @@ const header = `/*
  * Do not edit by hand: overrides and additions for this reconstruction live in src/app/globals.css.
  */
 `;
+for (const [rel, src] of assets) {
+  const file = path.join(ROOT, 'public/media', rel);
+  if (fs.existsSync(file)) continue;
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  try { execFileSync('curl', ['-sS', '-L', '--fail', '--retry', '3', '-o', file, ORIGIN + src]); }
+  catch { fs.rmSync(file, { force: true }); console.warn('missing on the original:', src); }
+}
 fs.mkdirSync(path.join(ROOT, 'src/styles'), { recursive: true });
 fs.writeFileSync(path.join(ROOT, 'src/styles/site.css'), header + out.join('\n\n') + '\n');
 console.log(`selectors kept ${stats.kept}, dropped ${stats.dropped}; ${(fs.statSync(path.join(ROOT, 'src/styles/site.css')).size / 1024).toFixed(0)} KB`);

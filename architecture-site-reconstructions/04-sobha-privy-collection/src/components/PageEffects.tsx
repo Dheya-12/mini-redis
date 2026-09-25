@@ -36,7 +36,13 @@ export default function PageEffects({ route, sheet, intro }: { route: string; sh
     // arriving from another page: a covered change starts at the top; a tab change fades in where the page was
     const nav = state.navigation;
     if (nav?.kind === "loader") { state.lenis?.scrollTo(0, { immediate: true, force: true }); window.scrollTo(0, 0); }
-    if (nav?.kind === "tabs") { root.classList.add("is-invisible"); transition(root, "fade-in"); }
+    let keepScroll = 0;
+    if (nav?.kind === "tabs") {
+      root.classList.add("is-invisible");
+      transition(root, "fade-in");
+      const y = nav.scroll;
+      keepScroll = window.setTimeout(() => { state.lenis?.scrollTo(y, { immediate: true, force: true }); if (!state.lenis) window.scrollTo(0, y); }, 16);
+    }
     const offSize = initIframeSize(root);
     const offAppear = initAppear(root);
     const sliders = initStickySliders(root, scrollY);
@@ -73,6 +79,7 @@ export default function PageEffects({ route, sheet, intro }: { route: string; sh
     return () => {
       alive = false;
       clearTimeout(late);
+      clearTimeout(keepScroll);
       window.removeEventListener("load", onLoad);
       window.removeEventListener("scroll", onScroll);
       offLenis?.();
