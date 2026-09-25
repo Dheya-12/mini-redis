@@ -7,7 +7,6 @@ import { submitLead } from "@/lib/lead";
 import { gsap } from "@/lib/motion/gsap";
 import { useSiteUI } from "@/components/site/SiteProvider";
 
-
 type Mode = "brochure" | "callback";
 
 /**
@@ -83,14 +82,20 @@ function EnquiryCard() {
       gsap
         .timeline()
         .to(wrap, { height: inner.offsetHeight + 26, duration: 0.6, ease: "power3.out" }, 0)
-        .fromTo(inner, { y: 40, opacity: 0, filter: "blur(6px)" }, { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.7, ease: "power3.out" }, 0.12);
+        .fromTo(
+          inner,
+          { y: 40, opacity: 0, filter: "blur(6px)" },
+          { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.7, ease: "power3.out" },
+          0.12,
+        );
     } else {
       gsap
         .timeline()
         .to(inner, { y: 30, opacity: 0, filter: "blur(6px)", duration: 0.35, ease: "power2.in" }, 0)
         .to(wrap, { height: 0, duration: 0.5, ease: "power3.inOut" }, 0.1);
     }
-    const nextCopy = next === "callback" ? ENQUIRY.callback : { ...ENQUIRY.brochure, intro: ENQUIRY.brochureIntroReturn };
+    const nextCopy =
+      next === "callback" ? ENQUIRY.callback : { ...ENQUIRY.brochure, intro: ENQUIRY.brochureIntroReturn };
     const swapping = card.current!.querySelectorAll("[data-swap]");
     gsap
       .timeline()
@@ -103,7 +108,9 @@ function EnquiryCard() {
   const playThanks = (name: string, email: string, callback: boolean) => {
     const first = name.split(/\s+/)[0] ?? "";
     // Commit the thank-you markup before the timeline measures it.
-    flushSync(() => setThanks({ eyebrow: first ? `Thank you, ${first}` : "Thank you", email: email || "your inbox", callback }));
+    flushSync(() =>
+      setThanks({ eyebrow: first ? `Thank you, ${first}` : "Thank you", email: email || "your inbox", callback }),
+    );
     const c = card.current!;
     const form = formView.current!;
     const success = successView.current!;
@@ -113,15 +120,36 @@ function EnquiryCard() {
       .to(form.children, { opacity: 0, y: -18, filter: "blur(6px)", duration: 0.45, ease: "power2.in", stagger: 0.05 })
       .set(form, { display: "none" })
       .set(success, { display: "block" })
-      .from(success.querySelector(".ink-card__rule"), { scaleX: 0, transformOrigin: "0 50%", duration: 1, ease: "power3.out" })
-      .from(success.querySelector(".ink-card__eyebrow-text"), { yPercent: 130, duration: 0.9, ease: "power3.out" }, "-=.7");
+      .from(success.querySelector(".ink-card__rule"), {
+        scaleX: 0,
+        transformOrigin: "0 50%",
+        duration: 1,
+        ease: "power3.out",
+      })
+      .from(
+        success.querySelector(".ink-card__eyebrow-text"),
+        { yPercent: 130, duration: 0.9, ease: "power3.out" },
+        "-=.7",
+      );
     if (!callback) {
       const lines = success.querySelectorAll(".ink-card__success-line span");
-      tl.from(lines, { x: (i: number) => (i % 2 ? 90 : -90), opacity: 0, duration: 1.3, ease: "expo.out", stagger: 0.08 }, "-=.55")
+      tl.from(
+        lines,
+        { x: (i: number) => (i % 2 ? 90 : -90), opacity: 0, duration: 1.3, ease: "expo.out", stagger: 0.08 },
+        "-=.55",
+      )
         .from(lines, { filter: "blur(16px)", duration: 1.5, ease: "power1.out", stagger: 0.08 }, "<")
-        .from(success.querySelector(".ink-card__view"), { opacity: 0, y: 16, duration: 0.6, ease: "power2.out" }, "-=.7");
+        .from(
+          success.querySelector(".ink-card__view"),
+          { opacity: 0, y: 16, duration: 0.6, ease: "power2.out" },
+          "-=.7",
+        );
     }
-    tl.from(success.querySelector(".ink-card__upsell"), { opacity: 0, y: 18, duration: 0.7, ease: "power2.out" }, callback ? "-=.5" : "-=.4");
+    tl.from(
+      success.querySelector(".ink-card__upsell"),
+      { opacity: 0, y: 18, duration: 0.7, ease: "power2.out" },
+      callback ? "-=.5" : "-=.4",
+    );
   };
 
   const onSubmit = async (e: FormEvent) => {
@@ -158,7 +186,9 @@ function EnquiryCard() {
       const upsell = success.querySelector<HTMLElement>(".ink-card__upsell")!;
       c.style.minHeight = `${c.offsetHeight}px`;
       upsell.style.minHeight = `${upsell.offsetHeight}px`;
-      const leaving = success.querySelectorAll(".ink-card__upsell-intro, .ink-card__upsell-form, .ink-card__success-line");
+      const leaving = success.querySelectorAll(
+        ".ink-card__upsell-intro, .ink-card__upsell-form, .ink-card__success-line",
+      );
       const done = success.querySelector(".ink-card__upsell-done");
       gsap
         .timeline()
@@ -201,7 +231,16 @@ function EnquiryCard() {
             <label className="ink-field__label" htmlFor="enquiry-name">
               <span>Name</span>
             </label>
-            <input ref={nameRef} className="ink-field__input" id="enquiry-name" name="name" autoComplete="name" placeholder=" " required {...focusLine} />
+            <input
+              ref={nameRef}
+              className="ink-field__input"
+              id="enquiry-name"
+              name="name"
+              autoComplete="name"
+              placeholder=" "
+              required
+              {...focusLine}
+            />
             <i className="ink-field__focus" />
             <i className="ink-field__caret" />
           </div>
@@ -209,7 +248,16 @@ function EnquiryCard() {
             <label className="ink-field__label" htmlFor="enquiry-email">
               <span>Email</span>
             </label>
-            <input ref={emailRef} className="ink-field__input" id="enquiry-email" type="email" name="email" autoComplete="email" required {...focusLine} />
+            <input
+              ref={emailRef}
+              className="ink-field__input"
+              id="enquiry-email"
+              type="email"
+              name="email"
+              autoComplete="email"
+              required
+              {...focusLine}
+            />
             <i className="ink-field__focus" />
           </div>
           <div className="ink-card__phone" ref={phoneWrap}>
@@ -277,15 +325,22 @@ function EnquiryCard() {
           ) : (
             <>
               <p className="ink-card__upsell-intro">
-                If you would like further information, enter your number below and one of our sales team will be happy to
-                give you a call back.
+                If you would like further information, enter your number below and one of our sales team will be happy
+                to give you a call back.
               </p>
               <div className="ink-card__upsell-form">
                 <div className="ink-field">
                   <label className="ink-field__label" htmlFor="enquiry-upsell-phone">
                     <span>Phone</span>
                   </label>
-                  <input ref={upsellPhone} className="ink-field__input" id="enquiry-upsell-phone" type="tel" placeholder=" " {...focusLine} />
+                  <input
+                    ref={upsellPhone}
+                    className="ink-field__input"
+                    id="enquiry-upsell-phone"
+                    type="tel"
+                    placeholder=" "
+                    {...focusLine}
+                  />
                   <i className="ink-field__focus" />
                   <i className="ink-field__caret" />
                 </div>

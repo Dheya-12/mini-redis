@@ -20,7 +20,12 @@ export function BookingDialog() {
 
   const schedulerHref = (() => {
     if (!CALENDLY_URL) return "";
-    const q = new URLSearchParams({ hide_gdpr_banner: "1", background_color: "ffffff", text_color: "1e211d", primary_color: "1e211d" });
+    const q = new URLSearchParams({
+      hide_gdpr_banner: "1",
+      background_color: "ffffff",
+      text_color: "1e211d",
+      primary_color: "1e211d",
+    });
     if (bookingPrefill.name) q.set("name", bookingPrefill.name);
     if (bookingPrefill.email) q.set("email", bookingPrefill.email);
     return `${CALENDLY_URL}?${q}`;
@@ -46,8 +51,7 @@ export function BookingDialog() {
           <em>appointment.</em>
         </h2>
         <p className="booking__body">
-          Visit the display suite at 216B Bay Road, Sandringham. Choose a time with the sales team, or call
-          directly.
+          Visit the display suite at 216B Bay Road, Sandringham. Choose a time with the sales team, or call directly.
         </p>
         <div className="booking__actions">
           {schedulerHref ? (

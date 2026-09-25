@@ -1,6 +1,9 @@
 "use client";
 
 import { gsap, isMobile } from "./gsap";
+import { entranceLength, mirroredExitAt, mirrorEase, parseTicker, renderTicker, type TickPart } from "./timing";
+
+export { entranceLength, mirrorEase };
 
 /**
  * One entrance, declared once. `from` is the hidden state; the shown state is derived.
@@ -30,7 +33,16 @@ export type RevealOptions = {
 export const REVEAL_DEFAULTS = { start: "top 50%", end: "top -50%", scrub: 2.5 } as const;
 
 const SHOWN: Record<string, number | string> = {
-  opacity: 1, x: 0, y: 0, xPercent: 0, yPercent: 0, scale: 1, scaleX: 1, scaleY: 1, rotation: 0, filter: "blur(0px)",
+  opacity: 1,
+  x: 0,
+  y: 0,
+  xPercent: 0,
+  yPercent: 0,
+  scale: 1,
+  scaleX: 1,
+  scaleY: 1,
+  rotation: 0,
+  filter: "blur(0px)",
 };
 
 function shownStateOf(from: gsap.TweenVars): gsap.TweenVars {
@@ -39,22 +51,6 @@ function shownStateOf(from: gsap.TweenVars): gsap.TweenVars {
     if (key !== "transformOrigin") shown[key] = SHOWN[key] ?? 0;
   }
   return shown;
-}
-
-/** power2.out ↔ power2.in; inOut eases are their own mirror. */
-export function mirrorEase(ease = "power2.out") {
-  if (ease.includes(".inOut")) return ease;
-  if (ease.includes(".out")) return ease.replace(".out", ".in");
-  if (ease.includes(".in")) return ease.replace(".in", ".out");
-  return ease;
-}
-
-/** Latest finishing beat of a set of moves = the length of the entrance. */
-export function entranceLength(moves: Move[]) {
-  return moves.reduce((max, m) => {
-    const end = (m.at ?? 0) + m.duration + (m.stagger ?? 0) * (m.targets.length - 1);
-    return Math.max(max, end);
-  }, 0);
 }
 
 /**
@@ -111,8 +107,6 @@ export function mirroredReveal(
 
     timeline.fromTo(m.targets, from, { ...shown, duration: m.duration, ease, stagger }, at);
 
-    const exitAt =
-      m.exitAt != null ? inEnd + m.exitAt : inEnd + (inEnd - (at + m.duration)) - stagger * (m.targets.length - 1);
     timeline.fromTo(
       m.targets,
       shown,
@@ -123,7 +117,7 @@ export function mirroredReveal(
         stagger: stagger ? { each: stagger, from: "end" } : 0,
         immediateRender: false,
       },
-      exitAt,
+      mirroredExitAt(m, inEnd),
     );
   }
   // Pin the length so timeline time maps exactly onto the band.
@@ -133,42 +127,26 @@ export function mirroredReveal(
   return timeline;
 }
 
-type TickPart = { text: string } | { value: number; decimals: number; start: number };
 type TickerEl = HTMLElement & { __tickSource?: string; __tickParts?: TickPart[] };
 
-/**
- * Figures count up as their stat block lands and back down as it leaves.
- * Big numbers start near their target (no digit-count jumps); small ones from zero.
- */
-function addTickers(timeline: gsap.core.Timeline, tickers: HTMLElement[], inEnd: number, total: number, options: RevealOptions) {
+/** Figures count up as their stat block lands and back down as it leaves. */
+function addTickers(
+  timeline: gsap.core.Timeline,
+  tickers: HTMLElement[],
+  inEnd: number,
+  total: number,
+  options: RevealOptions,
+) {
   for (const node of tickers as TickerEl[]) {
+    // The ticker owns textContent once harvested: always parse from the authored figure.
     if (node.__tickSource == null) node.__tickSource = node.textContent ?? "";
     node.textContent = node.__tickSource;
-    const pieces = node.__tickSource.match(/(\d[\d,]*(?:\.\d+)?)|(\D+)/g) ?? [];
-    node.__tickParts = pieces.map((piece) => {
-      if (!/\d/.test(piece)) return { text: piece };
-      const decimals = /\.(\d+)/.exec(piece)?.[1].length ?? 0;
-      const value = parseFloat(piece.replace(/,/g, ""));
-      let start = 0;
-      if (value > 20) {
-        start = Math.max(Math.ceil(value * 0.55), Math.pow(10, String(Math.round(value)).length - 1));
-        if (start >= value) start = value - 1;
-      }
-      return { value, decimals, start };
-    });
+    node.__tickParts = parseTicker(node.__tickSource);
   }
 
   const state = { p: 0 };
   const render = () => {
-    for (const node of tickers as TickerEl[]) {
-      node.textContent = (node.__tickParts ?? [])
-        .map((part) => {
-          if ("text" in part) return part.text;
-          const v = part.start + (part.value - part.start) * state.p;
-          return part.decimals ? v.toFixed(part.decimals) : Math.round(v).toLocaleString("en-AU");
-        })
-        .join("");
-    }
+    for (const node of tickers as TickerEl[]) node.textContent = renderTicker(node.__tickParts ?? [], state.p);
   };
   render();
 

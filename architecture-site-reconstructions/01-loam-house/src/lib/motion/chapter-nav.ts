@@ -167,7 +167,9 @@ export function desktopChapterNav(chapters: ChapterEl[]) {
   // Scrollbar: free while held; on release, project the momentum and settle.
   let holding = false;
   const isBarGrab = (e: MouseEvent) =>
-    e.clientX >= document.documentElement.clientWidth || e.target === document.documentElement || e.target === document.body;
+    e.clientX >= document.documentElement.clientWidth ||
+    e.target === document.documentElement ||
+    e.target === document.body;
   const onDown = (e: MouseEvent) => {
     if (!isBarGrab(e)) return;
     holding = true;

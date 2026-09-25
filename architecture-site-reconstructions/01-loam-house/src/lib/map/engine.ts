@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  AMENITIES,
-  DOT_RADIUS,
-  PLAN_PLACEMENT,
-  ROAD_NAMES,
-} from "@/content/precinct-map";
+import { AMENITIES, DOT_RADIUS, PLAN_PLACEMENT, ROAD_NAMES } from "@/content/precinct-map";
 import { alternateSides, gsap, ScrollTrigger, SplitText } from "@/lib/motion/gsap";
 import {
   cameraPath,
@@ -177,7 +172,12 @@ export class PrecinctMapEngine {
       apply: () => {
         if (!this.entryOwnsCamera || this.raf || this.active) return;
         this.entryPath ??= cameraPath(
-          [LOAM[0] - (117 * this.entryDistance) / 2, LOAM[1] - (83 * this.entryDistance) / 2, 117 * this.entryDistance, 83 * this.entryDistance],
+          [
+            LOAM[0] - (117 * this.entryDistance) / 2,
+            LOAM[1] - (83 * this.entryDistance) / 2,
+            117 * this.entryDistance,
+            83 * this.entryDistance,
+          ],
           [...this.targets.precinct.vb] as ViewBox,
         );
         this.cam = this.entryPath.at(state.t);
@@ -263,9 +263,12 @@ export class PrecinctMapEngine {
     const duration = clamp(path.length * 520, 750, 2200) * (diving ? DIVE.durationScale : 1);
     if (isAmenity(id)) {
       window.clearTimeout(this.panelTimer);
-      this.panelTimer = window.setTimeout(() => {
-        if (this.focus === id) this.panelIn(id);
-      }, Math.max(0, duration - DIVE.textLead));
+      this.panelTimer = window.setTimeout(
+        () => {
+          if (this.focus === id) this.panelIn(id);
+        },
+        Math.max(0, duration - DIVE.textLead),
+      );
     }
 
     const sway = diving && !GECKO ? (Math.random() * 2 - 1) * MAX_SPIN_DEG : 0;
@@ -460,7 +463,12 @@ export class PrecinctMapEngine {
       .fromTo(rest, { y: 46, opacity: 0 }, { y: 0, opacity: 1, duration: 1.82, stagger: 0.15 }, 1.6)
       .fromTo(lines, { filter: "blur(16px)" }, { filter: "blur(0px)", duration: 3.06, ease: "power1.out" }, 0.05)
       .fromTo(eyebrow, { filter: "blur(9px)" }, { filter: "blur(0px)", duration: 2.9, ease: "power1.out" }, 1.6)
-      .fromTo(rest, { filter: "blur(9px)" }, { filter: "blur(0px)", duration: 2.9, ease: "power1.out", stagger: 0.15 }, 1.6);
+      .fromTo(
+        rest,
+        { filter: "blur(9px)" },
+        { filter: "blur(0px)", duration: 2.9, ease: "power1.out", stagger: 0.15 },
+        1.6,
+      );
   }
 
   /** The exit mirrors the hero's: blur leads, lines return the way they came. */

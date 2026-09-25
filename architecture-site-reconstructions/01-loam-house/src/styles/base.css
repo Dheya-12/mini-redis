@@ -24,9 +24,8 @@
 }
 
 @layer base {
-  *,
-  *::before,
-  *::after {
+  /* Elements only: pseudo-elements stay content-box (the stepper dots rely on it). */
+  * {
     box-sizing: border-box;
   }
   html {
@@ -43,6 +42,13 @@
   img {
     display: block;
     width: 100%;
+  }
+  /* <picture> only selects a source; it must never become a grid/flex item itself. */
+  picture {
+    display: contents;
+  }
+  picture > source {
+    display: none;
   }
   a {
     color: inherit;

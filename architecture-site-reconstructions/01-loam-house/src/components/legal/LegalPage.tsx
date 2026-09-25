@@ -23,11 +23,17 @@ export function LegalPage({ title, subtitle, children }: { title: string; subtit
         </Link>
       </header>
       <main className="legal mx-auto max-w-[70ch] px-[6vw] pt-[72px] pb-[110px] max-tablet:px-6 max-tablet:pt-[52px] max-tablet:pb-[90px]">
-        <p className="mb-[22px] text-[10px] leading-none font-semibold tracking-[0.24em] text-olive uppercase">Loam House · Sandringham</p>
-        <h1 className="mb-[18px] font-serif text-[clamp(44px,7vw,68px)] leading-[0.95] font-normal tracking-[-0.03em] text-balance">{title}</h1>
+        <p className="mb-[22px] text-[10px] leading-none font-semibold tracking-[0.24em] text-olive uppercase">
+          Loam House · Sandringham
+        </p>
+        <h1 className="mb-[18px] font-serif text-[clamp(44px,7vw,68px)] leading-[0.95] font-normal tracking-[-0.03em] text-balance">
+          {title}
+        </h1>
         <p className="mb-12 text-[13px] text-ink/60">{subtitle}</p>
         {children}
-        <p className="mt-14 border-t border-line pt-[22px] text-[13px] text-ink/60">© 2026 Loam House · Final release by Auyin</p>
+        <p className="mt-14 border-t border-line pt-[22px] text-[13px] text-ink/60">
+          © 2026 Loam House · Final release by Auyin
+        </p>
       </main>
     </div>
   );

@@ -171,10 +171,27 @@ export function ContactChapter() {
 
           <div className={`step-form__step${step === 0 ? " step-form__step--active" : ""}`} data-step="0">
             <LineField id="contact-name" label="Full name" invalid={bad("contact-name")}>
-              <input className="line-field__control" id="contact-name" name="name" autoComplete="name" placeholder=" " required {...fieldEvents} />
+              <input
+                className="line-field__control"
+                id="contact-name"
+                name="name"
+                autoComplete="name"
+                placeholder=" "
+                required
+                {...fieldEvents}
+              />
             </LineField>
             <LineField id="contact-email" label="Email" invalid={bad("contact-email")}>
-              <input className="line-field__control" id="contact-email" name="email" type="email" autoComplete="email" placeholder=" " required {...fieldEvents} />
+              <input
+                className="line-field__control"
+                id="contact-email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                placeholder=" "
+                required
+                {...fieldEvents}
+              />
             </LineField>
             <div className="step-form__nav">
               <span className="step-form__spacer" />
@@ -186,10 +203,26 @@ export function ContactChapter() {
 
           <div className={`step-form__step${step === 1 ? " step-form__step--active" : ""}`} data-step="1">
             <LineField id="contact-phone" label="Phone" invalid={bad("contact-phone")}>
-              <input className="line-field__control" id="contact-phone" name="phone" type="tel" autoComplete="tel" placeholder=" " required {...fieldEvents} />
+              <input
+                className="line-field__control"
+                id="contact-phone"
+                name="phone"
+                type="tel"
+                autoComplete="tel"
+                placeholder=" "
+                required
+                {...fieldEvents}
+              />
             </LineField>
             <LineField id="contact-preferred" label="Preferred contact" invalid={bad("contact-preferred")}>
-              <select className="line-field__control" id="contact-preferred" name="preferred" required defaultValue="" {...fieldEvents}>
+              <select
+                className="line-field__control"
+                id="contact-preferred"
+                name="preferred"
+                required
+                defaultValue=""
+                {...fieldEvents}
+              >
                 <option value="" disabled hidden>
                   Choose one
                 </option>
@@ -209,7 +242,14 @@ export function ContactChapter() {
 
           <div className={`step-form__step${step === 2 ? " step-form__step--active" : ""}`} data-step="2">
             <LineField id="contact-enquiry" label="Enquiry" invalid={bad("contact-enquiry")}>
-              <select className="line-field__control" id="contact-enquiry" name="enquiry" required defaultValue="" {...fieldEvents}>
+              <select
+                className="line-field__control"
+                id="contact-enquiry"
+                name="enquiry"
+                required
+                defaultValue=""
+                {...fieldEvents}
+              >
                 <option value="" disabled hidden>
                   Select an enquiry type
                 </option>
@@ -219,7 +259,15 @@ export function ContactChapter() {
               </select>
             </LineField>
             <LineField id="contact-message" label="Message" invalid={bad("contact-message")}>
-              <textarea className="line-field__control" id="contact-message" name="message" rows={2} placeholder=" " required {...fieldEvents} />
+              <textarea
+                className="line-field__control"
+                id="contact-message"
+                name="message"
+                rows={2}
+                placeholder=" "
+                required
+                {...fieldEvents}
+              />
             </LineField>
             <div className="step-form__nav">
               <button type="button" className="step-btn step-btn--ghost" onClick={() => go(-1)}>

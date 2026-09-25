@@ -1,8 +1,9 @@
 import type { Metadata, Viewport } from "next";
-import { sans, serif } from "./fonts";
+import { cormorant, dmSans } from "./fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
   title: "Loam House — Sandringham",
   description: "Loam House — house-sized residences in Sandringham. Final release now selling.",
   icons: { icon: "/assets/favicon.png" },
@@ -23,7 +24,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en-AU" className={`${serif.variable} ${sans.variable}`}>
+    <html lang="en-AU" className={`${cormorant.variable} ${dmSans.variable}`}>
       <body>{children}</body>
     </html>
   );

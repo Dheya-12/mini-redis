@@ -23,14 +23,7 @@ export function DownloadIcon({ arrowClassName }: { arrowClassName?: string }) {
   );
 }
 
-const CALENDAR_DOTS = [
-  "M8 14h.01",
-  "M12 14h.01",
-  "M16 14h.01",
-  "M8 18h.01",
-  "M12 18h.01",
-  "M16 18h.01",
-];
+const CALENDAR_DOTS = ["M8 14h.01", "M12 14h.01", "M16 14h.01", "M8 18h.01", "M12 18h.01", "M16 18h.01"];
 
 /** Calendar whose six day-dots pop in sequence on hover. */
 export function CalendarIcon({ dotClassName }: { dotClassName?: string }) {

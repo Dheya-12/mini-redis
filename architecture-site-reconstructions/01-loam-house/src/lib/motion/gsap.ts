@@ -25,5 +25,7 @@ export const isMobile = () => window.matchMedia(MOBILE_QUERY).matches;
 export const prefersReducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 /** Horizontal entry offset for alternating headline lines: odd lines from the right. */
-export const alternateSides = (fraction = 0.28) => (i: number) =>
-  (i % 2 ? 1 : -1) * Math.max(window.innerWidth, 1) * fraction;
+export const alternateSides =
+  (fraction = 0.28) =>
+  (i: number) =>
+    (i % 2 ? 1 : -1) * Math.max(window.innerWidth, 1) * fraction;

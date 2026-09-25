@@ -269,6 +269,7 @@
     display: block;
     color: rgba(255, 255, 255, 0.82);
     text-decoration: none;
+    letter-spacing: 0.05em;
     font-size: 11.5px;
     margin-top: 3px;
   }

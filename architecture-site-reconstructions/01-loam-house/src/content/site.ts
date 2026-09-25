@@ -74,7 +74,11 @@ export const CINE_CHAPTERS: CineChapterData[] = [
   {
     id: "proposition",
     plate: { num: "01", title: "The proposition" },
-    image: { ...img("EXT_Terrace.jpg"), alt: "A private penthouse terrace overlooking leafy Bayside", mobilePosition: "36% center" },
+    image: {
+      ...img("EXT_Terrace.jpg"),
+      alt: "A private penthouse terrace overlooking leafy Bayside",
+      mobilePosition: "36% center",
+    },
     eyebrow: "A rare final release",
     headline: ["Leave the upkeep.", "Keep the life."],
     lede: "Loam House is made for people who have outgrown the maintenance, not the space. House-sized, single-level residences in the Bayside neighbourhood you already call home.",
@@ -87,7 +91,10 @@ export const CINE_CHAPTERS: CineChapterData[] = [
   {
     id: "size",
     plate: { num: "02", title: "The size" },
-    image: { ...img("INT03_Courtyard-Living-Dining.jpg"), alt: "Ground-floor living opening to a private landscaped courtyard" },
+    image: {
+      ...img("INT03_Courtyard-Living-Dining.jpg"),
+      alt: "Ground-floor living opening to a private landscaped courtyard",
+    },
     headline: ["A backyard oasis,", "without the mowing."],
     lede: "Two and three bedroom ground-floor homes opening to landscaped courtyards, with up to 154 square metres of private outdoor space.",
     collection: {
@@ -132,7 +139,11 @@ export const CINE_CHAPTERS: CineChapterData[] = [
 
 export const FINISHES = {
   plate: { num: "04", title: "The finishes" },
-  image: { ...img("INT05_Bathroom-Light.jpg"), alt: "Bathroom in the light finish palette", mobilePosition: "70% center" },
+  image: {
+    ...img("INT05_Bathroom-Light.jpg"),
+    alt: "Bathroom in the light finish palette",
+    mobilePosition: "70% center",
+  },
   eyebrow: "Tactile by nature",
   headline: ["Details you feel", "before you notice."] as [string, string],
   lede: "Integrated Miele appliances, stone benchtops, full-height tiling and custom joinery, in a light palette curated room by room.",

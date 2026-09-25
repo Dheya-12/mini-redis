@@ -77,8 +77,22 @@ export function chapterMoves(chapter: HTMLElement): { moves: Move[]; tickers: HT
   moves.push({ targets: lines, from: { filter: "blur(22px)" }, duration: 4.5, ease: "power1.out", at: 0 });
 
   const eyebrows = q(chapter, "eyebrow");
-  moves.push({ targets: eyebrows, from: { x: 220, opacity: 0 }, duration: 1.8, ease: "power3.out", at: 1.6, stagger: 0.15 });
-  moves.push({ targets: eyebrows, from: { filter: "blur(9px)" }, duration: 2.2, ease: "power1.out", at: 1.6, stagger: 0.15 });
+  moves.push({
+    targets: eyebrows,
+    from: { x: 220, opacity: 0 },
+    duration: 1.8,
+    ease: "power3.out",
+    at: 1.6,
+    stagger: 0.15,
+  });
+  moves.push({
+    targets: eyebrows,
+    from: { filter: "blur(9px)" },
+    duration: 2.2,
+    ease: "power1.out",
+    at: 1.6,
+    stagger: 0.15,
+  });
 
   const statsLabel = q(chapter, "stats-label");
   moves.push({ targets: statsLabel, from: { yPercent: -130 }, duration: 1.8, ease: "power3.out", at: 3.2 });
@@ -91,14 +105,41 @@ export function chapterMoves(chapter: HTMLElement): { moves: Move[]; tickers: HT
 
   const body = q(chapter, "body");
   moves.push({ targets: body, from: { y: 46, opacity: 0 }, duration: 2.2, ease: "power2.out", at: 1.7, stagger: 0.12 });
-  moves.push({ targets: body, from: { filter: "blur(7px)" }, duration: 2.6, ease: "power1.out", at: 1.7, stagger: 0.12 });
+  moves.push({
+    targets: body,
+    from: { filter: "blur(7px)" },
+    duration: 2.6,
+    ease: "power1.out",
+    at: 1.7,
+    stagger: 0.12,
+  });
 
   const lists = q(chapter, "list");
-  moves.push({ targets: lists, from: { y: 60, opacity: 0 }, duration: 2.3, ease: "power2.out", at: 1.9, stagger: 0.18 });
-  moves.push({ targets: lists, from: { filter: "blur(7px)" }, duration: 2.7, ease: "power1.out", at: 1.9, stagger: 0.18 });
+  moves.push({
+    targets: lists,
+    from: { y: 60, opacity: 0 },
+    duration: 2.3,
+    ease: "power2.out",
+    at: 1.9,
+    stagger: 0.18,
+  });
+  moves.push({
+    targets: lists,
+    from: { filter: "blur(7px)" },
+    duration: 2.7,
+    ease: "power1.out",
+    at: 1.9,
+    stagger: 0.18,
+  });
 
   const location = q(chapter, "location");
-  moves.push({ targets: location, from: { opacity: 0, filter: "blur(6px)" }, duration: 2.2, ease: "power2.out", at: 2.1 });
+  moves.push({
+    targets: location,
+    from: { opacity: 0, filter: "blur(6px)" },
+    duration: 2.2,
+    ease: "power2.out",
+    at: 2.1,
+  });
 
   if (kind === "precinct") moves.push(...precinctMoves(chapter));
 
@@ -128,19 +169,55 @@ function precinctMoves(chapter: HTMLElement): Move[] {
 
   const k = T.notePace;
   const lines = headingLines(chapter, "note-heading");
-  moves.push({ targets: lines, from: { x: alternateSides(0.28), opacity: 0 }, duration: 4.4 * k, ease: "power3.out", at: T.noteAt });
+  moves.push({
+    targets: lines,
+    from: { x: alternateSides(0.28), opacity: 0 },
+    duration: 4.4 * k,
+    ease: "power3.out",
+    at: T.noteAt,
+  });
   moves.push({ targets: lines, from: { filter: "blur(22px)" }, duration: 4.5 * k, ease: "power1.out", at: T.noteAt });
 
   const eyebrow = q(chapter, "note-eyebrow");
-  moves.push({ targets: eyebrow, from: { x: 220, opacity: 0 }, duration: 1.8 * k, ease: "power3.out", at: T.noteAt + 1.5 * k });
-  moves.push({ targets: eyebrow, from: { filter: "blur(9px)" }, duration: 2.2 * k, ease: "power1.out", at: T.noteAt + 1.5 * k });
+  moves.push({
+    targets: eyebrow,
+    from: { x: 220, opacity: 0 },
+    duration: 1.8 * k,
+    ease: "power3.out",
+    at: T.noteAt + 1.5 * k,
+  });
+  moves.push({
+    targets: eyebrow,
+    from: { filter: "blur(9px)" },
+    duration: 2.2 * k,
+    ease: "power1.out",
+    at: T.noteAt + 1.5 * k,
+  });
 
   const lede = q(chapter, "note-body");
-  moves.push({ targets: lede, from: { y: 46, opacity: 0 }, duration: 2.2 * k, ease: "power2.out", at: T.noteAt + 1.7 * k });
-  moves.push({ targets: lede, from: { filter: "blur(7px)" }, duration: 2.6 * k, ease: "power1.out", at: T.noteAt + 1.7 * k });
+  moves.push({
+    targets: lede,
+    from: { y: 46, opacity: 0 },
+    duration: 2.2 * k,
+    ease: "power2.out",
+    at: T.noteAt + 1.7 * k,
+  });
+  moves.push({
+    targets: lede,
+    from: { filter: "blur(7px)" },
+    duration: 2.6 * k,
+    ease: "power1.out",
+    at: T.noteAt + 1.7 * k,
+  });
 
   const chrome = q(chapter, "chrome");
-  moves.push({ targets: chrome, from: { opacity: 0, filter: "blur(8px)" }, duration: 3, ease: "power2.out", at: T.chromeAt });
+  moves.push({
+    targets: chrome,
+    from: { opacity: 0, filter: "blur(8px)" },
+    duration: 3,
+    ease: "power2.out",
+    at: T.chromeAt,
+  });
 
   return moves;
 }

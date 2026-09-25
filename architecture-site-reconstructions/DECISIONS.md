@@ -72,3 +72,30 @@ mirrors the reference's own base. Design tokens (ink/paper/chalk/clay/olive, ser
 Complex component styling (pseudo-elements, masks, keyframes, per-breakpoint cascades) lives in
 `src/styles/*.css` inside `@layer components`; simple layout uses utilities in JSX.
 **To reverse:** add `@import "tailwindcss/preflight.css" layer(base);` to globals.css and re-diff.
+
+### [08:05] Capture harness determinism (applied identically to reference and target)
+
+**Fork:** First diff run showed 40% on the hero and ~1% on the map — caused by timing, not code: the hero plays an
+8.04 s intro clip then hard-cuts to an ambient loop, and the local build finished its curtain sooner, so it was
+captured before the cut; map dots breathe with a random phase per page load.
+**Chose:** The harness waits for the intro→ambient cut, freezes video at t=0.5 s, and pins CSS animations to t=0,
+on **both** sides. The ≤1.0% / ≤1.5% gates were not changed.
+**To reverse:** remove the two blocks marked in `tools/visual-diff/capture.mjs`.
+
+### [08:14] Unit tests with Node's built-in runner
+
+**Chose:** Pure maths (camera path, marker curves, ease mirroring, entrance length, tickers) extracted into
+import-free modules and tested with `node --test` (Node ≥22 strips TS types natively; `allowImportingTsExtensions`
+enabled for the `.ts` import specifiers). No extra test dependency. Browser-level checks live in
+`tools/visual-diff/` (Playwright) and are documented, not wired into `npm test`, because they need a browser download.
+**To reverse:** delete `src/**/*.test.ts` and the `test` script.
+
+### [08:20] **[LOW]** Repository size strategy
+
+**Fork:** Each site commits its expanded project (with ~25 MB of public media) *and* its ZIP (~25 MB). Over 63
+sites that trends toward ~3 GB of history, above GitHub's recommended repo size (no single file is near the 100 MB
+hard limit).
+**Chose:** Follow the requested layout literally for now (both committed).
+**Alternatives if it becomes a problem:** track `zips/*.zip` with Git LFS, attach ZIPs to GitHub Releases instead,
+or stop committing `NN-*/public/assets` (the ZIP stays complete).
+**To reverse:** `git rm --cached architecture-site-reconstructions/zips/*.zip` and adopt one of the alternatives.

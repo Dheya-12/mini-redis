@@ -31,7 +31,13 @@ export function EditorialEngine() {
     // Smooth scroll. The wrapper's own scroll is pinned at 0 so a field's focus
     // scroll-into-view can never shift the whole page out of sync with the smoother.
     ctx.add(() => {
-      ScrollSmoother.create({ wrapper: "#smooth-wrapper", content: "#smooth-content", smooth: 0.8, smoothTouch: 0.1, effects: false });
+      ScrollSmoother.create({
+        wrapper: "#smooth-wrapper",
+        content: "#smooth-content",
+        smooth: 0.8,
+        smoothTouch: 0.1,
+        effects: false,
+      });
     });
     const wrapper = document.getElementById("smooth-wrapper");
     const pinWrapper = () => {
@@ -97,7 +103,11 @@ export function EditorialEngine() {
       const cam = gsap
         .timeline({ scrollTrigger: { trigger: chapter, ...band } })
         .to(camera.state, { t: 1, duration: camIn, ease: T.cameraEase, onUpdate: camera.apply }, 0)
-        .to(camera.state, { t: 0, duration: camIn, ease: mirrorEase(T.cameraEase), onUpdate: camera.apply, immediateRender: false }, total - camIn)
+        .to(
+          camera.state,
+          { t: 0, duration: camIn, ease: mirrorEase(T.cameraEase), onUpdate: camera.apply, immediateRender: false },
+          total - camIn,
+        )
         .to({}, { duration: total }, 0);
       camera.apply();
       const timelines = [cam, ...(reveal ? [reveal] : [])];

@@ -52,12 +52,7 @@ export function HeroChapter() {
 
   const { media } = HERO;
   return (
-    <section
-      ref={section}
-      className="hero chapter"
-      data-chapter="hero"
-      aria-labelledby="hero-title"
-    >
+    <section ref={section} className="hero chapter" data-chapter="hero" aria-labelledby="hero-title">
       <video
         ref={intro}
         className="hero__media hero__video"
@@ -84,7 +79,12 @@ export function HeroChapter() {
         <source src={media.ambientWebm} type="video/webm" />
         <source src={media.ambientMp4} type="video/mp4" />
       </video>
-      <img className="hero__media hero__still" src={media.mobileStill} alt="Loam House at sunset, Sandringham" data-hero-still />
+      <img
+        className="hero__media hero__still"
+        src={media.mobileStill}
+        alt="Loam House at sunset, Sandringham"
+        data-hero-still
+      />
       <div className="hero__shade" />
       <div className="scanlines" />
 

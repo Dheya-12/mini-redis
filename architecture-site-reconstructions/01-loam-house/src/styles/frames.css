@@ -220,11 +220,14 @@
     .frame--centered .frame__copy {
       padding: 0 26px calc(8vh + 26px);
     }
-    .frame .plate,
-    .frame--tall .plate {
+    .frame .plate {
       top: 124px;
       left: 26px;
       width: calc(100% - 52px);
+    }
+    /* The size chapter keeps its lifted plate on phones too. */
+    .frame--tall .plate {
+      top: 88px;
     }
     .frame__title {
       font-size: 16vw;

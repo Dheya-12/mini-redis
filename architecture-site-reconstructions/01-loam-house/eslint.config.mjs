@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Verification scripts (Node + Playwright), not part of the app.
+    "tools/**",
   ]),
 ]);
 

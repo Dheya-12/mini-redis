@@ -2,7 +2,6 @@ import type { CSSProperties, ReactNode } from "react";
 import type { CineChapterData, Figure } from "@/content/site";
 import { ChapterPlate, Headline } from "./ChapterPlate";
 
-
 export function Stat({ figure }: { figure: Figure }) {
   return (
     <div className="stat">
@@ -15,7 +14,13 @@ export function Stat({ figure }: { figure: Figure }) {
 }
 
 /** Full-bleed render with a desktop and a phone crop. */
-export function FrameImage({ image, className = "frame__image" }: { image: CineChapterData["image"]; className?: string }) {
+export function FrameImage({
+  image,
+  className = "frame__image",
+}: {
+  image: CineChapterData["image"];
+  className?: string;
+}) {
   return (
     <picture>
       {image.mobile ? <source media="(max-width: 800px)" srcSet={image.mobile} /> : null}
@@ -25,15 +30,29 @@ export function FrameImage({ image, className = "frame__image" }: { image: CineC
         alt={image.alt}
         loading="lazy"
         decoding="async"
-        style={image.mobilePosition ? ({ ["--mobile-position" as string]: image.mobilePosition } as CSSProperties) : undefined}
+        style={
+          image.mobilePosition
+            ? ({ ["--mobile-position" as string]: image.mobilePosition } as CSSProperties)
+            : undefined
+        }
       />
     </picture>
   );
 }
 
 /** One cinematic frame chapter (01–03 and the collection beats). */
-export function FrameChapter({ data, tall = false, children }: { data: CineChapterData; tall?: boolean; children?: ReactNode }) {
-  const classes = ["frame", "chapter", data.centered && "frame--centered", tall && "frame--tall"].filter(Boolean).join(" ");
+export function FrameChapter({
+  data,
+  tall = false,
+  children,
+}: {
+  data: CineChapterData;
+  tall?: boolean;
+  children?: ReactNode;
+}) {
+  const classes = ["frame", "chapter", data.centered && "frame--centered", tall && "frame--tall"]
+    .filter(Boolean)
+    .join(" ");
   return (
     <section className={classes} id={data.id} data-chapter="frame">
       {data.plate ? <ChapterPlate num={data.plate.num} title={data.plate.title} /> : null}

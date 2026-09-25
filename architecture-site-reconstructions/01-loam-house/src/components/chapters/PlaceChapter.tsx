@@ -1,7 +1,6 @@
 import { PLACE } from "@/content/site";
 import { ChapterPlate, Headline } from "./ChapterPlate";
 
-
 /** 06 — The place: the neighbourhood you keep, with drive/walk times. */
 export function PlaceChapter() {
   return (

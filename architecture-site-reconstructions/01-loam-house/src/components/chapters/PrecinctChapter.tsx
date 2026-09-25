@@ -28,7 +28,15 @@ import { ChapterPlate, Headline } from "./ChapterPlate";
 
 /* eslint-disable @next/next/no-img-element -- the lens photo is swapped by the map engine */
 
-function StackedLabel({ label, lineHeight, className }: { label: MultiLineLabel; lineHeight: number; className: string }) {
+function StackedLabel({
+  label,
+  lineHeight,
+  className,
+}: {
+  label: MultiLineLabel;
+  lineHeight: number;
+  className: string;
+}) {
   const y0 = label.y - ((label.lines.length - 1) * lineHeight) / 2;
   return (
     <text className={className} textAnchor={className === "map-building-label" ? "middle" : undefined}>
@@ -62,18 +70,22 @@ export function PrecinctChapter() {
   }, []);
 
   return (
-    <section
-      ref={chapter}
-      className="precinct chapter"
-      id="amenities"
-      data-chapter="precinct"
-      data-mode="precinct"
-    >
+    <section ref={chapter} className="precinct chapter" id="amenities" data-chapter="precinct" data-mode="precinct">
       <div className="precinct__stage">
-        <svg data-map="svg" className="precinct__map" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+        <svg
+          data-map="svg"
+          className="precinct__map"
+          xmlns="http://www.w3.org/2000/svg"
+          preserveAspectRatio="xMidYMid slice"
+        >
           <defs>
             <clipPath id="plan-clip" clipPathUnits="userSpaceOnUse">
-              <rect x={PLAN_CLIP.x} y={PLAN_CLIP.top} width={PLAN_CLIP.width} height={PLAN_CLIP.bottom - PLAN_CLIP.top} />
+              <rect
+                x={PLAN_CLIP.x}
+                y={PLAN_CLIP.top}
+                width={PLAN_CLIP.width}
+                height={PLAN_CLIP.bottom - PLAN_CLIP.top}
+              />
             </clipPath>
           </defs>
           {/* Camera rotation lives here, inside the SVG's own paint pass. */}
@@ -136,7 +148,14 @@ export function PrecinctChapter() {
                   <g className="amenity-dot__reveal" data-reveal="dot">
                     <circle className="amenity-dot__hit" cx={a.x} cy={a.y} r={DOT_RADIUS * 1.35} />
                     <g className="amenity-dot__halo">
-                      <circle className="amenity-dot__ping" data-part="ping" cx={a.x} cy={a.y} r={DOT_RADIUS} fill={AMENITY_COLOR} />
+                      <circle
+                        className="amenity-dot__ping"
+                        data-part="ping"
+                        cx={a.x}
+                        cy={a.y}
+                        r={DOT_RADIUS}
+                        fill={AMENITY_COLOR}
+                      />
                     </g>
                     <g className="amenity-dot__pulse" data-part="pulse">
                       <circle className="amenity-dot__core" cx={a.x} cy={a.y} r={DOT_RADIUS} fill={AMENITY_COLOR} />

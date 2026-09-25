@@ -30,8 +30,23 @@ export function buildHero(): gsap.core.Animation[] {
     .from(lines, { filter: "blur(16px)", duration: 3.06, ease: "power1.out" }, 0.05)
     .from(small, { y: 46, opacity: 0, duration: 1.82, stagger: 0.15 }, 1.6)
     .from(small, { filter: "blur(9px)", duration: 2.9, ease: "power1.out", stagger: 0.15 }, 1.6)
-    .from("[data-intro='cta']", { opacity: 0, filter: "blur(8px)", duration: 1.7, stagger: 0.12, ease: "power2.out", clearProps: "filter,opacity" }, 1.6)
-    .from("[data-intro='burger']", { opacity: 0, filter: "blur(8px)", duration: 1.6, ease: "power2.out", clearProps: "filter,opacity" }, 1.7);
+    .from(
+      "[data-intro='cta']",
+      {
+        opacity: 0,
+        filter: "blur(8px)",
+        duration: 1.7,
+        stagger: 0.12,
+        ease: "power2.out",
+        clearProps: "filter,opacity",
+      },
+      1.6,
+    )
+    .from(
+      "[data-intro='burger']",
+      { opacity: 0, filter: "blur(8px)", duration: 1.6, ease: "power2.out", clearProps: "filter,opacity" },
+      1.7,
+    );
   players.push(entrance);
 
   const card = document.querySelector<HTMLElement>("[data-hero='card']");
@@ -83,7 +98,15 @@ export function buildHero(): gsap.core.Animation[] {
       swing.fromTo(
         card,
         { xPercent: 0, rotation: 0, opacity: 1 },
-        { xPercent: -120, rotation: -22, opacity: 0, ease: "power3.in", duration: 2, transformOrigin: "50% 50%", immediateRender: false },
+        {
+          xPercent: -120,
+          rotation: -22,
+          opacity: 0,
+          ease: "power3.in",
+          duration: 2,
+          transformOrigin: "50% 50%",
+          immediateRender: false,
+        },
       );
     });
   }
@@ -96,9 +119,19 @@ export function buildHero(): gsap.core.Animation[] {
     });
     tl.fromTo(lines, { filter: "blur(0px)" }, { filter: "blur(14px)", duration: 0.5, ease: "power2.out" }, 0);
     tl.fromTo(lines, { x: 0, opacity: 1 }, { x: fromSide, opacity: 0, duration: 1, ease: "power2.out" }, 0);
-    tl.fromTo(eyebrow, { y: 0, filter: "blur(0px)" }, { y: 46, filter: "blur(9px)", duration: 0.4, ease: "power2.out" }, 0);
+    tl.fromTo(
+      eyebrow,
+      { y: 0, filter: "blur(0px)" },
+      { y: 46, filter: "blur(9px)", duration: 0.4, ease: "power2.out" },
+      0,
+    );
     tl.fromTo(eyebrow, { opacity: 1 }, { opacity: 0, duration: 0.95, ease: "power1.out" }, 0);
-    tl.fromTo(small, { y: 0, opacity: 1, filter: "blur(0px)" }, { y: -26, opacity: 0, filter: "blur(7px)", stagger: 0.08 }, 0.1);
+    tl.fromTo(
+      small,
+      { y: 0, opacity: 1, filter: "blur(0px)" },
+      { y: -26, opacity: 0, filter: "blur(7px)", stagger: 0.08 },
+      0.1,
+    );
   }
 
   return players;
