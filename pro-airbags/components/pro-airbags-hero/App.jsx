@@ -89,12 +89,12 @@ function magnetic(el, strength = 0.25) {
 }
 
 /* ---------------- navbar ---------------- */
-function NavItem({item, bus}) {
+function NavItem({item, bus, flow}) {
   const fx = useFx(), ref = useRef(null);
   useLayoutEffect(() => {
     const el = ref.current, label = el.querySelector('.nav-label'), icon = el.querySelector('.sprite'), chev = el.querySelector('.chev');
     const menu = el.querySelector('.menu'), links = [...menu.querySelectorAll('a')], hl = menu.querySelector('.menu-hl'), btn = el.querySelector('.chev-btn');
-    const split = SplitText.create(label, {type: 'chars'}); item.chars = split.chars;
+    const split = SplitText.create(label, {type: flow ? 'words,chars' : 'chars'}); item.chars = split.chars; /* pill mode wraps words, never letters */
     const [x0, , x1] = item.rect, cx = (x0 + x1) / 2;
     let openT, closeT, open = false;
     const menuTl = gsap.timeline({paused: true, onReverseComplete: () => gsap.set(menu, {visibility: 'hidden'})})
@@ -112,19 +112,20 @@ function NavItem({item, bus}) {
       programming: () => { gsap.fromTo(icon, {y: 0, scaleY: 1}, {keyframes: [{y: -3, scaleY: 1.08, duration: 0.16}, {y: 0, scaleY: 1, duration: 0.6, ease: 'elastic.out(1, 0.4)'}], overwrite: 'auto'}); fx && fx.screenFlicker(); },
     };
     const enter = e => {
-      if (e.pointerType === 'touch') return;
+      if (e.pointerType === 'touch' || (flow && e.type === 'focusin')) return;
       gsap.to(split.chars, {y: -2.5, textShadow: '0 0 12px rgba(255,70,50,.95)', duration: 0.3, stagger: 0.02, ease: 'power3.out', overwrite: 'auto'});
       gsap.fromTo(chev, {y: 0}, {y: 2.5, duration: 0.16, yoyo: true, repeat: 1});
       iconFx[item.key]();
       if (fx) { fx.hold(0, cx, 281, 1.0, 95); fx.hold(1, cx, 211, 0.8, 95); fx.screenRow(item.row, true); }
       clearTimeout(closeT); openT = setTimeout(() => setOpen(true), 130);
     };
-    const leave = () => {
+    const leave = e => {
+      if (e && e.pointerType === 'touch') return; /* a tap ends with a synthetic pointerleave; it must not close the menu the tap just opened */
       gsap.to(split.chars, {y: 0, textShadow: '0 0 0 rgba(0,0,0,0)', duration: 0.5, stagger: {each: 0.015, from: 'end'}, ease: 'power3.out', overwrite: 'auto'});
       if (fx) { fx.release(0); fx.release(1); fx.release(10); fx.release(11); fx.screenRow(item.row, false); if (item.key === 'airbags') { fx.breathe('dash', false); fx.breathe('car', false); } }
       clearTimeout(openT); closeT = setTimeout(() => setOpen(false), 220);
     };
-    const click = e => { e.preventDefault(); ripple(el.querySelector('.nav-hit'), e, 'rgba(255,60,40,.35)'); bus.navigate(item); setOpen(true); };
+    const click = e => { e.preventDefault(); ripple(el.querySelector('.nav-hit'), e, 'rgba(255,60,40,.35)'); bus.navigate(item); if (!flow) setOpen(true); };
     el.addEventListener('pointerenter', enter); el.addEventListener('pointerleave', leave);
     el.querySelector('.nav-link').addEventListener('click', click);
     btn.addEventListener('click', e => { e.preventDefault(); setOpen(!open); if (e.detail === 0 && !open) links[0].focus(); });
@@ -143,6 +144,19 @@ function NavItem({item, bus}) {
     return () => { split.revert(); menuTl.kill(); };
   }, []);
   const [x0, y0, x1, y1] = item.rect, s = SPRITES['nav_' + item.key], ch = M['nav_' + item.key].white.slice(-1)[0];
+  if (flow) return (
+    <div ref={ref} className="nav-item nav-pill" data-key={item.key}>
+      <a className="nav-link nav-hit" href={'#' + item.key} aria-label={item.label}>
+        <img alt="" aria-hidden="true" src={s.uri} className="sprite" />
+        <span className="nav-label mt">{item.label}</span>
+      </a>
+      <button className="chev-btn" type="button" aria-label={item.label + ' menu'} aria-expanded="false"><Chevron /></button>
+      <div className="menu" role="menu">
+        <i className="menu-line" /><i className="menu-hl" />
+        {item.menu.map(m => <a key={m} href={'#' + m.toLowerCase().replace(/[^a-z]+/g, '-')} role="menuitem">{m}</a>)}
+      </div>
+    </div>
+  );
   return (
     <div ref={ref} className="nav-item" style={box(x0, y0, x1, y1 + 8)} data-key={item.key}>
       <a className="nav-link nav-hit" href={'#' + item.key} aria-label={item.label}>
@@ -158,10 +172,8 @@ function NavItem({item, bus}) {
   );
 }
 
-function Nav({bus}) {
-  const fx = useFx(), ctaRef = useRef(null), logoRef = useRef(null);
-  useLayoutEffect(() => {
-    const cta = ctaRef.current, inner = cta.querySelector('.cta-in'), arrow = cta.querySelector('.arrow');
+function bindCta(cta, fx, bus) {
+    const inner = cta.querySelector('.cta-in'), arrow = cta.querySelector('.arrow');
     let loop;
     const enter = e => {
       if (e.pointerType === 'touch' || !fx) return;
@@ -175,11 +187,17 @@ function Nav({bus}) {
     const click = e => { e.preventDefault(); bus.startRepair('nav'); };
     cta.addEventListener('pointerenter', enter); cta.addEventListener('pointermove', move); cta.addEventListener('pointerleave', leave);
     cta.addEventListener('pointerdown', down); cta.addEventListener('pointerup', up); cta.addEventListener('click', click);
+    return () => { loop && loop.kill(); };
+}
+function Nav({bus}) {
+  const fx = useFx(), ctaRef = useRef(null), logoRef = useRef(null);
+  useLayoutEffect(() => {
+    const off = bindCta(ctaRef.current, fx, bus);
     const logo = logoRef.current;
     const lEnter = () => { if (fx) { fx.ring(1, 1.5, 0.9); fx.flash(8, LOGO.x, LOGO.y, 0.5, 150, 1.4); } };
     const lClick = e => { e.preventDefault(); bus.home(); };
     logo.addEventListener('pointerenter', lEnter); logo.addEventListener('click', lClick);
-    return () => { loop && loop.kill(); };
+    return off;
   }, []);
   const cx = CTA_NEON.x - CTA_NEON.hx - 6, cy = CTA_NEON.y - CTA_NEON.hy - 6, ar = M.cta_arrow;
   return (
@@ -389,6 +407,20 @@ function Trust({flow}) {
   );
 }
 
+/* ---------------- phone nav: the same nav items re-laid as two rows of pills over the dash, plus the CTA ---------------- */
+function MobileNav({bus, offset}) {
+  const fx = useFx(), ctaRef = useRef(null);
+  useLayoutEffect(() => bindCta(ctaRef.current, fx, bus), []);
+  return (
+    <nav className="m-nav" aria-label="Main" style={{marginTop: -offset}}>
+      {NAV.map(item => <NavItem key={item.key} item={item} bus={bus} flow />)}
+      <a ref={ctaRef} className="nav-cta m-cta" href="#start">
+        <span className="cta-in"><span className="t mt">Start a repair</span><span className="nav-cta-arrow mt"><Arrow w={17} /></span></span>
+      </a>
+    </nav>
+  );
+}
+
 /* ---------------- mobile nav (top bar + drawer) ---------------- */
 function MobileBar({bus}) {
   const [open, setOpen] = useState(false);
@@ -423,7 +455,8 @@ function MobileBar({bus}) {
 
 /* ---------------- the hero ---------------- */
 const MOBILE_Q = '(max-width: 999px)';
-const BAND = 352;                      /* design-space height of the dashboard band (the swipeable nav strip on phones) */
+const BAND = 352;                      /* design-space height of the dashboard band shown on phones */
+const SLOT_Y = 212;                    /* top of the dashboard's nav slot row: the phone nav panel starts here */
 const SCENE_FOCAL = {x: 1050, y: 640}; /* what the phone scene is cropped around: the car */
 
 export default function Hero() {
@@ -432,7 +465,7 @@ export default function Hero() {
   const fxRef = useRef(null), cropRef = useRef(null), mobileRef = useRef(false);
   const bus = useRef({}).current;
   const [mobile, setMobile] = useState(false);
-  const [scale, setScale] = useState(1);
+  const [tf, setTf] = useState({s: 1, x: 0});
   const [crop, setCrop] = useState(null);
 
   useLayoutEffect(() => {
@@ -453,14 +486,15 @@ export default function Hero() {
     return () => { io.disconnect(); mq.removeEventListener('change', sync); if (f) { gsap.ticker.remove(blit); f.destroy(); } };
   }, []);
 
-  /* sizing. desktop: the whole 1536 x 1024 stage scaled to the width. phone: the dashboard band in a swipeable strip at a readable scale, the car in a cover-cropped scene */
+  /* sizing. desktop: the whole 1536 x 1024 stage scaled to the width. phone: the dashboard band fixed and framed on the logo, the car in a cover-cropped scene */
   useLayoutEffect(() => {
-    const hero = heroRef.current, vis = visRef.current, scene = sceneRef.current, f = fxRef.current;
-    let last = -1;
+    const hero = heroRef.current, scene = sceneRef.current, f = fxRef.current;
+    let last = null;
     const onResize = () => {
-      let s;
+      let s, x = 0;
       if (mobile) {
-        s = clamp(window.innerHeight * 0.3, 220, 300) / BAND;
+        s = clamp(window.innerHeight * 0.26, 190, 250) / BAND;
+        x = clamp(hero.clientWidth / 2 - LOGO.x * s, hero.clientWidth - W * s, 0);
         if (scene) {
           const cw = scene.clientWidth, ch = Math.max(scene.clientHeight, 1), asp = cw / ch;
           let sh = H - BAND, sw = sh * asp; if (sw > W) { sw = W; sh = sw / asp; }
@@ -469,15 +503,12 @@ export default function Hero() {
           const c = sceneCanvasRef.current; if (c) { const d = Math.min(window.devicePixelRatio || 1, 2); c.width = Math.round(cw * d); c.height = Math.round(ch * d); }
         }
       } else { cropRef.current = null; s = hero.clientWidth / W; }
-      if (s === last) return; last = s; setScale(s); if (f) f.setSize(s);
+      if (last && last.s === s && last.x === x) return; last = {s, x}; setTf(last); if (f) f.setSize(s);
     };
     onResize();
     const ro = new ResizeObserver(onResize); ro.observe(hero); if (scene) ro.observe(scene);
     return () => ro.disconnect();
   }, [mobile]);
-
-  /* phone: start the strip centered on the logo */
-  useEffect(() => { if (!mobile) return; const vis = visRef.current; vis.scrollLeft = Math.max(0, LOGO.x * scale - vis.clientWidth / 2); }, [mobile, scale]);
 
   const sceneTap = () => { const f = fxRef.current; if (!f) return; f.inflate('car', 0.07); f.burst(SCENE_FOCAL.x, SCENE_FOCAL.y - 40, 14, {spd: [40, 160]}); f.scan(0.9); };
   const scrollTo = (el, block = 'start') => el && el.scrollIntoView({behavior: REDUCED ? 'auto' : 'smooth', block});
@@ -568,19 +599,18 @@ export default function Hero() {
   return (
     <FX.Provider value={fxRef}>
       <section ref={heroRef} className={'hero booting' + (mobile ? ' m' : '')} id="top">
-        <div ref={visRef} className="vis" style={{height: (mobile ? BAND : H) * scale}}>
-          <div ref={stageRef} className="stage" style={{transform: `scale(${scale})`}}>
+        <div ref={visRef} className="vis" style={{height: (mobile ? BAND : H) * tf.s}}>
+          <div ref={stageRef} className="stage" style={{transform: `translate(${tf.x}px, 0px) scale(${tf.s})`}}>
             <canvas ref={canvasRef} className="gl" aria-hidden="true" />
             <img className="fallback" alt="" aria-hidden="true" src={ASSETS.plate} />
-            <Nav bus={bus} />
+            {!mobile && <Nav bus={bus} />}
             {!mobile && <Copy bus={bus} />}
             {!mobile && <Srs bus={bus} />}
             {!mobile && <Cards bus={bus} />}
             {!mobile && <Trust />}
           </div>
         </div>
-        {mobile && <i className="m-fade m-fade-l" style={{height: BAND * scale}} aria-hidden="true" />}
-        {mobile && <i className="m-fade m-fade-r" style={{height: BAND * scale}} aria-hidden="true" />}
+        {mobile && <MobileNav bus={bus} offset={(BAND - SLOT_Y) * tf.s} />}
         {mobile && (
           <div ref={sceneRef} className="m-scene" onPointerDown={sceneTap} aria-hidden="true">
             <img className="m-scene-img" alt="" src={ASSETS.plate} style={crop ? {transform: `translate(${-crop.sx * crop.k}px, ${-crop.sy * crop.k}px) scale(${crop.k})`} : undefined} />
