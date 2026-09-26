@@ -1,4 +1,5 @@
 import '@/components/pro-airbags-hero/styles.css';
+import '@/components/pro-airbags-hero/responsive.css';
 import './globals.css';
 
 export const metadata = {
