@@ -20,7 +20,7 @@ export default function Cta() {
             <Reveal>
               <h2 className="max-w-[510px] bg-gradient-to-br from-white from-30% via-[#d5d8f6] via-80% to-[#fdf7fe] bg-clip-text font-title text-80 font-medium leading-h2 -tracking-[0.03em] text-transparent lg:text-80 md:max-w-80 md:text-56 sm:text-44">Start a repair</h2>
               <p className="relative z-10 mb-7 mt-2 leading-snug tracking-tight text-grey-90 lg:mb-5 md:mb-[18px]">
-                Tell us what deployed. A technician calls back with a plan<br />and an honest estimate, usually within one business hour.
+                Tell us what deployed and where the car is.<br />A technician calls back within the hour.
               </p>
             </Reveal>
             <div className="relative z-0 flex h-fit w-fit gap-[31px] md:flex-col md:gap-4">
@@ -39,7 +39,7 @@ export default function Cta() {
         <div className="container relative z-10 mt-[120px] grid grid-cols-2 gap-x-16 lg:mt-24 md:mt-20 md:grid-cols-1 md:gap-y-12 sm:mt-16" id="request">
           <Reveal>
             <h3 className="mt-[17px] font-title text-36 font-semibold leading-none tracking-snugger text-white lg:text-32 md:text-28 xs:mt-3 xs:text-24">Request a repair</h3>
-            <p className="mt-3 max-w-[420px] text-15 leading-snug tracking-snugger text-grey-60">No obligation. We never sell or share your information.</p>
+            <p className="mt-3 max-w-[420px] text-15 leading-snug tracking-snugger text-grey-60">No obligation, and your details stay with us.</p>
             <ul className="mt-8 flex flex-col gap-y-3 text-15 leading-snug tracking-snugger text-grey-70">
               <li><span className="text-white">Shop</span> · Detroit, Michigan · metro pick-up and delivery for shop accounts</li>
               <li><span className="text-white">Call or text</span> · <a className="transition-colors duration-200 hover:text-white" href="tel:+13135550142">(313) 555-0142</a></li>
@@ -50,7 +50,7 @@ export default function Cta() {
             {done ? (
               <div className="rounded-[14px] border border-grey-10 bg-grey-5 p-8 text-white shadow-[0px_14px_20px_rgba(0,0,0,0.5)]" role="status">
                 <h3 className="font-title text-28 font-semibold leading-none tracking-snugger">Request received</h3>
-                <p className="mt-3 text-15 leading-snug tracking-snugger text-grey-60">Your request is in the queue. A technician will call back during business hours with a plan and estimate.</p>
+                <p className="mt-3 text-15 leading-snug tracking-snugger text-grey-60">A technician will call you back during business hours.</p>
               </div>
             ) : (
               <form className="mt-7 flex flex-col lg:mt-6 xs:mt-5" noValidate onSubmit={e => { e.preventDefault(); setDone(true); }}>

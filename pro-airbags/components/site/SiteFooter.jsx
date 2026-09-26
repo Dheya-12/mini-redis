@@ -15,8 +15,8 @@ export default function SiteFooter() {
           <span className="2xs:mt-1 2xs:block">. All rights reserved.</span>
         </p>
         <ul className="z-10 ml-[70px] flex items-center gap-x-[26px] lg:order-2 lg:-mb-1.5 lg:ml-0 lg:w-1/2 lg:justify-end lg:gap-x-6 md:mb-0 md:ml-0 md:gap-x-4 sm:mt-9 sm:w-full sm:justify-center">
-          <li><a className="transition-colors duration-200 leading-none inline-flex items-center text-14 text-grey-80 tracking-tight hover:text-white !tracking-snugger" href="#faq">Terms of Service</a></li>
-          <li><a className="transition-colors duration-200 leading-none inline-flex items-center text-14 text-grey-80 tracking-tight hover:text-white !tracking-snugger" href="#faq">Privacy Policy</a></li>
+          <li><a className="transition-colors duration-200 leading-none inline-flex items-center text-14 text-grey-80 tracking-tight hover:text-white !tracking-snugger" href="#start">Terms of Service</a></li>
+          <li><a className="transition-colors duration-200 leading-none inline-flex items-center text-14 text-grey-80 tracking-tight hover:text-white !tracking-snugger" href="#start">Privacy Policy</a></li>
         </ul>
         <ul className="ml-[70px] flex gap-x-4.5 lg:order-1 lg:-mb-1.5 lg:ml-0 lg:w-1/2 md:mb-0 sm:w-full sm:justify-center">
           <li><a aria-label="X" className="transition-colors duration-200" href="#top">

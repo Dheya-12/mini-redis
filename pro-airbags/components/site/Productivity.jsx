@@ -1,13 +1,13 @@
 import Reveal from './Reveal';
 
+/* huly.io "Unmatched productivity": four ring cards on the light backdrop with the blurred colour blobs. One image and one message per card. */
 const CARDS = [
-  { id: 'airbags', img: '/assets/img/pa-airbags.jpg', pos: 'object-center', title: 'Airbags.', body: 'Driver, passenger, knee, seat and curtain airbags replaced with OEM-spec units matched to your VIN.', wide: false, order: 'order-1' },
-  { id: 'module', img: '/assets/img/pa-dash.jpg', pos: 'object-[38%_50%]', title: 'Module reset.', body: 'Crash data and hard codes cleared on your original SRS module. No new unit, no dealer visit.', wide: true, order: 'order-2' },
-  { id: 'programming', img: '/assets/img/pa-screen.jpg', pos: 'object-center', title: 'Programming.', body: 'Replacement modules and occupant sensors coded and calibrated with factory-level tooling.', wide: false, order: 'order-4' },
-  { id: 'seatbelt', img: '/assets/img/pa-seatbelt.jpg', pos: 'object-[50%_35%]', title: 'Seatbelt repair.', body: 'Locked or fired pretensioners rebuilt on your original belts so colors and trim still match.', wide: true, order: 'order-3' },
+  { id: 'airbags', img: '/assets/img/pa-wheel.jpg', title: 'Airbags.', body: 'Driver, passenger, knee, seat and curtain units replaced to OEM spec.', wide: false, order: 'order-1' },
+  { id: 'module', img: '/assets/img/pa-module.jpg', title: 'Module reset.', body: 'Crash data and hard codes cleared on your original SRS module.', wide: true, order: 'order-2' },
+  { id: 'programming', img: '/assets/img/pa-screen.jpg', title: 'Programming.', body: 'Modules and occupant sensors coded and calibrated to the VIN.', wide: false, order: 'order-4' },
+  { id: 'seatbelt', img: '/assets/img/pa-belt.jpg', title: 'Seatbelt repair.', body: 'Pretensioners rebuilt on your own belts, so the trim still matches.', wide: true, order: 'order-3' },
 ];
 
-/* huly.io "Unmatched productivity" section: light backdrop, four ring cards, blurred colour blobs. */
 export default function Productivity() {
   return (
     <div className="overflow-hidden bg-[#f6f6f6]">
@@ -16,7 +16,7 @@ export default function Productivity() {
           <Reveal>
             <h2 className="font-title text-80 font-semibold leading-h2 tracking-tighter text-black lg:text-88 md:text-64 sm:text-36">Unmatched restraint repair</h2>
             <p className="mt-6 max-w-[705px] text-18 leading-tight tracking-tight lg:mt-5 sm:mt-3 sm:max-w-lg sm:text-15">
-              Pro Airbags is an airbag, seatbelt, module and programming shop that rebuilds the whole supplemental restraint system to the manufacturer&apos;s specification, then proves it with dealer-level diagnostics.
+              Pro Airbags rebuilds the whole supplemental restraint system in one bay, from the bag in the wheel to the module under the seat, for owners, adjusters and body shops alike.
             </p>
           </Reveal>
           <ul className="mt-10 flex flex-wrap gap-5 lg:mt-9 lg:gap-4 md:mt-6 sm:mt-5 sm:grid sm:grid-cols-2 xs:grid-cols-1">
@@ -29,7 +29,7 @@ export default function Productivity() {
                 </div>
                 <div className="relative col-span-full row-span-full">
                   <span aria-hidden="true" className="absolute left-1/2 top-0 -z-10 h-full w-px" />
-                  <img alt="" className={'absolute inset-0 h-full w-full object-cover ' + c.pos} decoding="async" loading="lazy" src={c.img} />
+                  <img alt="" className="absolute inset-0 h-full w-full object-cover" decoding="async" loading="lazy" src={c.img} />
                   <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-[58%] bg-[linear-gradient(180deg,rgba(12,12,13,0)_0%,#0C0C0D_78%)]" />
                 </div>
               </Reveal>
@@ -49,24 +49,23 @@ export default function Productivity() {
   );
 }
 
-const SYSTEMS = [['Airbags', 'OK', true], ['Seatbelts', 'OK', false], ['Sensors', 'OK', true]];
 const STEPS = [
-  { icon: '/assets/img/customize.03200dd0.png', title: 'Diagnose', body: 'Full SRS scan with dealer-level tools. Every stored code read and quoted before we touch the car.' },
-  { icon: '/assets/img/video.e4ea1f4b.png', title: 'Repair & reset', body: 'Bags, belts and sensors replaced or rebuilt, crash data erased, module reset or coded to the VIN.' },
-  { icon: '/assets/img/invite.043fb941.png', title: 'Verify', body: 'Readiness check and road test. The SRS light goes out and stays out, documented on your report.' },
+  { icon: '/assets/img/customize.03200dd0.png', title: 'Diagnose', body: 'A full SRS scan with dealer-level tools before anything is quoted.' },
+  { icon: '/assets/img/video.e4ea1f4b.png', title: 'Repair and reset', body: 'Parts replaced or rebuilt, crash data erased, module back online.' },
+  { icon: '/assets/img/invite.043fb941.png', title: 'Road test', body: 'The car goes out with the light off and comes back with it still off.' },
 ];
 const BTN = 'flex aspect-square h-11 items-center justify-center rounded-full shadow-[0px_4px_16px_0px_#00000059] md:h-[29px] xs:h-4';
 
-/* huly.io "Work together. Like in the office." section: framed video stage with overlay chrome, then three icon columns. */
+/* huly.io "Work together. Like in the office.": the framed video stage with its overlay chrome, then three icon columns. */
 function WorkTogether() {
   return (
     <section className="work-together py-60 px-safe lg:py-32 md:py-24 sm:pb-[68px] sm:pt-20" id="process">
       <div className="container max-w-[1344px] lg:max-w-[960px] md:max-w-3xl md:px-0 sm:px-5">
         <div className="pl-80 pr-16 lg:px-0 md:pl-24 md:pr-9 sm:px-0">
           <Reveal>
-            <h2 className="relative z-10 max-w-[550px] font-title text-80 font-semibold leading-[0.9] tracking-tighter text-black lg:text-72 md:max-w-[430px] md:text-56 sm:max-w-[250px] sm:text-36">Rebuilt in the bay. Verified before it leaves.</h2>
+            <h2 className="relative z-10 max-w-[550px] font-title text-80 font-semibold leading-[0.9] tracking-tighter text-black lg:text-72 md:max-w-[430px] md:text-56 sm:max-w-[250px] sm:text-36">Done in the bay. Like at the dealer.</h2>
             <p className="relative z-10 mt-3.5 max-w-[544px] text-18 leading-tight tracking-tight lg:mt-2.5 md:max-w-[450px] md:text-16 sm:mt-3">
-              Most vehicles are diagnosed, repaired, reset and road-tested within two working days, with a readiness report your insurer and body shop accept.
+              Factory tooling, OEM-spec parts and a technician who does nothing but restraint systems. Most cars are back on the road within two working days.
             </p>
           </Reveal>
           <Reveal delay={0.1}>
@@ -75,20 +74,20 @@ function WorkTogether() {
               <img alt="" className="relative h-full w-full rounded-[10px] object-cover lg:rounded-lg md:rounded-[7px] sm:rounded" decoding="async" loading="lazy" src="/assets/img/pa-garage.jpg" />
               <div className="pointer-events-none absolute inset-0 rounded-[10px] text-white lg:rounded-lg md:rounded-[7px] sm:rounded">
                 <div className="absolute left-5 top-5 flex flex-col lg:left-4 lg:top-4 md:left-[13px] md:top-[13px]">
-                  <span className="text-18 font-medium leading-snug tracking-snugger opacity-90 lg:text-16 md:text-12">Post-collision SRS rebuild</span>
+                  <span className="text-18 font-medium leading-snug tracking-snugger opacity-90 lg:text-16 md:text-12">Bay 2 · SRS rebuild</span>
                   <span className="mt-0.5 flex items-center gap-x-1.5 text-12 font-medium leading-snug tracking-snugger opacity-60 lg:text-10 md:mt-0 md:text-8">
                     <img alt="" className="lg:h-auto lg:w-[13px] md:w-[9px]" decoding="async" height="14" loading="lazy" src="/assets/media/6cad5c6f35277cc12565a6826b9940bf.svg" style={{ color: 'transparent' }} width="14" />
-                    5 systems checked
+                    2 technicians
                   </span>
                 </div>
-                {SYSTEMS.map(([name, st, blue], i) => (
+                {[['Front bags', true], ['Curtains', false], ['Belts', true]].map(([name, blue], i) => (
                   <div key={name} className="absolute h-[20.782%] w-[20.833%] right-[1.157%]" style={{ top: ['2.058%', '25.309%', '48.559%'][i] }}>
                     <div className={'absolute right-[3.333%] top-[5.94%] flex h-[19.802%] w-[11.111%] items-center justify-center rounded-full shadow-[0px_4px_6px_0px_#00000026] ' + (blue ? 'bg-[#3d7eff]' : 'bg-[#0b0d1033]')}>
                       <img alt="" className="h-1/2 w-1/2" decoding="async" height="10" loading="lazy" src={blue ? '/assets/media/93e08622f4a0bbef839d81e681f8bba7.svg' : '/assets/media/0e5b98ef7d38250f3aee6888407436e3.svg'} style={{ color: 'transparent' }} width="10" />
                     </div>
                     <span className="absolute bottom-[5.94%] left-[3.333%] flex items-center gap-x-1 text-10 font-medium leading-snug tracking-snugger opacity-80 lg:text-9 md:gap-x-0.5 md:text-[7px] sm:text-[4px]">
                       <span className="inline-block h-[7px] w-[7px] rounded-full bg-[#5dff9b] shadow-[0_0_6px_rgba(93,255,155,.8)] md:h-[5px] md:w-[5px] sm:h-[3px] sm:w-[3px]" />
-                      {name} · {st}
+                      {name}
                     </span>
                   </div>
                 ))}
@@ -104,7 +103,7 @@ function WorkTogether() {
           </Reveal>
           <Reveal>
             <p className="relative z-10 mt-[66px] max-w-2xl text-24 font-medium leading-snug tracking-snugger lg:mt-[60px] lg:max-w-[544px] lg:text-20 md:mt-[72px] sm:mt-7 sm:text-18">
-              A deployed airbag does not have to mean a totaled car. Insurance adjusters and body shops send us the vehicle, and it comes back with every restraint armed and a clean dash.
+              A deployed airbag does not have to mean a totaled car. Bring it in, mail the module, or have us collect it from the body shop.
             </p>
           </Reveal>
           <ul className="relative z-10 mt-10 grid grid-cols-3 gap-16 lg:mt-9 md:gap-8 sm:mt-8 sm:grid-cols-1 sm:gap-y-7">

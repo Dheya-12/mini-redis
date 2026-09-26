@@ -9,7 +9,7 @@ const SERVICES = [
   { key: 'seatbelt', label: 'Seatbelt repair', sub: 'Pretensioners, buckles, retractors', href: '#seatbelt' },
   { key: 'programming', label: 'Programming', sub: 'Module coding and calibration', href: '#programming' },
 ];
-const LINKS = [['Process', '#process'], ['Pricing', '#pricing'], ['Reviews', '#reviews'], ['FAQ', '#faq']];
+const LINKS = [['Process', '#process'], ['Insurers', '#insurance'], ['Knowledge', '#knowledge']];
 const MOBILE_LINKS = [['Services', '#specialties'], ...LINKS];
 
 /* huly.io site header. It is fixed and slides in once the hero, which carries its own dashboard navigation, has scrolled away.
@@ -26,6 +26,7 @@ export default function SiteHeader() {
   useEffect(() => { document.body.style.overflow = open ? 'hidden' : ''; return () => { document.body.style.overflow = ''; }; }, [open]);
   const arrow = <img alt="" className="ml-auto mr-1 -rotate-90 opacity-0 transition-opacity duration-200 group-hover/subitem:opacity-100" decoding="async" height="6" src={CHEVRON} style={{ color: 'transparent' }} width="10" />;
   return (
+    <>
     <header className={'site-header left-0 right-0 top-0 z-40 h-16 transition-colors duration-200 px-safe pt-safe bg-grey-1/80 backdrop-blur' + (on || open ? ' on' : '')}>
       <div className="container relative z-10 flex h-full items-center" aria-label="Global">
         <a className="transition-colors duration-200 transition-all duration-200" href="#top"><span className="sr-only">Pro Airbags</span><Wordmark /></a>
@@ -74,7 +75,9 @@ export default function SiteHeader() {
           <span className={'block h-[2px] w-6 bg-white transition-transform duration-200 ' + (open ? '-translate-y-[7px] -rotate-45' : '')} />
         </button>
       </div>
-      <div className={'fixed inset-0 top-16 z-30 hidden bg-grey-1 transition-opacity duration-200 md:block ' + (open ? 'visible opacity-100' : 'invisible opacity-0')}>
+    </header>
+    {/* The drawer is a sibling of the header: a backdrop-filter ancestor would become its containing block and collapse it. */}
+    <div className={'site-drawer fixed inset-0 top-16 z-30 hidden bg-grey-1 transition-opacity duration-200 md:block ' + (open ? 'visible opacity-100' : 'invisible opacity-0')}>
         <nav className="container flex flex-col gap-y-1 pt-6">
           {MOBILE_LINKS.map(([l, h]) => (
             <a key={h} href={h} onClick={() => setOpen(false)} className="rounded-[14px] p-3 text-16 text-white transition-colors duration-200 hover:bg-grey-10">{l}</a>
@@ -84,7 +87,7 @@ export default function SiteHeader() {
             <a href="#start" onClick={() => setOpen(false)} className="uppercase font-bold flex h-10 flex-1 items-center justify-center px-4 text-11 border-button-grey relative text-white tracking-snug">Start a repair</a>
           </div>
         </nav>
-      </div>
-    </header>
+    </div>
+    </>
   );
 }

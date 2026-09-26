@@ -1,12 +1,12 @@
 import Reveal from './Reveal';
 
 const FEATURES = [
-  { id: 'crash-data-clearing', icon: '/assets/media/2a9e454742efc41c8de5d3889bf55d34.svg', w: 37, title: 'Two-way with your insurer', body: 'Itemized estimates in and readiness reports out. Adjusters get what they need the same day.' },
-  { id: 'srs-module-reset', icon: '/assets/media/4d5dd04473e9f2ebc5c49291c1f73681.svg', w: 40, title: 'Your original module', body: 'Crash data cleared and coding kept on the unit you already own. No dealer programming.' },
-  { id: 'hard-code-removal', icon: '/assets/media/7338cddab3021d50f73a3d36c88df490.svg', w: 44, title: 'All makes and models', body: 'Domestic, European and Asian platforms from 2005 on, with OEM-spec parts for each.' },
-  { id: 'module-bench-test', icon: '/assets/media/c1edb00984cbfb46dd8eda516738f4f0.svg', w: 40, title: 'Mail-in modules', body: 'Ship the SRS module, get it back reset and bench-tested within one business day of arrival.' },
-  { id: 'system-setup', icon: '/assets/media/352118264d839bffe60735ff4aeed26f.svg', w: 60, title: 'Track every code', body: 'Each DTC is listed on your report with what deployed, what was replaced and what was cleared.' },
-  { id: 'srs-light-diagnosis', icon: '/assets/media/12b7898bd7ddbbbbcacf68c0f47c7c51.svg', w: 40, title: 'Twelve-month warranty', body: 'Workmanship covered for a year. If the light comes back, the car comes back at no charge.' },
+  { icon: '/assets/media/2a9e454742efc41c8de5d3889bf55d34.svg', w: 37, title: 'Two-way with the adjuster', body: 'Estimates go out itemized. Approvals come back the same day.' },
+  { icon: '/assets/media/4d5dd04473e9f2ebc5c49291c1f73681.svg', w: 40, title: 'Direct billing', body: 'We bill the carrier. You pay the deductible and nothing else.' },
+  { icon: '/assets/media/7338cddab3021d50f73a3d36c88df490.svg', w: 44, title: 'Body shop accounts', body: 'Pick-up and delivery across the metro, on the shop’s schedule.' },
+  { icon: '/assets/media/c1edb00984cbfb46dd8eda516738f4f0.svg', w: 40, title: 'Total-loss reviews', body: 'A second opinion before a car is written off over its airbags.' },
+  { icon: '/assets/media/352118264d839bffe60735ff4aeed26f.svg', w: 60, title: 'Claim tracking', body: 'Every claim has one number, one contact and one status.' },
+  { icon: '/assets/media/12b7898bd7ddbbbbcacf68c0f47c7c51.svg', w: 40, title: 'Twelve-month warranty', body: 'Workmanship covered for a year, honored at any location.' },
 ];
 const REPORT = [
   ['B0001', 'Driver frontal deployment loop', 'cleared'], ['B0012', 'Passenger frontal stage 1', 'cleared'], ['B0028', 'Left curtain deployment', 'cleared'],
@@ -15,8 +15,7 @@ const REPORT = [
 ];
 const COLOR = { cleared: '#47d18c', erased: '#ff990a', reset: '#4da6ff', rebuilt: '#bf6afb', calibrated: '#4da6ff', complete: '#47d18c' };
 
-/* huly.io "Sync with GitHub. Both ways." section: dark #111 backdrop, framed stage, six icon features with blue glows.
-   The stage holds the diagnostic report as a code block, styled with the site's own shiki tokens. */
+/* huly.io "Sync with GitHub. Both ways.": dark #111 backdrop, framed stage, six features with blue glows. */
 export default function Insurance() {
   return (
     <section className="sync-with-github relative z-20 overflow-hidden bg-[#111111] pb-[180px] pt-[131px] px-safe lg:pb-[131px] lg:pt-24 md:py-24 sm:py-16" id="insurance">
@@ -24,7 +23,7 @@ export default function Insurance() {
         <Reveal className="relative z-10">
           <h2 className="max-w-2xl font-title text-80 font-medium leading-[0.9] tracking-snugger text-white lg:text-72 md:max-w-md md:text-56 sm:max-w-96 sm:text-36">Works with your insurer. Both ways.</h2>
           <p className="mt-4 max-w-[580px] leading-snug tracking-tight text-grey-60">
-            Every repair ends with a documented readiness report. Adjusters and body shops use it to close the claim, and you keep it with the car&apos;s service history.
+            Every job closes with a readiness report the carrier accepts: what deployed, what was replaced, what was reset, and the result of the final scan.
           </p>
         </Reveal>
         <div>
@@ -54,7 +53,7 @@ export default function Insurance() {
         </div>
         <ul className="gird mt-40 grid grid-cols-3 gap-x-24 gap-y-20 lg:mt-[102px] lg:gap-x-[76px] lg:gap-y-14 md:mt-16 md:gap-x-16 md:gap-y-12 sm:mt-12 sm:grid-cols-1 sm:gap-y-8">
           {FEATURES.map((f, i) => (
-            <Reveal key={f.title} as="li" id={f.id} delay={(i % 3) * 0.08} className="relative scroll-mt-24">
+            <Reveal key={f.title} as="li" delay={(i % 3) * 0.08} className="relative">
               <div className="realtive after:pointer-events-none after:absolute after:-left-2 after:-top-2 after:h-8 after:w-8 after:rounded-[50%] after:bg-[linear-gradient(180deg,#478BEB_60%,rgba(71,139,235,0)_100%)] after:opacity-60 after:mix-blend-plus-lighter after:blur-2xl after:lg:h-7 after:lg:w-7">
                 <img alt="" className="h-10 w-auto md:h-9 sm:h-8" decoding="async" height="40" loading="lazy" src={f.icon} style={{ color: 'transparent' }} width={f.w} />
               </div>
