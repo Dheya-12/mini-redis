@@ -62,3 +62,33 @@ html, body { background: #090a0c; }
 
 /* anchors land below the fixed header */
 section[id], [id].scroll-anchor { scroll-margin-top: 72px; }
+
+/* ---------- Tile artwork (HTML versions of huly.io's tile images, with Pro Airbags content) ---------- */
+.art-plate { background: linear-gradient(160deg, #101114 0%, #0b0c0e 55%, #0a0b0d 100%); color: #fff; font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif; letter-spacing: -.02em; }
+.art-glow { position: absolute; width: 70%; aspect-ratio: 1; border-radius: 50%; pointer-events: none; filter: blur(40px); background: radial-gradient(circle, rgba(72, 126, 255, .75) 0%, rgba(72, 126, 255, 0) 70%); }
+.art-glow-left { left: -30%; bottom: -25%; } .art-glow-right { right: -30%; top: -25%; } .art-glow-top { left: 15%; top: -55%; } .art-glow-none { display: none; }
+.art-stack { position: absolute; left: 0; right: 0; top: 46%; display: flex; flex-direction: column; gap: 10px; }
+.art-row { display: flex; align-items: center; gap: 10px; width: 300px; padding: 10px 12px; border-radius: 6px; font-size: 13px; background: rgba(20, 22, 26, .92); border: 1px solid rgba(255, 255, 255, .18); box-shadow: 0 8px 20px rgba(0, 0, 0, .45); white-space: nowrap; }
+.art-box { width: 16px; height: 16px; border-radius: 4px; border: 1px solid rgba(255, 255, 255, .5); display: grid; place-items: center; flex: none; } .art-box.on { background: #fff; } .art-box.on img { filter: invert(1); }
+.art-cards { position: absolute; left: 14%; top: 42%; width: 74%; } .art-card { border-radius: 8px; background: rgba(22, 23, 27, .95); border: 1px solid rgba(255, 255, 255, .16); padding: 11px 12px; box-shadow: 0 10px 24px rgba(0, 0, 0, .5); font-size: 11.5px; line-height: 1.3; }
+.art-card-t { font-weight: 500; } .art-card-s { opacity: .6; margin-top: 3px; } .art-people { display: flex; align-items: center; margin-top: 8px; } .art-people .art-avatar { margin-right: -7px; box-shadow: 0 0 0 2px #17181b; } .art-more { margin-left: 12px; opacity: .6; font-size: 11px; }
+.art-card-b { width: 60%; margin: -4px 0 0 30%; padding: 8px 10px; opacity: .55; }
+.art-avatar { display: inline-grid; place-items: center; border-radius: 50%; background: #1b1c20; flex: none; } .art-avatar img { width: 60%; height: 60%; object-fit: contain; }
+.art-menu { position: absolute; left: 12%; right: 8%; top: 50%; border-radius: 8px; background: rgba(22, 23, 27, .95); border: 1px solid rgba(255, 255, 255, .16); box-shadow: 0 10px 24px rgba(0, 0, 0, .5); padding: 6px; font-size: 11.5px; }
+.art-menu-h { padding: 4px 8px 6px; font-size: 10px; opacity: .5; } .art-menu-i { display: flex; gap: 10px; align-items: center; padding: 6px 8px; border-radius: 6px; } .art-menu-i:first-of-type { background: rgba(255, 255, 255, .08); } .art-menu-i small { opacity: .55; font-size: 10px; }
+.art-menu-ic { width: 28px; height: 28px; border-radius: 6px; background: #2a2c31; display: grid; place-items: center; font-size: 12px; flex: none; }
+.art-strip { position: absolute; left: 0; right: 0; top: 40%; display: flex; justify-content: center; gap: 22px; } .art-person { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 11px; opacity: .85; } .art-person .art-avatar { box-shadow: 0 0 0 2px #5dff9b; }
+.art-pill { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); white-space: nowrap; font-size: 11px; padding: 6px 12px; border-radius: 999px; background: rgba(22, 23, 27, .95); border: 1px solid rgba(255, 255, 255, .16); }
+.art-cal { display: grid; place-items: center; align-content: center; border-radius: 50%; } .art-cal-n { font-size: 96px; font-weight: 600; line-height: .9; letter-spacing: -.04em; background: linear-gradient(180deg, #fff, #9aa1b5); -webkit-background-clip: text; background-clip: text; color: transparent; } .art-cal-m { font-size: 18px; opacity: .8; margin-top: 4px; }
+.art-cal-plus { position: absolute; right: 8%; bottom: 8%; width: 54px; height: 54px; border-radius: 50%; background: #1b1c20; border: 1px solid rgba(255, 255, 255, .2); display: grid; place-items: center; font-size: 28px; }
+.art-chat { position: absolute; left: 8%; right: 8%; top: 40%; display: flex; flex-direction: column; gap: 8px; font-size: 11px; line-height: 1.3; }
+.art-bubble { display: flex; gap: 8px; align-items: flex-start; padding: 8px 10px; border-radius: 10px; background: rgba(28, 29, 33, .95); border: 1px solid rgba(255, 255, 255, .14); max-width: 88%; } .art-bubble.r { align-self: flex-end; } .art-bubble b { color: #ff8964; font-weight: 500; }
+.art-compose { display: flex; justify-content: space-between; padding: 8px 12px; border-radius: 999px; background: rgba(28, 29, 33, .95); border: 1px solid rgba(255, 255, 255, .14); opacity: .6; }
+.art-fleet { position: absolute; left: 8%; right: 8%; top: 44%; border-radius: 8px; background: rgba(245, 245, 247, .97); color: #101114; padding: 10px 12px; font-size: 11.5px; box-shadow: 0 10px 24px rgba(0, 0, 0, .5); }
+.art-fleet-h { display: flex; justify-content: space-between; font-weight: 500; padding-bottom: 6px; border-bottom: 1px solid rgba(0, 0, 0, .1); } .art-fleet-h span { color: #ff8964; } .art-fleet-r { display: flex; justify-content: space-between; padding: 5px 0; } .art-fleet-r em { font-style: normal; opacity: .55; }
+.art-spec { position: relative; border-radius: 10px; background: #111112; color: #f9fafa; padding: 22px 24px; font-family: var(--font-mono), ui-monospace, monospace; font-size: 13px; line-height: 1.75; letter-spacing: -.02em; white-space: pre; overflow: hidden; }
+.art-spec-copy { position: absolute; right: 14px; top: 12px; width: 30px; height: 30px; border-radius: 6px; background: #2a2c31; display: grid; place-items: center; font-size: 14px; color: #c9cbcf; }
+@media (max-width: 767px) { .art-spec { font-size: 11px; padding: 16px; } .art-row { width: 240px; font-size: 12px; } .art-cal-n { font-size: 80px; } }
+.w-\[264px\] { width: 264px; } .w-\[66px\] { width: 66px; }
+@media (max-width: 1023px) { .md\:h-\[45px\] { height: 45px; } .md\:w-\[45px\] { width: 45px; } }
+@media (max-width: 767px) { .sm\:h-\[36px\] { height: 36px; } }

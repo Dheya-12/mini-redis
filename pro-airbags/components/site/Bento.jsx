@@ -1,8 +1,9 @@
 import Reveal from './Reveal';
+import { Checklist, Schedule, Notes, Status, Calendar, Chat, Fleet, Spec } from './Art';
+import { SPRITES } from '@/components/pro-airbags-hero/generated/assets';
 
 const TILE = 'relative rounded-[30px] outline outline-white/60 md:rounded-3xl sm:m-0 sm:aspect-[1.45] sm:h-auto sm:w-full sm:overflow-hidden sm:rounded-[20px] sm:outline-4 xs:aspect-[1.65]';
 const CAP = 'absolute inset-0 bottom-auto z-10 px-6 py-[19px] text-15 font-light leading-tight text-white/65 xl:py-[21px] md:p-4 md:text-14 sm:p-5 sm:text-15';
-const MOBILE = 'pointer-events-none absolute left-1/2 top-1/2 hidden min-w-full -translate-x-1/2 -translate-y-1/2 rounded-[20px] sm:block';
 
 /* huly.io "Huly MetaBrain": the bento of outlined tiles with Huly's own tile art, markup and class strings verbatim. */
 export default function Bento() {
@@ -18,42 +19,37 @@ export default function Bento() {
           </Reveal>
           <div className="mt-14 flex w-full gap-4.5 xl:mt-12 xl:flex-col xl:gap-3.5 md:mt-10 sm:mt-6 sm:gap-3">
             <ul className="flex w-[808px] flex-wrap items-center gap-4.5 xl:w-full xl:justify-between xl:gap-3.5 md:gap-4 sm:grid sm:grid-cols-2 sm:gap-3 xs:grid-cols-1">
-              <li id="airbag-replacement" className={TILE + ' ml-64 h-[250px] w-[270px] rounded-none outline-0 md:ml-56 md:h-[218px] md:w-[234px]'}>
+              <li id="airbag-replacement" className={TILE + ' ml-64 h-[250px] w-[270px] overflow-hidden md:ml-56 md:h-[218px] md:w-[234px]'}>
                 <p className={CAP + ' sm:max-w-[240px]'}><strong className="font-medium text-white">Book a job.</strong> Pick the service and a drop-off slot.</p>
-                <img alt="" className="pointer-events-none rounded-[30px] md:rounded-3xl sm:hidden absolute -right-1 -top-1 h-[508px] w-[534px] rounded-none max-w-max md:h-[444px] md:w-[466px]" decoding="async" height="508" loading="lazy" src="/assets/img/tasks-notes.69743ddd.png" srcSet="/assets/img/tasks-notes.69743ddd.png 2x" style={{ color: 'transparent' }} width="534" />
-                <img alt="" className={MOBILE} decoding="async" height="220" loading="lazy" src="/assets/img/tasks-mobile.abb306cb.jpg" srcSet="/assets/img/tasks-mobile.abb306cb.jpg 2x" style={{ color: 'transparent' }} width="320" />
+                <Checklist />
               </li>
-              <li id="clock-spring-repair" className={TILE + ' outline-4 xl:h-[250px] xl:w-[250px] md:h-[218px] md:w-[230px]'}>
+              <li id="clock-spring-repair" className={TILE + ' outline-4 h-[250px] w-[264px] overflow-hidden xl:h-[250px] xl:w-[250px] md:h-[218px] md:w-[230px]'}>
                 <p className={CAP + ' xl:pr-[21px] sm:max-w-[260px]'}><strong className="font-medium text-white">Plan the bay.</strong> See when your car is on the lift.</p>
-                <img alt="" className="pointer-events-none rounded-[30px] md:rounded-3xl sm:hidden xl:h-full xl:w-full xl:object-cover xl:object-left" decoding="async" height="250" loading="lazy" src="/assets/img/plan-work.26bcf442.jpg" srcSet="/assets/img/plan-work.26bcf442.jpg 2x" style={{ color: 'transparent' }} width="264" />
-                <img alt="" className={MOBILE} decoding="async" height="220" loading="lazy" src="/assets/img/plan-work-mobile.d9e8f583.jpg" srcSet="/assets/img/plan-work-mobile.d9e8f583.jpg 2x" style={{ color: 'transparent' }} width="320" />
+                <Schedule />
               </li>
-              <li id="seat-and-curtain-airbags" className={TILE + ' h-[232px] w-[270px] rounded-none outline-0 md:h-[202px] md:w-[234px]'}>
-                <p className={CAP + ' pt-0 -top-0.5 after:relative after:left-[6px] after:-mt-1 after:top-[5px] after:inline-block after:h-4.5 after:w-px after:bg-[#D1D4FA] after:opacity-80 xl:pt-1.5 xl:after:top-1.5 md:max-w-[195px] md:pt-4 md:pl-5 md:top-[-17px] md:left-[-3px] md:pr-0 md:after:h-4 md:after:top-1 sm:max-w-[280px] sm:top-[-7px]'}>
+              <li id="seat-and-curtain-airbags" className={TILE + ' h-[232px] w-[270px] overflow-hidden md:h-[202px] md:w-[234px]'}>
+                <p className={CAP + ' after:relative after:left-[6px] after:-mt-1 after:top-[5px] after:inline-block after:h-4.5 after:w-px after:bg-[#D1D4FA] after:opacity-80 md:max-w-[195px] sm:max-w-[280px]'}>
                   <img alt="" className="mb-[7px] md:mb-1.5 md:h-auto md:w-3 sm:w-3.5" decoding="async" height="14" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGZpbGw9Im5vbmUiIHZpZXdCb3g9IjAgMCAxNCAxNCI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTExLjM3NS4yMTlINS4xM2MtMS44ODQgMC0zLjUwNiAxLjQ0OC0zLjU5NSAzLjMzYTMuNSAzLjUgMCAwIDAgMy40OTYgMy42N2guNDM4djYuMzQ0YS4yMi4yMiAwIDAgMCAuMjE5LjIxOGguNDM3YS4yMi4yMiAwIDAgMCAuMjE5LS4yMTlWMS4wOTVoMi42MjV2MTIuNDY5YS4yMi4yMiAwIDAgMCAuMjE5LjIxOGguNDM3YS4yMi4yMiAwIDAgMCAuMjE5LS4yMTlWMS4wOTVoMS41MzFhLjIyLjIyIDAgMCAwIC4yMTktLjIxOVYuNDM4YS4yMi4yMiAwIDAgMC0uMjE5LS4yMiIvPjwvc3ZnPg==" style={{ color: 'transparent' }} width="14" />
                   <strong className="font-medium text-white">Tech notes.</strong><br className="sm:hidden" /> What was found, in plain words
                 </p>
-                <img alt="" className={MOBILE} decoding="async" height="220" loading="lazy" src="/assets/img/notes-mobile.2bf5fcba.jpg" srcSet="/assets/img/notes-mobile.2bf5fcba.jpg 2x" style={{ color: 'transparent' }} width="320" />
+                <Notes />
               </li>
-              <li id="pretensioner-rebuild" className={TILE + ' outline-4 xl:w-[515px] md:w-[453px]'}>
+              <li id="pretensioner-rebuild" className={TILE + ' outline-4 h-[232px] w-[520px] overflow-hidden xl:h-[250px] xl:w-[515px] md:w-[453px]'}>
                 <p className={CAP + ' max-w-[425px] xl:px-5 sm:max-w-[290px]'}><strong className="font-medium text-white">Live status.</strong> Owner, adjuster and shop watch the same job move from scan to sign-off.</p>
-                <img alt="" className="pointer-events-none rounded-[30px] md:rounded-3xl sm:hidden xl:h-full xl:w-full xl:object-cover" decoding="async" height="232" loading="lazy" src="/assets/img/teammates.c5a8e1bf.jpg" srcSet="/assets/img/teammates.c5a8e1bf.jpg 2x" style={{ color: 'transparent' }} width="520" />
-                <img alt="" className={MOBILE + ' xs:top-[47.5%]'} decoding="async" height="220" loading="lazy" src="/assets/img/teammates-mobile.8dc948be.jpg" srcSet="/assets/img/teammates-mobile.8dc948be.jpg 2x" style={{ color: 'transparent' }} width="320" />
+                <Status />
               </li>
             </ul>
             <ul className="flex flex-1 flex-wrap items-center gap-4.5 xl:flex-nowrap xl:items-end sm:grid sm:grid-cols-2 sm:gap-3 xs:grid-cols-1">
-              <li id="webbing-replacement" className={TILE + ' h-[236px] w-[236px] rounded-none outline-0 xl:h-[250px] xl:w-[270px] xl:p-2 md:h-[218px] md:w-[235px] sm:hidden'}>
-                <img alt="" className="pointer-events-none rounded-[30px] md:rounded-3xl sm:hidden -m-1 h-[244px] w-[244px] max-w-max rounded-none xl:mx-auto md:h-[218px] md:w-[235px]" decoding="async" height="244" loading="lazy" src="/assets/img/calendar.74569b09.png" srcSet="/assets/img/calendar.74569b09.png 2x" style={{ color: 'transparent' }} width="244" />
+              <li id="webbing-replacement" className={TILE + ' h-[236px] w-[236px] !rounded-full overflow-hidden xl:h-[250px] xl:w-[250px] md:h-[218px] md:w-[218px] sm:hidden'}>
+                <Calendar />
               </li>
-              <li id="buckle-and-sensor-repair" className={TILE + ' outline-4 xl:h-[250px] xl:w-[250px] md:h-[218px] md:w-[218px]'}>
+              <li id="buckle-and-sensor-repair" className={TILE + ' outline-4 h-[250px] w-[264px] overflow-hidden xl:h-[250px] xl:w-[250px] md:h-[218px] md:w-[218px]'}>
                 <p className={CAP + ' sm:max-w-60'}><strong className="font-medium text-white">Message the tech.</strong> Ask about the job, get a straight answer.</p>
-                <img alt="" className="pointer-events-none rounded-[30px] md:rounded-3xl sm:hidden xl:h-full xl:w-full xl:object-cover xl:object-left" decoding="async" height="250" loading="lazy" src="/assets/img/collab.aa5fcd89.jpg" srcSet="/assets/img/collab.aa5fcd89.jpg 2x" style={{ color: 'transparent' }} width="264" />
-                <img alt="" className={MOBILE + ' xs:top-[47.5%]'} decoding="async" height="220" loading="lazy" src="/assets/img/collab-mobile.a7137137.jpg" srcSet="/assets/img/collab-mobile.a7137137.jpg 2x" style={{ color: 'transparent' }} width="320" />
+                <Chat />
               </li>
-              <li id="retractor-repair" className={TILE + ' h-[232px] w-[422px] outline-4 xl:h-[250px] xl:w-[250px] md:h-[218px] md:w-[218px]'}>
+              <li id="retractor-repair" className={TILE + ' h-[232px] w-[422px] outline-4 overflow-hidden xl:h-[250px] xl:w-[250px] md:h-[218px] md:w-[218px]'}>
                 <p className={CAP + ' max-w-[85%] xl:max-w-full xl:pr-[5px] md:pr-[9px] sm:max-w-[260px]'}><strong className="font-medium text-white">Fleet view.</strong> Shops see every car they have with us at once.</p>
-                <img alt="" className="pointer-events-none rounded-[30px] md:rounded-3xl sm:hidden h-full w-full object-cover" decoding="async" height="250" loading="lazy" src="/assets/img/pm.57044e5b.jpg" srcSet="/assets/img/pm.57044e5b.jpg 2x" style={{ color: 'transparent' }} width="422" />
-                <img alt="" className={MOBILE + ' xs:top-[55%]'} decoding="async" height="220" loading="lazy" src="/assets/img/pm-mobile.39d0b377.jpg" srcSet="/assets/img/pm-mobile.39d0b377.jpg 2x" style={{ color: 'transparent' }} width="320" />
+                <Fleet />
               </li>
             </ul>
           </div>
@@ -82,7 +78,7 @@ const SENTENCE = <><span className="font-semibold">Guides from the bench</span> 
 function Pin({ color, img, line, className }) {
   return (
     <span aria-hidden="true" className={'absolute z-40 flex flex-col items-center hover:cursor-grab active:cursor-grabbing group ' + className} draggable="false" style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none', userSelect: 'none', touchAction: 'none' }}>
-      <img alt="" className={'pointer-events-none z-10 max-w-none rounded-full border-2 shadow-[0px_6px_25px_0px_#00000080] transition-all duration-200 group-active:translate-y-[-15px] group-active:scale-[1.05] group-active:shadow-[0px_14px_30px_0px_#00000080] md:max-w-[45px] sm:max-w-[36px] ' + (color === 'blue' ? 'border-blue' : 'border-orange')} decoding="async" height="66" loading="lazy" src={img} srcSet={img + ' 2x'} style={{ color: 'transparent' }} width="66" />
+      <span className={'pointer-events-none z-10 grid h-[66px] w-[66px] max-w-none place-items-center rounded-full border-2 bg-grey-5 shadow-[0px_6px_25px_0px_#00000080] transition-all duration-200 group-active:translate-y-[-15px] group-active:scale-[1.05] group-active:shadow-[0px_14px_30px_0px_#00000080] md:h-[45px] md:w-[45px] sm:h-[36px] sm:w-[36px] ' + (color === 'blue' ? 'border-blue' : 'border-orange')}><img alt="" className="h-[58%] w-[58%] object-contain" decoding="async" loading="lazy" src={SPRITES[img].uri} /></span>
       <span className="flex flex-col items-center transition-transform duration-200 group-active:-translate-y-[25px]">
         <span className={line + ' w-0.5 md:w-px ' + (color === 'blue' ? 'bg-blue' : 'bg-orange')} />
         <span className={'-mt-px h-2.5 w-2.5 rounded-full md:h-[7px] md:w-[7px] ' + (color === 'blue' ? 'bg-blue' : 'bg-orange')} />
@@ -105,7 +101,7 @@ function Knowledge() {
                 <span className="invisible">Your Fingertips</span>
                 <span aria-hidden="true" className="absolute left-0 top-7 lg:top-5 sm:top-2.5">
                   <span />
-                  <Pin color="blue" img="/assets/img/blue-pin-image.bb230dcd.jpg" line="h-[46px] md:h-[34px] sm:h-[26px]" className="right-[-38px] top-[-38px] text-blue lg:-right-10 lg:-top-10 md:-right-7 md:-top-8 sm:right-[-22px]" />
+                  <Pin color="blue" img="trust_0" line="h-[46px] md:h-[34px] sm:h-[26px]" className="right-[-38px] top-[-38px] text-blue lg:-right-10 lg:-top-10 md:-right-7 md:-top-8 sm:right-[-22px]" />
                 </span>
               </span>
             </h2>
@@ -141,7 +137,7 @@ function Knowledge() {
                 </div>
               </div>
             </div>
-            <img alt="" className="mt-9 rounded-[10px] lg:mt-8 md:mt-7 md:h-auto md:w-full sm:mt-[19px]" decoding="async" height="423" loading="lazy" src="/assets/img/billboard.a71a6e72.jpg" srcSet="/assets/img/billboard.a71a6e72.jpg 2x" style={{ color: 'transparent' }} width="706" />
+            <img alt="" className="mt-9 aspect-[706/423] w-full rounded-[10px] object-cover lg:mt-8 md:mt-7 md:h-auto md:w-full sm:mt-[19px]" decoding="async" height="423" loading="lazy" src="/assets/img/pa-dash.jpg" style={{ color: 'transparent' }} width="706" />
             <div className="absolute left-0 top-0 h-[31.5%] w-px xl:h-[33%] sm:hidden" />
             <p className="relative -mt-8 pb-3 pt-[68px] lg:-mt-9 md:mt-[-19px] md:pt-[47px] sm:mt-[-22px] sm:pt-[38px]">
               <span aria-hidden="true" className="absolute left-1/2 top-0 -z-10 h-full w-px" />
@@ -153,12 +149,12 @@ function Knowledge() {
               <span className="relative pr-2 md:pr-1">
                 <strong className="font-medium text-orange" />
                 <span className="relative">
-                  <Pin color="orange" img="/assets/img/orange-pin-image.5c9a9e65.jpg" line="h-[27px] md:h-[18px]" className="bottom-[-8px] left-[-30px] text-orange md:bottom-[-4px] md:left-[-21px] sm:left-[-16px]" />
+                  <Pin color="orange" img="trust_2" line="h-[27px] md:h-[18px]" className="bottom-[-8px] left-[-30px] text-orange md:bottom-[-4px] md:left-[-21px] sm:left-[-16px]" />
                 </span>
               </span>
               shops ask us for most.
             </p>
-            <img alt="" className="mt-[22px] rounded-[10px] lg:mt-[22px] md:mt-[11px] md:h-auto md:w-full sm:mt-[3px]" decoding="async" height="336" loading="lazy" src="/assets/media/11129cb398cec0781980fa6071f63c4c.svg" style={{ color: 'transparent' }} width="704" />
+            <div className="mt-[22px] lg:mt-[22px] md:mt-[11px] sm:mt-[3px]"><Spec /></div>
             <p className="mt-9 lg:mt-8 md:mt-6 sm:mt-4">
               Articles carry photos from the bay, code tables and short clips of the tooling in use. New ones are added whenever a job teaches us something worth passing on.
             </p>
@@ -176,11 +172,11 @@ function Knowledge() {
         <div className="order-first ml-2 pt-[222px] xl:ml-[81px] lg:ml-[63px] lg:pt-[202px] md:ml-6 md:pt-32 sm:hidden">
           <div className="sticky top-[222px] z-10 h-[282px] w-64 rounded-xl lg:top-[202px] lg:h-[227px] lg:w-[206px] md:top-32 md:h-[169px] md:w-[154px]">
             <div className="absolute bottom-0 left-0 px-4.5 pb-7 pt-4 transition-opacity duration-300 ease-in-out lg:pb-6 lg:pl-4 lg:pr-3 md:px-2.5 md:py-4 z-10 opacity-0">
-              <h3 className="font-semibold leading-snug tracking-tight lg:text-13 md:text-10">Collaborate</h3>
+              <h3 className="font-semibold leading-snug tracking-tight lg:text-13 md:text-10">From the bench</h3>
               <p className="mt-1.5 text-15 leading-snug tracking-tight lg:text-12 md:mt-1 md:text-9">Owners, adjusters and shops read the same article.</p>
             </div>
             <div className="absolute bottom-0 left-0 px-4.5 pb-7 pt-4 transition-opacity duration-300 ease-in-out lg:pb-6 lg:pl-4 lg:pr-3 md:px-2.5 md:py-4 opacity-1 z-20">
-              <h3 className="font-semibold leading-snug tracking-tight lg:text-13 md:text-10">Version history</h3>
+              <h3 className="font-semibold leading-snug tracking-tight lg:text-13 md:text-10">Kept current</h3>
               <p className="mt-1.5 text-15 leading-snug tracking-tight lg:text-12 md:mt-1 md:text-9">Every revision kept, so a spec is never lost.</p>
             </div>
             <div className="pointer-events-none absolute bottom-[-52.5%] left-1/2 aspect-[.912] w-[178.125%] -translate-x-1/2">
