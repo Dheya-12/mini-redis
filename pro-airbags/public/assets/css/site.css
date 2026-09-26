@@ -1,0 +1,75 @@
+/* Site-level glue, served as the last stylesheet so it wins over the Huly sheets. Everything below the hero is styled by the Huly design system's compiled stylesheets
+   (public/assets/css) through the exact utility classes used on huly.io; this file only adds what those
+   stylesheets left to their client bundle. */
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+html, body { background: #090a0c; }
+
+/* The light call-to-action button: the warm glow sweeps across on hover (driven client-side on the original). */
+.light-btn .light-glow { transition: transform .7s cubic-bezier(.16, 1, .3, 1); }
+.light-btn:hover .light-glow { transform: translateX(-105px) translateZ(0) !important; }
+.light-btn .light-ring-a, .light-btn .light-ring-b { transition: opacity .5s ease; }
+.light-btn:hover .light-ring-a { opacity: 0 !important; }
+.light-btn:hover .light-ring-b { opacity: 1 !important; }
+
+/* Site header: fixed, slides in once the hero (which carries its own dashboard nav) has scrolled away. */
+.site-header { position: fixed; transform: translateY(-110%); transition: transform .45s cubic-bezier(.16, 1, .3, 1), background-color .2s; }
+.site-header.on { transform: none; }
+
+/* Pricing cards: the original swaps these glows in on hover. */
+.plan:hover .plan-glow { opacity: 1 !important; }
+.plan:hover .plan-frame { opacity: 1 !important; }
+.plan { border-color: rgba(255, 255, 255, .05); }
+.plan:hover { border-color: rgba(255, 255, 255, .12); }
+
+/* Knowledge section: the editor toolbar, highlight and cursor are revealed when the section enters the viewport. */
+.doc-demo .doc-anim { transition: opacity .6s ease, transform .6s cubic-bezier(.16, 1, .3, 1); }
+.doc-demo.on .doc-toolbar { opacity: 1 !important; transform: none !important; }
+.doc-demo.on .doc-highlight { opacity: 1 !important; --highlight-position: 1 !important; transition: opacity .3s ease, --highlight-position 1.4s ease .3s; }
+.doc-demo.on .doc-cursor { opacity: 1 !important; --cursor-position: 1 !important; transition: opacity .3s ease, --cursor-position 1.4s ease .3s; }
+.doc-demo.on .doc-underline { background-size: 100% 2px !important; color: #090a0c !important; }
+@property --highlight-position { syntax: '<number>'; inherits: false; initial-value: 0; }
+@property --cursor-position { syntax: '<number>'; inherits: false; initial-value: 0; }
+
+/* Reviews: readable clamp for the excerpt when line-clamp is unsupported. */
+.line-clamp-6 { display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* FAQ answers */
+.faq-a { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .4s cubic-bezier(.16, 1, .3, 1); }
+.faq.open .faq-a { grid-template-rows: 1fr; }
+.faq-a > div { overflow: hidden; }
+
+/* ---------- Utilities used on this site that huly.io's compiled Tailwind never emitted (same semantics as Tailwind) ---------- */
+.text-56 { font-size: 56px; }
+.w-\[520px\] { width: 520px; } .w-\[250px\] { width: 250px; } .w-\[26px\] { width: 26px; } .w-\[22px\] { width: 22px; } .w-\[7px\] { width: 7px; }
+.h-\[26px\] { height: 26px; } .h-\[22px\] { height: 22px; } .h-\[2px\] { height: 2px; } .h-\[7px\] { height: 7px; } .h-\[58\%\] { height: 58%; } .h-\[62\%\] { height: 62%; }
+.gap-\[5px\] { gap: 5px; } .gap-y-1 { row-gap: .25rem; } .gap-y-2\.5 { row-gap: .625rem; }
+.mt-8 { margin-top: 2rem; } .mt-\[120px\] { margin-top: 120px; } .p-8 { padding: 2rem; } .pt-6 { padding-top: 1.5rem; } .pt-24 { padding-top: 6rem; } .pr-9 { padding-right: 2.25rem; } .pb-\[120px\] { padding-bottom: 120px; }
+.top-16 { top: 4rem; } .right-3\.5 { right: .875rem; } .max-w-\[420px\] { max-width: 420px; } .leading-\[1\.7\] { line-height: 1.7; } .opacity-70 { opacity: .7; } .resize-y { resize: vertical; }
+.items-baseline { align-items: baseline; } .justify-start { justify-content: flex-start; } .scroll-mt-24 { scroll-margin-top: 6rem; }
+.object-center { object-position: center; } .object-contain { object-fit: contain; }
+.object-\[38\%_50\%\] { object-position: 38% 50%; } .object-\[50\%_30\%\] { object-position: 50% 30%; } .object-\[50\%_35\%\] { object-position: 50% 35%; } .object-\[50\%_40\%\] { object-position: 50% 40%; } .object-\[60\%_50\%\] { object-position: 60% 50%; }
+.ring-black\/5 { --tw-ring-color: rgb(0 0 0 / .05); }
+.hover\:border-white\/40:hover { border-color: rgb(255 255 255 / .4); }
+.backdrop-blur { -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+.bg-grey-1\/80 { background-color: rgb(9 10 12 / .8); }
+.bg-\[\#47d18c\] { background-color: #47d18c; } .bg-\[\#5dff9b\] { background-color: #5dff9b; } .text-\[\#f9fafa\] { color: #f9fafa; }
+.bg-\[rgba\(255\,255\,255\,0\.10\)\] { background-color: rgba(255, 255, 255, .1); }
+.border-\[rgba\(255\,255\,255\,0\.05\)\] { border-color: rgba(255, 255, 255, .05); }
+.focus\:ring-\[rgba\(209\,208\,255\,0\.5\)\]:focus { --tw-ring-color: rgba(209, 208, 255, .5); box-shadow: 0 0 0 1px rgba(209, 208, 255, .5); }
+.shadow-\[0_0_6px_rgba\(93\,255\,155\,\.8\)\] { box-shadow: 0 0 6px rgba(93, 255, 155, .8); }
+.shadow-\[0_0_8px_rgba\(71\,209\,140\,\.8\)\] { box-shadow: 0 0 8px rgba(71, 209, 140, .8); }
+.bg-\[linear-gradient\(180deg\,\#0C0C0D_0\%\,rgba\(12\,12\,13\,0\.7\)_45\%\,rgba\(12\,12\,13\,0\)_100\%\)\] { background-image: linear-gradient(180deg, #0C0C0D 0%, rgba(12, 12, 13, .7) 45%, rgba(12, 12, 13, 0) 100%); }
+.bg-\[linear-gradient\(180deg\,rgba\(12\,12\,13\,0\)_0\%\,\#0C0C0D_78\%\)\] { background-image: linear-gradient(180deg, rgba(12, 12, 13, 0) 0%, #0C0C0D 78%); }
+.bg-\[linear-gradient\(180deg\,rgba\(12\,12\,13\,0\)_20\%\,\#0C0C0D_80\%\)\] { background-image: linear-gradient(180deg, rgba(12, 12, 13, 0) 20%, #0C0C0D 80%); }
+.bg-\[linear-gradient\(90deg\,\#111111_0\%\,\#111111_46\%\,rgba\(17\,17\,17\,0\.35\)_100\%\)\] { background-image: linear-gradient(90deg, #111111 0%, #111111 46%, rgba(17, 17, 17, .35) 100%); }
+.\!h-11 { height: 2.75rem !important; } .\!h-auto { height: auto !important; } .\!h-\[104px\] { height: 104px !important; } .\!px-16 { padding-left: 4rem !important; padding-right: 4rem !important; }
+@media (max-width: 1279px) { .lg\:p-6 { padding: 1.5rem; } .lg\:pb-\[100px\] { padding-bottom: 100px; } }
+@media (max-width: 1023px) { .md\:mt-9 { margin-top: 2.25rem; } .md\:mt-20 { margin-top: 5rem; } .md\:pb-20 { padding-bottom: 5rem; } .md\:pt-16 { padding-top: 4rem; } .md\:py-12 { padding-top: 3rem; padding-bottom: 3rem; } .md\:grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); } .md\:p-5 { padding: 1.25rem; } .md\:h-\[5px\] { height: 5px; }
+  .md\:after\:bg-\[linear-gradient\(180deg\,rgba\(9\,10\,12\,0\)_0\%\,\#090A0C_40\.76\%\)\]:after { background-image: linear-gradient(180deg, rgba(9, 10, 12, 0) 0%, #090A0C 40.76%); } }
+@media (max-width: 767px) { .sm\:mt-16 { margin-top: 4rem; } .sm\:pb-16 { padding-bottom: 4rem; } .sm\:pt-12 { padding-top: 3rem; } .sm\:p-3 { padding: .75rem; } .sm\:h-5 { height: 1.25rem; } .sm\:text-9 { font-size: 9px; } .sm\:text-\[7px\] { font-size: 7px; } .sm\:leading-\[1\.5\] { line-height: 1.5; } .sm\:h-\[3px\] { height: 3px; }
+  .sm\:\!pl-\[59px\] { padding-left: 59px !important; } .sm\:\!pr-\[52px\] { padding-right: 52px !important; } }
+@media (max-width: 639px) { .xs\:\!h-10 { height: 2.5rem !important; } }
+
+/* anchors land below the fixed header */
+section[id], [id].scroll-anchor { scroll-margin-top: 72px; }

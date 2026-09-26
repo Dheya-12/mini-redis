@@ -1,31 +1,27 @@
 import Hero from '@/components/pro-airbags-hero/App';
-import Header from '@/components/sections/Header';
-import Ticker from '@/components/sections/Ticker';
-import About from '@/components/sections/About';
-import Services from '@/components/sections/Services';
-import Process from '@/components/sections/Process';
-import Testimonials from '@/components/sections/Testimonials';
-import Faq from '@/components/sections/Faq';
-import Contact from '@/components/sections/Contact';
-import Footer from '@/components/sections/Footer';
-import Reveals from '@/components/sections/Reveals';
+import SiteHeader from '@/components/site/SiteHeader';
+import Productivity from '@/components/site/Productivity';
+import Insurance from '@/components/site/Insurance';
+import Bento from '@/components/site/Bento';
+import Pricing from '@/components/site/Pricing';
+import Reviews from '@/components/site/Reviews';
+import Faq from '@/components/site/Faq';
+import Cta from '@/components/site/Cta';
 
 export default function Page() {
   return (
     <>
-      <Header />
+      <SiteHeader />
       <Hero />
-      <main className="site">
-        <Ticker />
-        <About />
-        <Services />
-        <Process />
-        <Testimonials />
+      <main>
+        <Productivity />
+        <Insurance />
+        <Bento />
+        <Pricing />
+        <Reviews />
         <Faq />
-        <Contact />
+        <Cta />
       </main>
-      <Footer />
-      <Reveals />
     </>
   );
 }
