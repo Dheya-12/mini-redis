@@ -158,7 +158,7 @@ function NavItem({item, bus}) {
   );
 }
 
-function Nav({bus, inert}) {
+function Nav({bus}) {
   const fx = useFx(), ctaRef = useRef(null), logoRef = useRef(null);
   useLayoutEffect(() => {
     const cta = ctaRef.current, inner = cta.querySelector('.cta-in'), arrow = cta.querySelector('.arrow');
@@ -183,7 +183,7 @@ function Nav({bus, inert}) {
   }, []);
   const cx = CTA_NEON.x - CTA_NEON.hx - 6, cy = CTA_NEON.y - CTA_NEON.hy - 6, ar = M.cta_arrow;
   return (
-    <nav className="nav" aria-label="Main" inert={inert || undefined}>
+    <nav className="nav" aria-label="Main">
       <a ref={logoRef} className="logo-link" href="#top" aria-label="Pro Airbags home" style={{left: LOGO.x - 112, top: LOGO.y - 112, width: 224, height: 224}} />
       {NAV.map(item => <NavItem key={item.key} item={item} bus={bus} />)}
       <a ref={ctaRef} className="nav-cta" href="#start" style={{left: cx, top: cy, width: CTA_NEON.hx * 2 + 12, height: CTA_NEON.hy * 2 + 12}}>
@@ -408,7 +408,7 @@ function MobileBar({bus}) {
           <a className="m-brand" href="#top" aria-label="Pro Airbags home" onClick={e => { e.preventDefault(); setOpen(false); bus.home(); window.scrollTo({top: 0, behavior: 'smooth'}); }}>Pro <b>Airbags</b><small>Airbag &amp; Safety System Specialists</small></a>
           {NAV.map(item => (
             <div key={item.key} className="m-group">
-              <a className="m-link" href={'#' + item.key} onClick={() => { setOpen(false); bus.navigate(item); }}>
+              <a className="m-link" href={'#' + item.key} onClick={e => { e.preventDefault(); setOpen(false); bus.navigate(item); }}>
                 <img alt="" aria-hidden="true" src={SPRITES['nav_' + item.key].uri} /><span>{item.label}</span><Chevron />
               </a>
               <div className="m-sub">{item.menu.map(m => <a key={m} href={'#' + slug(m)} onClick={() => setOpen(false)}>{m}</a>)}</div>
@@ -423,40 +423,64 @@ function MobileBar({bus}) {
 
 /* ---------------- the hero ---------------- */
 const MOBILE_Q = '(max-width: 999px)';
-const FOCAL = {x: 800, y: 470}, ZOOM = 1.12; /* mobile: the stage covers the visual, zoomed in on the logo / SRS box / car */
+const BAND = 352;                      /* design-space height of the dashboard band (the swipeable nav strip on phones) */
+const SCENE_FOCAL = {x: 1050, y: 640}; /* what the phone scene is cropped around: the car */
+
 export default function Hero() {
-  const heroRef = useRef(null), visRef = useRef(null), stageRef = useRef(null), canvasRef = useRef(null);
+  const heroRef = useRef(null), visRef = useRef(null), stageRef = useRef(null), canvasRef = useRef(null), sceneRef = useRef(null), sceneCanvasRef = useRef(null);
   const [fx, setFx] = useState(undefined);
-  const fxRef = useRef(null);
+  const fxRef = useRef(null), cropRef = useRef(null), mobileRef = useRef(false);
   const bus = useRef({}).current;
   const [mobile, setMobile] = useState(false);
-  const [tf, setTf] = useState({s: 1, x: 0, y: 0});
+  const [scale, setScale] = useState(1);
+  const [crop, setCrop] = useState(null);
 
   useLayoutEffect(() => {
     const mq = window.matchMedia(MOBILE_Q);
     const f = createGL(canvasRef.current, ASSETS, REDUCED);
     fxRef.current = f; setFx(f);
     if (!f) heroRef.current.classList.add('no-gl');
-    let last = null;
+    const sync = () => { mobileRef.current = mq.matches; setMobile(mq.matches); };
+    sync(); mq.addEventListener('change', sync);
+    /* phone scene: after each GL frame, copy the car region of the live canvas into the scene canvas (same tick, so the buffer is still valid) */
+    const blit = () => {
+      const c = sceneCanvasRef.current, r = cropRef.current; if (!c || !r) return;
+      const gl = canvasRef.current, pr = gl.width / W;
+      c.getContext('2d').drawImage(gl, r.sx * pr, r.sy * pr, r.sw * pr, r.sh * pr, 0, 0, c.width, c.height);
+    };
+    if (f) gsap.ticker.add(blit);
+    const io = new IntersectionObserver(e => f && f.setRunning(e[0].isIntersecting)); io.observe(heroRef.current);
+    return () => { io.disconnect(); mq.removeEventListener('change', sync); if (f) { gsap.ticker.remove(blit); f.destroy(); } };
+  }, []);
+
+  /* sizing. desktop: the whole 1536 x 1024 stage scaled to the width. phone: the dashboard band in a swipeable strip at a readable scale, the car in a cover-cropped scene */
+  useLayoutEffect(() => {
+    const hero = heroRef.current, vis = visRef.current, scene = sceneRef.current, f = fxRef.current;
+    let last = -1;
     const onResize = () => {
-      const hero = heroRef.current, vis = visRef.current, m = mq.matches;
-      let s, x = 0, y = 0;
-      if (m) {
-        /* phones / tablets: cover the visual box with the stage, cropped around the focal point */
-        const vw = vis.clientWidth, vh = vis.clientHeight;
-        s = Math.max(vw / W, vh / H) * ZOOM;
-        x = clamp(vw / 2 - FOCAL.x * s, vw - W * s, 0); y = clamp(vh / 2 - FOCAL.y * s, vh - H * s, 0);
-      } else s = hero.clientWidth / W; /* desktop: the whole 1536 x 1024 stage scaled to the width */
-      setMobile(m);
-      if (last && last.s === s && last.x === x && last.y === y) return;
-      last = {s, x, y}; setTf(last); if (f) f.setSize(s);
+      let s;
+      if (mobile) {
+        s = clamp(window.innerHeight * 0.3, 220, 300) / BAND;
+        if (scene) {
+          const cw = scene.clientWidth, ch = Math.max(scene.clientHeight, 1), asp = cw / ch;
+          let sh = H - BAND, sw = sh * asp; if (sw > W) { sw = W; sh = sw / asp; }
+          const sx = clamp(SCENE_FOCAL.x - sw / 2, 0, W - sw), sy = clamp(SCENE_FOCAL.y - sh / 2, BAND, H - sh);
+          const r = {sx, sy, sw, sh, k: cw / sw}; cropRef.current = r; setCrop(r);
+          const c = sceneCanvasRef.current; if (c) { const d = Math.min(window.devicePixelRatio || 1, 2); c.width = Math.round(cw * d); c.height = Math.round(ch * d); }
+        }
+      } else { cropRef.current = null; s = hero.clientWidth / W; }
+      if (s === last) return; last = s; setScale(s); if (f) f.setSize(s);
     };
     onResize();
-    const ro = new ResizeObserver(onResize); ro.observe(heroRef.current); ro.observe(visRef.current);
-    mq.addEventListener('change', onResize);
-    const io = new IntersectionObserver(e => f && f.setRunning(e[0].isIntersecting)); io.observe(heroRef.current);
-    return () => { ro.disconnect(); io.disconnect(); mq.removeEventListener('change', onResize); f && f.destroy(); };
-  }, []);
+    const ro = new ResizeObserver(onResize); ro.observe(hero); if (scene) ro.observe(scene);
+    return () => ro.disconnect();
+  }, [mobile]);
+
+  /* phone: start the strip centered on the logo */
+  useEffect(() => { if (!mobile) return; const vis = visRef.current; vis.scrollLeft = Math.max(0, LOGO.x * scale - vis.clientWidth / 2); }, [mobile, scale]);
+
+  const sceneTap = () => { const f = fxRef.current; if (!f) return; f.inflate('car', 0.07); f.burst(SCENE_FOCAL.x, SCENE_FOCAL.y - 40, 14, {spd: [40, 160]}); f.scan(0.9); };
+  const scrollTo = (el, block = 'start') => el && el.scrollIntoView({behavior: REDUCED ? 'auto' : 'smooth', block});
 
   useEffect(() => {
     if (fx === undefined) return;
@@ -466,6 +490,7 @@ export default function Hero() {
     const setCurrent = it => hero.querySelectorAll('.nav-link').forEach((a, i) => { if (NAV[i] === it) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
     bus.closeOthers = key => NAV.forEach(n => { if (n.key !== key && n.close) n.close(); });
     bus.navigate = item => {
+      if (mobileRef.current) gsap.delayedCall(0.6, () => scrollTo(document.getElementById(item.key)));
       const i = NAV.indexOf(item), s = navS[i], cx = (item.rect[0] + item.rect[2]) / 2, prev = active;
       if (prev === item) { fx && fx.flash(7, cx, 281, 1.2, 90, 0.7); return; }
       active = item; setCurrent(item);
@@ -484,9 +509,11 @@ export default function Hero() {
       cards.forEach((c, i) => gsap.timeline({delay: i * 0.09}).to(c, {y: -10, duration: 0.25, ease: 'power2.out'}).to(c, {y: 0, duration: 0.7, ease: 'elastic.out(1, 0.4)'}));
       hero.querySelectorAll('.card-glow').forEach((g, i) => gsap.fromTo(g, {opacity: 1}, {opacity: 0, duration: 0.9, delay: i * 0.09 + 0.2}));
       if (fx) M.cards.forEach((c, i) => gsap.delayedCall(i * 0.09, () => fx.burst((c.x[0] + c.x[1]) / 2, 833, 8, {spd: [40, 150], life: [0.3, 0.6]})));
+      if (mobileRef.current) scrollTo(hero.querySelector('.cards'));
     };
     bus.startRepair = from => {
       if (running) return; running = true;
+      if (mobileRef.current && from !== 'panel') scrollTo(hero.querySelector('.srs'), 'center');
       const rows = [...hero.querySelectorAll('.srs-row')], state = hero.querySelector('.srs-state'), frame = hero.querySelector('.srs-frame');
       const tl = gsap.timeline({onComplete: () => { running = false; }});
       if (fx) {
@@ -541,18 +568,26 @@ export default function Hero() {
   return (
     <FX.Provider value={fxRef}>
       <section ref={heroRef} className={'hero booting' + (mobile ? ' m' : '')} id="top">
-        <div ref={visRef} className="vis" style={mobile ? undefined : {height: H * tf.s}}>
-          <div ref={stageRef} className="stage" style={{transform: `translate(${tf.x}px, ${tf.y}px) scale(${tf.s})`}}>
+        <div ref={visRef} className="vis" style={{height: (mobile ? BAND : H) * scale}}>
+          <div ref={stageRef} className="stage" style={{transform: `scale(${scale})`}}>
             <canvas ref={canvasRef} className="gl" aria-hidden="true" />
             <img className="fallback" alt="" aria-hidden="true" src={ASSETS.plate} />
-            <Nav bus={bus} inert={mobile} />
+            <Nav bus={bus} />
             {!mobile && <Copy bus={bus} />}
             {!mobile && <Srs bus={bus} />}
             {!mobile && <Cards bus={bus} />}
             {!mobile && <Trust />}
           </div>
-          {mobile && <div className="m-scrim" aria-hidden="true" />}
         </div>
+        {mobile && <i className="m-fade m-fade-l" style={{height: BAND * scale}} aria-hidden="true" />}
+        {mobile && <i className="m-fade m-fade-r" style={{height: BAND * scale}} aria-hidden="true" />}
+        {mobile && (
+          <div ref={sceneRef} className="m-scene" onPointerDown={sceneTap} aria-hidden="true">
+            <img className="m-scene-img" alt="" src={ASSETS.plate} style={crop ? {transform: `translate(${-crop.sx * crop.k}px, ${-crop.sy * crop.k}px) scale(${crop.k})`} : undefined} />
+            <canvas ref={sceneCanvasRef} className="m-scene-gl" />
+            <i className="m-scene-fade" />
+          </div>
+        )}
         {mobile && <MobileBar bus={bus} />}
         {mobile && (
           <div className="m-body">

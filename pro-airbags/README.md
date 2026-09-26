@@ -21,7 +21,7 @@ The app lives in the `pro-airbags/` folder of the repository, so set **Root Dire
 
 ## Structure
 
-- `components/pro-airbags-hero/` — the hero as delivered (gl.js, styles.css, generated/* untouched). `App.jsx` gained a mobile branch and `responsive.css` was added: at 1000px and wider the original 1536 x 1024 stage is scaled to the width exactly as designed; below that the same stage and WebGL effects become a full-bleed visual cropped around the logo and car, with a hamburger drawer for the nav, and the headline, buttons, SRS panel, cards and trust items re-flowed for touch using the same components.
+- `components/pro-airbags-hero/` — the hero as delivered (gl.js, styles.css, generated/* untouched). `App.jsx` gained a mobile branch and `responsive.css` was added. At 1000px and wider the original 1536 x 1024 stage is scaled to the width exactly as designed. Below that, the dashboard band becomes a horizontally swipeable strip at a readable scale with the real nav pills and CTA inside it (dropdowns are replaced by a hamburger drawer carrying the same sub-links), the car region of the same live WebGL canvas is copied each frame into a cover-cropped scene, and the headline, buttons, SRS panel, cards and trust items are re-flowed for touch using the same components.
 - `components/sections/` — Header, Ticker, About, Services, Process, Testimonials, Faq, Contact, Footer, Reveals.
 - `app/globals.css` — site styles (design tokens copied from the hero: #070709 background, #ff3a2c neon red, silver/red gradient headlines in Saira 900 / Montserrat).
 
