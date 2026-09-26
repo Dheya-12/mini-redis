@@ -1,0 +1,2 @@
+/* Site styles live in public/assets/css/site.css (linked last in app/layout.jsx so they win over the Huly stylesheets). */
+html, body { background: #090a0c; }
